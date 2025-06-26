@@ -1,0 +1,37 @@
+
+.journal-modal .modal-header {
+    text-align: center;
+    border-bottom: 1px solid var(--background-modifier-border);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.journal-modal .modal-main-content {
+    display: flex;
+}
+
+.journal-modal .modal-nav {
+    width: 150px;
+    border-right: 1px solid var(--background-modifier-border);
+    padding-right: 10px;
+    margin-right: 10px;
+}
+
+.journal-modal .nav-item {
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.journal-modal .nav-item:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.journal-modal .nav-item.active {
+    background-color: var(--background-modifier-accent);
+    color: var(--text-on-accent);
+}
+
+.journal-modal .modal-content-container {
+    flex: 1;
+}

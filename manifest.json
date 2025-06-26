@@ -1,0 +1,10 @@
+{
+    "id": "chronicle",
+    "name": "Chronicle",
+    "version": "0.1.0",
+    "minAppVersion": "0.15.0",
+    "description": "Create structured journal entries with dream diary tracking and metrics",
+    "author": "banisterious",
+    "authorUrl": "https://github.com/banisterious",
+    "isDesktopOnly": false
+} 

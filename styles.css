@@ -303,10 +303,12 @@
     background: var(--background-secondary) !important;
     cursor: pointer !important;
     transition: all 0.3s ease !important;
-    resize: horizontal !important;
+    resize: both !important;
     overflow: auto !important;
     min-width: 150px !important;
-    max-width: 400px !important;
+    max-width: 800px !important;
+    min-height: 100px !important;
+    max-height: 600px !important;
     position: relative !important;
 }
 
@@ -397,7 +399,7 @@
 
 .sfp-setting-item textarea {
     min-height: 120px !important;
-    resize: vertical !important;
+    resize: both !important;
     font-family: inherit !important;
 }
 

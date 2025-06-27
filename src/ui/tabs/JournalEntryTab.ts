@@ -230,7 +230,7 @@ export class JournalEntryTab {
             
             .sfp-textarea {
                 min-height: 120px;
-                resize: vertical;
+                resize: both;
                 font-family: inherit;
             }
             
@@ -248,7 +248,7 @@ export class JournalEntryTab {
             
             .sfp-preview-container {
                 width: 200px;
-                flex-shrink: 0;
+                flex-shrink: 1;
                 border: 2px dashed var(--background-modifier-border);
                 border-radius: 12px;
                 padding: 20px;
@@ -257,10 +257,12 @@ export class JournalEntryTab {
                 cursor: pointer;
                 transition: all 0.3s ease;
                 position: relative;
-                resize: horizontal;
+                resize: both;
                 overflow: auto;
                 min-width: 150px;
-                max-width: 400px;
+                max-width: 800px;
+                min-height: 100px;
+                max-height: 600px;
             }
             
             .sfp-preview-container:hover {
@@ -701,7 +703,7 @@ export class JournalEntryTab {
                 const img = previewContainer.createEl('img');
                 img.style.cssText = `
                     max-width: 100%;
-                    max-height: 400px;
+                    max-height: 600px;
                     object-fit: contain;
                     border-radius: 4px;
                     margin-top: 10px;

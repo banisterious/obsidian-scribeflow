@@ -24,19 +24,18 @@ export async function writeJournalEntry(app: App, settings: ScribeFlowPluginSett
 }
 
 function generateMarkdown(settings: ScribeFlowPluginSettings, state: FormState): string {
-    const wordCount = state.journalContent.split(/\s+/).filter(Boolean).length;
     const dreamWordCount = state.dreamContent.split(/\s+/).filter(Boolean).length;
     const dateBlockID = `^${state.date.replace(/-/g, '')}`;
     const dreamDateId = state.date.replace(/-/g, '');
 
     let journalImageBlock = '';
     if (state.journalImagePath) {
-        journalImageBlock = `>> [!journal-page|right]\n>> [[${state.journalImagePath}|${state.journalImageWidth}]]\n> `;
+        journalImageBlock = `>> [!journal-page|right]\n>> ![[${state.journalImagePath}|${state.journalImageWidth}]]\n> `;
     }
 
     let dreamImageBlock = '';
     if (state.dreamImagePath) {
-        dreamImageBlock = `>>> [!journal-page|right]\n>>> [[${state.dreamImagePath}|${state.dreamImageWidth}]]\n>>`;
+        dreamImageBlock = `>>> [!journal-page|right]\n>>> ![[${state.dreamImagePath}|${state.dreamImageWidth}]]\n>>`;
     }
 
     let dreamDiaryBlock = '';
@@ -45,7 +44,7 @@ function generateMarkdown(settings: ScribeFlowPluginSettings, state: FormState):
         dreamDiaryBlock = `>> [!${settings.calloutNames.dreamDiary}] ${state.dreamTitle} [[Journals/Dream Diary/Dream Diary#^${dreamDateId}-${state.dreamTitle.replace(/\s+/g, '-')}|Dream Diary]]\n>>\n${dreamImageBlock ? dreamImageBlock + '\n' : ''}>> ${state.dreamContent}\n>>\n>>> [!dream-metrics]\n>>> Words: ${dreamWordCount}${metricsText ? ', ' + metricsText : ''}`;
     }
 
-    const journalContent = `> [!${settings.calloutNames.journalEntry}] ${state.date} [[Journals|John's Journal]] *Words: ${wordCount}*\n> ${dateBlockID}\n> \n${journalImageBlock ? journalImageBlock + '\n' : ''}> ${state.journalContent}${dreamDiaryBlock ? '\n> \n' + dreamDiaryBlock : ''}`;
+    const journalContent = `> [!${settings.calloutNames.journalEntry}] ${state.date} [[Journals|John's Journal]]\n> ${dateBlockID}\n> \n${journalImageBlock ? journalImageBlock + '\n' : ''}> ${state.journalContent}${dreamDiaryBlock ? '\n> \n' + dreamDiaryBlock : ''}`;
 
     return journalContent;
 }

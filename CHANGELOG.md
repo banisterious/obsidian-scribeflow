@@ -1,129 +1,73 @@
 # Changelog
 
-All notable changes to the Custom Journal Entry Plugin will be documented in this file.
+All notable changes to the ScribeFlow Plugin will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Versioning Guidelines
-
-This project follows semantic versioning (MAJOR.MINOR.PATCH):
-
-- **MAJOR** version (1.0.0) for incompatible API changes
-- **MINOR** version (0.1.0) for backwards-compatible functionality
-- **PATCH** version (0.0.1) for backwards-compatible bug fixes
-
 ## [Unreleased]
 
+## [0.2.0] - 2024-12-27
+
 ### Added
-- Modern tabbed interface for Journal Entry and Dream Diary
-- Two-column layout with resizable columns
-- Clear Image button functionality
-- Automatic dream diary inclusion based on content
-- Improved responsive design
-- Enhanced tab switching animations
-- Better visual feedback for active states
+- **Plugin Rebranding**: Renamed from "Chronicle" to "ScribeFlow" with updated branding
+- **Comprehensive Settings System**: 
+  - Customizable callout names for journal-entry and dream-diary
+  - Image folder autosuggester for organizing images
+  - File type multi-select for filtering image picker (PNG, JPG, SVG, etc.)
+  - Unlimited selectable dream metrics with drag-to-reorder
+- **Enhanced Modal Interface**:
+  - Reference section with Inspirations tab and individual metric description tabs
+  - Settings tab within modal mirroring main plugin settings
+  - 18+ detailed dream metrics with comprehensive descriptions and scoring guides
+- **Smart Image Management**:
+  - Folder autosuggester using Obsidian's native `AbstractInputSuggest`
+  - Image file type filtering based on user preferences
+  - Improved error messages when no images found
+- **UI/UX Improvements**:
+  - Material Design styling with Obsidian theme compatibility
+  - Proper CSS class organization with `sfp-` prefixes
+  - Obsidian-style setting headers and sentence case naming
+  - Removed inline styles in favor of CSS classes
+- **Documentation**: Added MCL Multi Column requirement note for image callout floating
 
 ### Changed
-- Removed manual dream diary toggle in favor of content-based inclusion
-- Updated layout to use two main columns instead of three
-- Improved textarea resizing behavior
-- Enhanced column resize handles
-- Better organization of UI components
-- Optimized form state management
-- Updated CSS class naming and structure
+- **Architecture Overhaul**: Complete redesign of plugin structure and settings system
+- **Settings Management**: 
+  - Moved from hardcoded values to user-configurable settings
+  - Settings available in both main plugin settings and modal interface
+  - Dynamic metric selection replacing fixed metric set
+- **Image Picker Logic**: Now respects user's selected file types instead of hardcoded extensions
+- **Right-click Menu**: Updated text to "ScribeFlow: insert journal entry"
+- **Plugin Metadata**: Updated all references, URLs, and documentation for ScribeFlow branding
 
 ### Fixed
-- Horizontal resizing of columns
-- Image selection after clearing
-- Dream content textarea resizing
-- Column resize handle visibility
-- Top section spacing and alignment
-- Tab switching behavior
-- Form state restoration with new layout
+- **Image Types Manager Position**: Fixed bug where file type selector would drop below Dream metrics section
+- **CSS Class Conflicts**: Resolved potential conflicts with Obsidian's global styles using proper prefixing
+- **Unused Variables**: Cleaned up TypeScript warnings for unused declarations
+- **Inline Styles**: Moved all inline styles to CSS classes for better maintainability
+
+### Technical Improvements
+- **TypeScript**: Enhanced type safety with comprehensive interfaces
+- **Code Organization**: Better separation of concerns and modular structure
+- **Build Process**: Optimized build pipeline with proper error handling
+- **Documentation**: Complete overhaul of README.md and project documentation
 
 ## [0.1.0] - 2024-03-XX
 
 ### Added
-- Initial release
-- Basic journal entry creation
-- Dream diary integration
-- Image attachment support
-- Metrics tracking for dreams
+- Initial release as Chronicle Plugin
+- Basic journal entry creation with tabbed interface
+- Dream diary integration with metrics tracking
+- Image attachment support with preview
 - Form state persistence
-- Settings management
-- Target note configuration
+- Two-column layout with resizable columns
+- Modern Material Design UI
 
-### Changed
-- Migrated from QuickAdd-based solution
-- Implemented custom UI
-- Added proper callout formatting
-- Enhanced error handling
-
-### Fixed
-- Various bug fixes and improvements
-
-## Changelog Template
-
-When adding new entries to the changelog, follow this template:
-
-```markdown
-## [X.Y.Z] - YYYY-MM-DD
-### Added
-- New feature 1
-  - Sub-feature or detail
-  - Implementation note
-- New feature 2
-  - Sub-feature or detail
-  - Implementation note
-
-### Changed
-- Changed feature 1
-  - What changed
-  - Why it changed
-- Changed feature 2
-  - What changed
-  - Why it changed
-
-### Deprecated
-- Deprecated feature 1
-  - Why it's deprecated
-  - What to use instead
-- Deprecated feature 2
-  - Why it's deprecated
-  - What to use instead
-
-### Removed
-- Removed feature 1
-  - Why it was removed
-  - Migration path if any
-- Removed feature 2
-  - Why it was removed
-  - Migration path if any
-
-### Fixed
-- Fixed bug 1
-  - What was fixed
-  - How it was fixed
-- Fixed bug 2
-  - What was fixed
-  - How it was fixed
-
-### Security
-- Security fix 1
-  - What was fixed
-  - Impact of the fix
-- Security fix 2
-  - What was fixed
-  - Impact of the fix
-```
-
-### Guidelines for Changelog Entries
-
-1. **Be Specific**: Include details about what changed and why
-2. **Be Consistent**: Use the same format and style throughout
-3. **Be Clear**: Write entries that are easy to understand
-4. **Be Complete**: Include all relevant changes
-5. **Be Organized**: Group related changes together
-6. **Be Timely**: Add entries as changes are made
-7. **Be Accurate**: Verify all information is correct 
+### Features
+- Journal Entry tab with word count tracking
+- Dream Diary tab with title, content, and metrics
+- Image selection with preview and resize functionality
+- Comprehensive dream metrics (sensory detail, emotional recall, etc.)
+- Auto-save form state between sessions
+- Customizable date formatting and target note configuration

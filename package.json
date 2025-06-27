@@ -1,7 +1,7 @@
 {
-    "name": "obsidian-chronicle",
-    "version": "0.1.0",
-    "description": "Create structured journal entries with dream diary tracking and metrics",
+    "name": "obsidian-scribeflow",
+    "version": "0.2.0",
+    "description": "Streamlined journaling with structured entries, dream diary tracking, and insightful metrics",
     "main": "main.js",
     "scripts": {
         "dev": "node esbuild.config.mjs",
@@ -12,7 +12,10 @@
         "obsidian",
         "plugin",
         "journal",
-        "dream-diary"
+        "dream-diary",
+        "scribeflow",
+        "writing",
+        "metrics"
     ],
     "author": "banisterious",
     "license": "MIT",
@@ -21,9 +24,9 @@
         "@typescript-eslint/eslint-plugin": "^5.2.0",
         "@typescript-eslint/parser": "^5.2.0",
         "builtin-modules": "^3.2.0",
-        "esbuild": "0.13.12",
+        "esbuild": "^0.13.12",
         "obsidian": "latest",
         "tslib": "2.3.1",
         "typescript": "4.7.4"
     }
-} 
+}

@@ -1,37 +1,474 @@
+/* ScribeFlow - Material Design
+ * An Obsidian plugin that enables structured journal entries with dream diary tracking and metrics.
+ * 
+ * Author: John Banister
+ * GitHub: https://github.com/banisterious
+ * 
+ * Modern Material Design styling optimized for Obsidian
+ */
 
-.journal-modal .modal-header {
-    text-align: center;
+/* Modal Container */
+.modal:has(.sfp-journal-modal) {
+    height: var(--modal-height);
+    width: var(--modal-width);
+    max-height: var(--modal-max-height);
+    max-width: var(--modal-max-width);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Modal Header */
+.sfp-journal-modal .sfp-modal-header {
+    color: var(--text-normal);
+    padding: 24px;
+    margin: 0;
     border-bottom: 1px solid var(--background-modifier-border);
-    padding-bottom: 10px;
-    margin-bottom: 10px;
-}
-
-.journal-modal .modal-main-content {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.journal-modal .modal-nav {
-    width: 150px;
-    border-right: 1px solid var(--background-modifier-border);
-    padding-right: 10px;
-    margin-right: 10px;
+.sfp-journal-modal .sfp-header-content h2 {
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+    text-transform: capitalize;
 }
 
-.journal-modal .nav-item {
-    padding: 10px;
+.sfp-journal-modal .sfp-header-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.sfp-journal-modal .sfp-header-buttons .sfp-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    border-radius: 5px;
+    transition: all 0.3s ease;
+    outline: none;
 }
 
-.journal-modal .nav-item:hover {
-    background-color: var(--background-modifier-hover);
-}
-
-.journal-modal .nav-item.active {
-    background-color: var(--background-modifier-accent);
+.sfp-journal-modal .sfp-header-buttons .sfp-btn-primary {
+    background: var(--interactive-accent);
     color: var(--text-on-accent);
 }
 
-.journal-modal .modal-content-container {
+.sfp-journal-modal .sfp-header-buttons .sfp-btn-primary:hover {
+    background: var(--interactive-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--background-modifier-box-shadow);
+}
+
+.sfp-journal-modal .sfp-header-buttons .sfp-btn-secondary {
+    background: var(--background-primary);
+    color: var(--text-muted);
+    border: 1px solid var(--background-modifier-border);
+}
+
+.sfp-journal-modal .sfp-header-buttons .sfp-btn-secondary:hover {
+    background: var(--background-secondary);
+    border-color: var(--background-modifier-border-hover);
+}
+
+/* Main Content Layout */
+.sfp-journal-modal .sfp-modal-main-content {
+    display: flex;
+    height: 100%;
+}
+
+.sfp-journal-modal .sfp-modal-nav {
+    width: 150px;
+    background: var(--background-secondary);
+    border-right: 1px solid var(--background-modifier-border);
+    padding: 20px 0;
+}
+
+.sfp-journal-modal .sfp-nav-item {
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.sfp-journal-modal .sfp-nav-item:hover {
+    background: var(--background-modifier-hover);
+    padding-left: 24px;
+}
+
+.sfp-journal-modal .sfp-nav-item.sfp-active {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border-left: 4px solid var(--text-on-accent);
+    padding-left: 20px;
+}
+
+.sfp-journal-modal .sfp-nav-heading {
+    padding: 4px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    border-top: 1px solid var(--background-modifier-border);
+    border-bottom: 1px solid var(--background-modifier-border);
+    margin-top: 8px;
+    background-color: var(--background-primary);
+}
+
+.sfp-journal-modal .sfp-modal-content-container {
     flex: 1;
+    padding: 24px;
+    background: var(--background-primary);
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+.sfp-modal-content-container h2:first-of-type {
+    margin-block-start: 0;
+}
+
+/* Settings Styling */
+.sfp-metrics-container {
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.sfp-selected-metrics .sfp-metric-item,
+.sfp-available-metrics .sfp-metric-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    margin-bottom: 4px;
+    transition: background-color 0.2s;
+}
+
+.sfp-selected-metrics .sfp-metric-item {
+    background: var(--background-secondary);
+}
+
+.sfp-available-metrics .sfp-metric-item {
+    cursor: pointer;
+}
+
+.sfp-available-metrics .sfp-metric-item:hover {
+    background: var(--background-modifier-hover);
+}
+
+.sfp-drag-handle {
+    cursor: grab;
+    color: var(--text-muted);
+}
+
+.sfp-metric-item .sfp-metric-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.sfp-metric-item .sfp-metric-desc {
+    flex: 2;
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+
+.sfp-metric-item .sfp-remove-btn {
+    background: none;
+    border: none;
+    color: var(--text-error);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.sfp-metric-item .sfp-add-btn {
+    background: var(--interactive-accent);
+    border: none;
+    color: var(--text-on-accent);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+.sfp-modal-content-container .sfp-metrics-container {
+    max-height: 300px;
+}
+
+.sfp-modal-content-container .sfp-metric-item {
+    font-size: 0.9em;
+}
+
+.sfp-modal-content-container .sfp-remove-btn {
+    font-size: 16px;
+}
+
+.sfp-modal-content-container .sfp-add-btn {
+    font-size: 14px;
+}
+
+/* Section Headers */
+.sfp-section-header-first {
+    margin-top: 0 !important;
+}
+
+.sfp-section-header {
+    margin-top: 16px !important;
+}
+
+/* Image Types Manager */
+.sfp-image-types-manager {
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.sfp-selected-types .sfp-type-item,
+.sfp-available-types .sfp-type-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    margin-bottom: 4px;
+    transition: background-color 0.2s;
+}
+
+.sfp-selected-types .sfp-type-item {
+    background: var(--background-secondary);
+}
+
+.sfp-available-types .sfp-type-item {
+    cursor: pointer;
+}
+
+.sfp-available-types .sfp-type-item:hover {
+    background: var(--background-modifier-hover);
+}
+
+.sfp-type-item .sfp-type-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+/* Form Styling */
+.sfp-datetime-container {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.sfp-datetime-container .sfp-setting-item {
+    flex: 1;
+}
+
+/* Content Sections */
+.sfp-journal-content-section,
+.sfp-dream-content-section {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.sfp-journal-content-form,
+.sfp-dream-content-form {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Preview Containers */
+.sfp-journal-preview,
+.sfp-dream-preview {
+    border: 2px dashed var(--background-modifier-border) !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    text-align: center !important;
+    background: var(--background-secondary) !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    resize: horizontal !important;
+    overflow: auto !important;
+    min-width: 150px !important;
+    max-width: 400px !important;
+    position: relative !important;
+}
+
+.sfp-journal-preview:hover,
+.sfp-dream-preview:hover {
+    border-color: var(--interactive-accent) !important;
+    background: var(--background-modifier-hover) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+.sfp-preview-label {
+    font-weight: 500 !important;
+    color: var(--text-muted) !important;
+    margin-bottom: 8px !important;
+    text-transform: lowercase !important;
+}
+
+.sfp-preview-instruction {
+    font-size: 14px !important;
+    color: var(--text-muted) !important;
+    font-style: italic !important;
+    margin-bottom: 12px !important;
+}
+
+.sfp-width-control {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 13px !important;
+    justify-content: center !important;
+    color: var(--text-muted) !important;
+}
+
+.sfp-width-control input {
+    width: 60px !important;
+    padding: 4px 8px !important;
+    border: 1px solid var(--background-modifier-border) !important;
+    border-radius: 4px !important;
+    text-align: center !important;
+    font-size: 13px !important;
+    background: var(--background-primary) !important;
+    color: var(--text-normal) !important;
+}
+
+/* Setting Items */
+.sfp-setting-item {
+    border: none !important;
+    padding: 16px 0 !important;
+    margin-bottom: 16px !important;
+}
+
+.sfp-setting-item-name {
+    font-weight: 500 !important;
+    color: var(--text-normal) !important;
+    font-size: 14px !important;
+    text-transform: lowercase !important;
+}
+
+.sfp-setting-item-description {
+    color: var(--text-muted) !important;
+    font-size: 13px !important;
+    margin-top: 4px !important;
+}
+
+/* Input Fields */
+.sfp-setting-item input[type="text"],
+.sfp-setting-item input[type="date"],
+.sfp-setting-item input[type="time"],
+.sfp-setting-item textarea,
+.sfp-setting-item .search-input-container input {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    border: 2px solid var(--background-modifier-border) !important;
+    border-radius: 8px !important;
+    background: var(--background-primary) !important;
+    color: var(--text-normal) !important;
+    font-size: 16px !important;
+    transition: all 0.3s ease !important;
+    outline: none !important;
+}
+
+.sfp-setting-item input:focus,
+.sfp-setting-item textarea:focus {
+    border-color: var(--interactive-accent) !important;
+    box-shadow: 0 0 0 3px var(--interactive-accent-hover) !important;
+}
+
+.sfp-setting-item textarea {
+    min-height: 120px !important;
+    resize: vertical !important;
+    font-family: inherit !important;
+}
+
+/* Section Titles */
+.sfp-journal-modal h4 {
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    color: var(--text-normal) !important;
+    margin: 32px 0 16px 0 !important;
+    padding-bottom: 8px !important;
+    border-bottom: 2px solid var(--background-modifier-border) !important;
+    text-transform: lowercase !important;
+}
+
+/* Metrics */
+.sfp-setting-item .slider {
+    background: var(--background-modifier-border) !important;
+    height: 6px !important;
+    border-radius: 3px !important;
+}
+
+.sfp-setting-item .slider .slider-track {
+    background: linear-gradient(90deg, var(--interactive-accent), var(--interactive-accent-hover)) !important;
+    border-radius: 3px !important;
+}
+
+.sfp-setting-item .slider .slider-thumb {
+    background: var(--interactive-accent) !important;
+    border: 2px solid var(--background-primary) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+
+/* Dropdown */
+.sfp-setting-item select {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    border: 2px solid var(--background-modifier-border) !important;
+    border-radius: 8px !important;
+    background: var(--background-primary) !important;
+    color: var(--text-normal) !important;
+    font-size: 16px !important;
+    transition: all 0.3s ease !important;
+    outline: none !important;
+}
+
+.sfp-setting-item select:focus {
+    border-color: var(--interactive-accent) !important;
+    box-shadow: 0 0 0 3px var(--interactive-accent-hover) !important;
+}
+
+/* Search Input Suggestions */
+.sfp-suggestion-container {
+    background: var(--background-primary) !important;
+    border: 1px solid var(--background-modifier-border) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+    overflow: hidden !important;
+}
+
+.sfp-suggestion-item {
+    padding: 12px 16px !important;
+    cursor: pointer !important;
+    border-bottom: 1px solid var(--background-modifier-border) !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.sfp-suggestion-item:hover {
+    background: var(--background-modifier-hover) !important;
+}
+
+.sfp-suggestion-item:last-child {
+    border-bottom: none !important;
 }

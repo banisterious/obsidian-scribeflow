@@ -1,12 +1,12 @@
 
 import { Plugin } from 'obsidian';
 import { JournalEntryModal } from './ui/JournalEntryModal';
-import { ChroniclePluginSettings, FormState } from './types';
-import { DEFAULT_SETTINGS, ChronicleSettingTab } from './settings';
+import { ScribeFlowPluginSettings, FormState } from './types';
+import { DEFAULT_SETTINGS, ScribeFlowSettingTab } from './settings';
 import { loadDraft, saveDraft } from './logic/draft-manager';
 
-export default class ChroniclePlugin extends Plugin {
-    settings: ChroniclePluginSettings;
+export default class ScribeFlowPlugin extends Plugin {
+    settings: ScribeFlowPluginSettings;
     draft: FormState | null = null;
 
     async onload() {
@@ -14,14 +14,27 @@ export default class ChroniclePlugin extends Plugin {
         this.draft = await loadDraft(this);
 
         this.addCommand({
-            id: 'open-chronicle-entry-modal',
-            name: 'Create Chronicle Entry',
+            id: 'open-scribeflow-entry-modal',
+            name: 'Create ScribeFlow Entry',
             callback: () => {
                 new JournalEntryModal(this.app, this).open();
             },
         });
 
-        this.addSettingTab(new ChronicleSettingTab(this.app, this));
+        this.addSettingTab(new ScribeFlowSettingTab(this.app, this));
+
+        this.registerEvent(
+            this.app.workspace.on('editor-menu', (menu, editor, view) => {
+                menu.addItem((item) => {
+                    item
+                        .setTitle('ScribeFlow: insert journal entry')
+                        .setIcon('calendar-plus')
+                        .onClick(() => {
+                            new JournalEntryModal(this.app, this).open();
+                        });
+                });
+            })
+        );
     }
 
     async onunload() {

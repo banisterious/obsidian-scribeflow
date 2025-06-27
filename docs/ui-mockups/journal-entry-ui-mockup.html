@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronicle Journal Entry - Material Design Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .content {
+            padding: 24px;
+        }
+
+        .field-group {
+            margin-bottom: 24px;
+        }
+
+        .field-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .field {
+            position: relative;
+            flex: 1;
+        }
+
+        .field.half {
+            flex: 0.5;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+            transition: color 0.2s ease;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .field-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .field-input::placeholder {
+            color: #999;
+        }
+
+        .textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .content-section {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .content-form {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .preview-container {
+            width: 200px;
+            flex-shrink: 0;
+            border: 2px dashed #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            resize: horizontal;
+            overflow: auto;
+            min-width: 150px;
+            max-width: 400px;
+        }
+
+        .preview-container:hover {
+            border-color: #667eea;
+            background: #f0f3ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .preview-label {
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .preview-instruction {
+            font-size: 14px;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 12px;
+        }
+
+        .width-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            justify-content: center;
+        }
+
+        .width-input {
+            width: 60px;
+            padding: 4px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            margin: 32px 0 16px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .metric-field {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .metric-label {
+            flex: 1;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .metric-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .metric-slider {
+            flex: 0 0 120px;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .metric-slider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 3px;
+        }
+
+        .metric-value {
+            flex: 0 0 30px;
+            text-align: center;
+            font-weight: 500;
+            color: #667eea;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
+        }
+
+        .resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(-45deg, transparent 0%, transparent 40%, #ccc 40%, #ccc 60%, transparent 60%);
+            cursor: nw-resize;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Create chronicle entry</h1>
+        </div>
+        
+        <div class="content">
+            <!-- Date and Time -->
+            <div class="field-row">
+                <div class="field half">
+                    <label class="field-label">Date</label>
+                    <input type="date" class="field-input" value="2025-01-27">
+                </div>
+                <div class="field half">
+                    <label class="field-label">Time</label>
+                    <input type="time" class="field-input" value="14:30">
+                </div>
+            </div>
+
+            <!-- Journal Content with Preview -->
+            <div class="content-section">
+                <div class="content-form">
+                    <div class="field">
+                        <label class="field-label">Journal entry</label>
+                        <textarea class="field-input textarea" placeholder="Write your journal entry here..."></textarea>
+                    </div>
+                </div>
+                <div class="preview-container">
+                    <div class="preview-label">Journal image preview</div>
+                    <div class="preview-instruction">Click to select image</div>
+                    <div class="width-control">
+                        <span>Width:</span>
+                        <input type="number" class="width-input" value="400">
+                        <span>px</span>
+                    </div>
+                    <div class="resize-handle"></div>
+                </div>
+            </div>
+
+            <!-- Dream Diary Section -->
+            <h3 class="section-title">Dream diary</h3>
+            
+            <div class="field">
+                <label class="field-label">Dream title</label>
+                <input type="text" class="field-input" placeholder="Title for your dream...">
+            </div>
+
+            <div class="content-section">
+                <div class="content-form">
+                    <div class="field">
+                        <label class="field-label">Dream content</label>
+                        <textarea class="field-input textarea" placeholder="Describe your dream here..." style="min-height: 100px;"></textarea>
+                    </div>
+                </div>
+                <div class="preview-container">
+                    <div class="preview-label">Dream image preview</div>
+                    <div class="preview-instruction">Click to select image</div>
+                    <div class="width-control">
+                        <span>Width:</span>
+                        <input type="number" class="width-input" value="400">
+                        <span>px</span>
+                    </div>
+                    <div class="resize-handle"></div>
+                </div>
+            </div>
+
+            <!-- Dream Metrics -->
+            <h3 class="section-title">Dream metrics</h3>
+            
+            <div class="metrics-grid">
+                <div class="metric-field">
+                    <div>
+                        <div class="metric-label">Sensory</div>
+                        <div class="metric-desc">How vivid were the sensory details?</div>
+                    </div>
+                    <div class="metric-slider"></div>
+                    <div class="metric-value">5</div>
+                </div>
+                
+                <div class="metric-field">
+                    <div>
+                        <div class="metric-label">Emotional</div>
+                        <div class="metric-desc">How emotionally intense was the dream?</div>
+                    </div>
+                    <div class="metric-slider"></div>
+                    <div class="metric-value">7</div>
+                </div>
+                
+                <div class="metric-field">
+                    <div>
+                        <div class="metric-label">Lost</div>
+                        <div class="metric-desc">How much detail was lost upon waking?</div>
+                    </div>
+                    <div class="metric-slider"></div>
+                    <div class="metric-value">3</div>
+                </div>
+                
+                <div class="metric-field">
+                    <div>
+                        <div class="metric-label">Descriptive</div>
+                        <div class="metric-desc">How descriptive can you be about the dream?</div>
+                    </div>
+                    <div class="metric-slider"></div>
+                    <div class="metric-value">6</div>
+                </div>
+                
+                <div class="metric-field">
+                    <div>
+                        <div class="metric-label">Confidence</div>
+                        <div class="metric-desc">How confident are you in your recall?</div>
+                    </div>
+                    <div class="metric-slider"></div>
+                    <div class="metric-value">8</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-container">
+                <button class="btn btn-secondary">Clear form</button>
+                <button class="btn btn-primary">Insert entry</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some basic interactivity for preview
+        document.querySelectorAll('.preview-container').forEach(container => {
+            container.addEventListener('click', function(e) {
+                if (e.target.classList.contains('width-input')) return;
+                
+                this.style.borderColor = '#667eea';
+                this.style.background = '#f0f3ff';
+                
+                setTimeout(() => {
+                    alert('Image selector would open here');
+                    this.style.borderColor = '#e0e0e0';
+                    this.style.background = '#fafafa';
+                }, 100);
+            });
+        });
+
+        // Prevent width input from triggering container click
+        document.querySelectorAll('.width-input').forEach(input => {
+            input.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
+</body>
+</html>

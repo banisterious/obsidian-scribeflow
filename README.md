@@ -24,6 +24,12 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - Unlimited selectable metrics with drag-to-reorder
 - Settings available both in plugin settings and modal interface
 
+<p align="center">
+  <img src="docs/images/scribeflow-journal-entry-01.png" alt="ScribeFlow journal entry example" width="600"/>
+</p>
+
+<p align="center"><em>ScribeFlow journal entry example</em></p>
+
 ## Quick Start
 
 1. **Access ScribeFlow**: Right-click in any note → "ScribeFlow: insert journal entry"

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2024-12-27
+
+### Enhanced
+- **Improved Resize Capabilities**: Both textareas and image previews now support horizontal and vertical resizing
+- **Increased Image Preview Limits**: Maximum image preview size expanded to 800px width and 600px height
+- **Better Layout Control**: Added minimum height constraints (100px) for image preview containers
+
+### Fixed
+- **Image Embedding Syntax**: Added missing exclamation points for proper image display in markdown (`![[image.png|400]]`)
+- **Cleaner Headers**: Removed word count from journal entry headers for a more minimal appearance
+
+### Technical
+- **Code Cleanup**: Removed unused `wordCount` variable
+- **CSS Improvements**: Updated resize constraints in both inline and external CSS
+
 ## [0.2.0] - 2024-12-27
 
 ### Added

@@ -24,7 +24,7 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - Unlimited selectable metrics with drag-to-reorder
 - Settings available both in plugin settings and modal interface
 
-<p align="center">
+<p align="left">
   <img src="docs/images/scribeflow-journal-entry-01.png" alt="ScribeFlow journal entry example" width="300"/>
 </p>
 

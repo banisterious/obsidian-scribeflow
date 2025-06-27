@@ -25,7 +25,7 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - Settings available both in plugin settings and modal interface
 
 <p align="center">
-  <img src="docs/images/scribeflow-journal-entry-01.png" alt="ScribeFlow journal entry example" width="600"/>
+  <img src="docs/images/scribeflow-journal-entry-01.png" alt="ScribeFlow journal entry example" width="300"/>
 </p>
 
 <p align="center"><em>ScribeFlow journal entry example</em></p>

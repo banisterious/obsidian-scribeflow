@@ -1,6 +1,7 @@
-import { Notice, TFile, Modal } from 'obsidian';
+import { Notice, TFile, Modal, MarkdownView } from 'obsidian';
 import ScribeFlowPlugin from '../../main';
 import { FormState, MetricDefinition } from '../../types';
+import { TemplateProcessingService } from '../../services/TemplateProcessingService';
 
 export class JournalEntryTab {
     containerEl: HTMLElement;
@@ -11,12 +12,14 @@ export class JournalEntryTab {
     private dreamImagePreview: HTMLElement | null = null;
     private clearButton?: HTMLButtonElement;
     private insertButton?: HTMLButtonElement;
+    private journalModal?: any;
 
-    constructor(containerEl: HTMLElement, plugin: ScribeFlowPlugin, buttons?: { clearButton: HTMLButtonElement, insertButton: HTMLButtonElement }) {
+    constructor(containerEl: HTMLElement, plugin: ScribeFlowPlugin, buttons?: { clearButton: HTMLButtonElement, insertButton: HTMLButtonElement }, journalModal?: any) {
         this.containerEl = containerEl;
         this.plugin = plugin;
         this.clearButton = buttons?.clearButton;
         this.insertButton = buttons?.insertButton;
+        this.journalModal = journalModal;
         
         // Create dedicated content element for this tab
         this.contentEl = containerEl.createDiv('sfp-tab-content sfp-journal-entry-tab');
@@ -66,6 +69,19 @@ export class JournalEntryTab {
                 dreamImageWidth: 400,
                 metrics: defaultMetrics,
             };
+        }
+        
+        // Set up button event handlers
+        this.setupButtonHandlers();
+    }
+    
+    private setupButtonHandlers(): void {
+        if (this.insertButton) {
+            this.insertButton.addEventListener('click', () => this.handleInsertEntry());
+        }
+        
+        if (this.clearButton) {
+            this.clearButton.addEventListener('click', () => this.handleClearForm());
         }
     }
 
@@ -184,18 +200,8 @@ export class JournalEntryTab {
             this.createModernMetricField(metricsGrid, metric.name, metric.description, metric);
         });
 
-        // Setup button event listeners if buttons are provided
-        if (this.clearButton) {
-            this.clearButton.addEventListener('click', () => {
-                this.clearForm();
-            });
-        }
-        
-        if (this.insertButton) {
-            this.insertButton.addEventListener('click', () => {
-                this.insertEntry();
-            });
-        }
+        // Note: Button event handlers are already set up in setupButtonHandlers() called from constructor
+        // Removing duplicate event listeners to prevent double insertion
         
         // Update previews for any existing image paths
         if (this.formState.journalImagePath) {
@@ -499,44 +505,7 @@ export class JournalEntryTab {
     }
     
 
-    private async insertEntry(): Promise<void> {
-        try {
-            const { writeJournalEntry } = await import('../../logic/entry-writer');
-            await writeJournalEntry(this.plugin.app, this.plugin.settings, this.formState);
-            new Notice('Journal entry created successfully');
-        } catch (error) {
-            console.error('Failed to create journal entry:', error);
-            new Notice('Failed to create journal entry');
-        }
-    }
 
-    private clearForm(): void {
-        // Reset form state to defaults
-        const defaultMetrics: Record<string, number | string> = {};
-        this.plugin.settings.selectedMetrics.forEach(metric => {
-            if (metric.type === 'score' || metric.type === 'number') {
-                defaultMetrics[metric.id] = metric.min || 1;
-            } else {
-                defaultMetrics[metric.id] = '';
-            }
-        });
-        
-        this.formState = {
-            date: new Date().toISOString().split('T')[0],
-            time: new Date().toTimeString().slice(0, 5),
-            journalContent: '',
-            journalImagePath: '',
-            journalImageWidth: 400,
-            dreamTitle: '',
-            dreamContent: '',
-            dreamImagePath: '',
-            dreamImageWidth: 400,
-            metrics: defaultMetrics,
-        };
-        
-        // Refresh the display
-        this.display();
-    }
 
 
     private createPreviewContent(previewElement: HTMLElement, type: 'journal' | 'dream'): void {
@@ -768,5 +737,110 @@ export class JournalEntryTab {
 
     hide(): void {
         this.contentEl.style.display = 'none';
+    }
+    
+    private async handleInsertEntry(): Promise<void> {
+        try {
+            // Get the selected template from the modal
+            const selectedTemplate = this.getSelectedTemplate();
+            if (!selectedTemplate) {
+                new Notice('No template selected');
+                return;
+            }
+            
+            // Process the template with current form data
+            const templateProcessor = new TemplateProcessingService();
+            const processedContent = templateProcessor.processTemplate(
+                selectedTemplate,
+                this.formState,
+                this.plugin.settings.selectedMetrics
+            );
+            
+            // Insert into active editor
+            await this.insertIntoActiveEditor(processedContent);
+            
+            // Show success message
+            new Notice('Journal entry inserted successfully!');
+            
+            // Save draft and optionally clear form
+            await this.plugin.saveSettings();
+            
+        } catch (error) {
+            console.error('Error inserting journal entry:', error);
+            new Notice(`Failed to insert journal entry: ${error.message}`);
+        }
+    }
+    
+    private getSelectedTemplate() {
+        // Get selected template from the modal
+        if (this.journalModal && this.journalModal.selectedTemplate) {
+            return this.journalModal.selectedTemplate;
+        }
+        
+        // Fallback: use first available template
+        if (this.plugin.settings.templates.length > 0) {
+            return this.plugin.settings.templates[0];
+        }
+        
+        return null;
+    }
+    
+    private async insertIntoActiveEditor(content: string): Promise<void> {
+        const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
+        if (!activeView) {
+            throw new Error('No active markdown editor found');
+        }
+        
+        const editor = activeView.editor;
+        const cursor = editor.getCursor();
+        
+        // Insert the content at cursor position
+        editor.replaceRange(content, cursor);
+        
+        // Move cursor to end of inserted content
+        const lines = content.split('\n');
+        const newCursor = {
+            line: cursor.line + lines.length - 1,
+            ch: lines.length === 1 ? cursor.ch + content.length : lines[lines.length - 1].length
+        };
+        editor.setCursor(newCursor);
+    }
+    
+    private handleClearForm(): void {
+        // Reset form state to defaults
+        const defaultMetrics: Record<string, number | string> = {};
+        this.plugin.settings.selectedMetrics.forEach(metric => {
+            if (metric.type === 'score' || metric.type === 'number') {
+                defaultMetrics[metric.id] = metric.min || 1;
+            } else {
+                defaultMetrics[metric.id] = '';
+            }
+        });
+        
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayString = `${year}-${month}-${day}`;
+        const timeString = today.toTimeString().slice(0, 5);
+        
+        this.formState = {
+            date: todayString,
+            time: timeString,
+            journalContent: '',
+            journalImagePath: '',
+            journalImageWidth: 400,
+            dreamTitle: '',
+            dreamContent: '',
+            dreamImagePath: '',
+            dreamImageWidth: 400,
+            metrics: defaultMetrics,
+        };
+        
+        // Re-render the form to reflect cleared state
+        this.contentEl.empty();
+        this.renderFormElements(this.contentEl);
+        
+        new Notice('Form cleared');
     }
 }

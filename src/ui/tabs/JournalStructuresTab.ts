@@ -1,4 +1,4 @@
-import { Setting, ButtonComponent } from 'obsidian';
+import { Setting, ButtonComponent, setIcon } from 'obsidian';
 import ScribeFlowPlugin from '../../main';
 import { JournalTemplate } from '../../types';
 import { TemplateWizardModal } from '../TemplateWizardModal';
@@ -73,14 +73,27 @@ export class JournalStructuresTab {
             
             const templateActions = templateItem.createDiv('sfp-template-actions');
             
-            new ButtonComponent(templateActions)
-                .setButtonText('Edit')
+            // Edit button with icon
+            const editButton = new ButtonComponent(templateActions)
+                .setTooltip('Edit template')
                 .onClick(() => this.editTemplate(template));
+            setIcon(editButton.buttonEl, 'edit');
+            editButton.buttonEl.addClass('sfp-icon-button');
+            
+            // Copy button with icon
+            const copyButton = new ButtonComponent(templateActions)
+                .setTooltip('Copy template')
+                .onClick(() => this.copyTemplate(template));
+            setIcon(copyButton.buttonEl, 'copy');
+            copyButton.buttonEl.addClass('sfp-icon-button');
                 
-            new ButtonComponent(templateActions)
-                .setButtonText('Delete')
+            // Delete button with icon
+            const deleteButton = new ButtonComponent(templateActions)
+                .setTooltip('Delete template')
                 .setWarning()
                 .onClick(() => this.deleteTemplate(template));
+            setIcon(deleteButton.buttonEl, 'trash-2');
+            deleteButton.buttonEl.addClass('sfp-icon-button');
         });
     }
     
@@ -94,17 +107,46 @@ export class JournalStructuresTab {
     
     // Template management methods
     private editTemplate(template: JournalTemplate): void {
-        // TODO: Implement edit functionality
-        console.log('Edit template:', template.name);
+        const modal = new TemplateWizardModal(this.plugin.app, this.plugin, () => {
+            // Callback to refresh templates list when wizard completes
+            this.updateTemplatesList();
+        });
+        
+        // Pre-populate the wizard with template data for editing
+        modal.setEditMode(template);
+        modal.open();
+    }
+    
+    private copyTemplate(template: JournalTemplate): void {
+        // Create a copy of the template with a new ID and modified name
+        const copiedTemplate: JournalTemplate = {
+            id: `template-${Date.now()}`,
+            name: `${template.name} (Copy)`,
+            content: template.content,
+            description: template.description ? `${template.description} (Copy)` : undefined
+        };
+        
+        // Add the copied template to settings
+        this.plugin.settings.templates.push(copiedTemplate);
+        
+        // Save settings and refresh the list
+        this.plugin.saveSettings().then(() => {
+            this.updateTemplatesList();
+        });
     }
     
     private deleteTemplate(template: JournalTemplate): void {
-        const index = this.plugin.settings.templates.findIndex(t => t.id === template.id);
-        if (index >= 0) {
-            this.plugin.settings.templates.splice(index, 1);
-            this.plugin.saveSettings().then(() => {
-                this.updateTemplatesList();
-            });
+        // Show confirmation dialog
+        const confirmed = confirm(`Are you sure you want to delete the template "${template.name}"?\n\nThis action cannot be undone.`);
+        
+        if (confirmed) {
+            const index = this.plugin.settings.templates.findIndex(t => t.id === template.id);
+            if (index >= 0) {
+                this.plugin.settings.templates.splice(index, 1);
+                this.plugin.saveSettings().then(() => {
+                    this.updateTemplatesList();
+                });
+            }
         }
     }
 

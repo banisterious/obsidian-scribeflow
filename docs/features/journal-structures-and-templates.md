@@ -292,11 +292,77 @@ interface JournalTemplate {
 
 ## Future Considerations
 
+### Predefined Journal Structures
+
+#### Core Daily Templates
+- **Basic Daily Journal**
+  - Date header, mood check-in, main entry, reflection
+  - Simple structure for everyday journaling
+  
+- **Productivity-Focused Daily**
+  - Goals, tasks completed, wins/challenges, tomorrow's priorities
+  - Optimized for goal-oriented users
+  
+- **Wellness & Self-Care Daily**
+  - Sleep, exercise, meals, mood, energy levels tracking
+  - Health-focused journaling approach
+  
+- **Gratitude & Reflection Daily**
+  - 3 gratitudes, highlight of day, lesson learned
+  - Mindfulness and positivity-centered
+
+#### Specialized Entry Types
+- **Dream Journal Structure**
+  - Dream title, narrative, emotions, symbols, lucidity level
+  - Comprehensive dream tracking and analysis
+  
+- **Travel Log Structure**
+  - Location, activities, photos, people met, memorable moments
+  - Travel experiences and memories
+  
+- **Learning Notes Structure**
+  - Topic, key insights, questions, action items
+  - Educational and skill development tracking
+  
+- **Creative Ideas Structure**
+  - Idea description, inspiration source, next steps
+  - Creative process documentation
+
+#### Review Templates
+- **Weekly Reflection Template**
+  - Week overview, accomplishments, challenges, next week goals
+  - Regular progress assessment
+  
+- **Monthly Review Template**
+  - Major events, personal growth, habit tracking summary
+  - Long-term pattern recognition
+  
+- **Goal Progress Template**
+  - Current goals, progress made, obstacles, adjustments needed
+  - Goal management and accountability
+
+#### Structure Features
+- **Built-in Callouts**: Each structure leverages ScribeFlow's callout system (`[!journal-entry]`, `[!dream-diary]`, `[!reflection]`, etc.)
+- **Smart Placeholders**: Auto-populated fields like `{{date}}`, `{{time}}`, `{{mood-scale}}`, `{{weather}}`, `{{location}}`
+- **Metric Integration**: Structures auto-suggest relevant metrics based on content type
+- **Customization Options**: Users can modify predefined structures to fit their needs
+
+### Advanced Template Features
 - **OneiroMetrics Integration**: Design template format for compatibility with OneiroMetrics analysis
 - **Template Sharing**: Community template repository
 - **Advanced Placeholders**: Conditional logic, computed values
 - **Template Inheritance**: Base templates with variations
 - **Multi-note Templates**: Templates that create multiple linked notes
+- **Variable Placeholders**: Support for `{{weather}}`, `{{location}}`, etc.
+- **Conditional Content**: Show/hide sections based on user preferences
+- **Community Templates**: Share templates with other users
+- **Template Validation**: Ensure templates follow ScribeFlow conventions
+
+### Integration Improvements
+- **Smart Suggestions**: Recommend templates based on user patterns
+- **Template Analytics**: Track which templates are most effective
+- **Backup/Restore**: Export/import template collections
+- **Version Control**: Track template changes over time
 
 ## Success Criteria
 

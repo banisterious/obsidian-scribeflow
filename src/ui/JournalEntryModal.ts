@@ -78,7 +78,7 @@ export class JournalEntryModal extends Modal {
 
         const contentContainerEl = mainContentEl.createDiv('sfp-modal-content-container');
 
-        const entryTabContent = new JournalEntryTab(contentContainerEl, this.plugin, { clearButton, insertButton });
+        const entryTabContent = new JournalEntryTab(contentContainerEl, this.plugin, { clearButton, insertButton }, this);
         const settingsTabContent = new JournalSettingsTab(contentContainerEl, this.plugin);
         const journalStructuresTabContent = new JournalStructuresTab(contentContainerEl, this.plugin);
         const inspirationsTabContent = new InspirationsTab(contentContainerEl, this.plugin);

@@ -14,11 +14,16 @@ export class TemplateWizardModal extends Modal {
     private selectedCreationMethod: 'direct' | 'template' | 'predefined' | null = null;
     private templatePluginSource: 'templater' | 'core' | null = null;
     private selectedTemplateFile: TemplateFile | null = null;
+    private selectedStructureId: string | null = null;
     
     // Template data
     private templateName: string = '';
     private templateDescription: string = '';
     private templateContent: string = '';
+    
+    // Edit mode
+    private isEditMode: boolean = false;
+    private editingTemplate: JournalTemplate | null = null;
     
     // UI elements
     private headerEl: HTMLElement;
@@ -30,6 +35,16 @@ export class TemplateWizardModal extends Modal {
         this.plugin = plugin;
         this.onSuccess = onSuccess;
         this.templateIntegrationService = new TemplateIntegrationService(app);
+    }
+    
+    setEditMode(template: JournalTemplate): void {
+        this.isEditMode = true;
+        this.editingTemplate = template;
+        this.templateName = template.name;
+        this.templateDescription = template.description || '';
+        this.templateContent = template.content;
+        this.selectedCreationMethod = 'direct'; // Default to direct editing for existing templates
+        this.currentStep = 2; // Skip creation method selection for editing
     }
 
     onOpen() {
@@ -73,8 +88,10 @@ export class TemplateWizardModal extends Modal {
 
         // Title and subtitle
         const titleContainer = this.headerEl.createDiv('sfp-wizard-title-container');
-        titleContainer.createEl('h1', { text: 'Template Creation Wizard', cls: 'sfp-wizard-title' });
-        titleContainer.createEl('p', { text: 'Create a new journal template for ScribeFlow', cls: 'sfp-wizard-subtitle' });
+        const titleText = this.isEditMode ? 'Edit Template' : 'Template Creation Wizard';
+        const subtitleText = this.isEditMode ? 'Modify your existing journal template' : 'Create a new journal template for ScribeFlow';
+        titleContainer.createEl('h1', { text: titleText, cls: 'sfp-wizard-title' });
+        titleContainer.createEl('p', { text: subtitleText, cls: 'sfp-wizard-subtitle' });
 
         // Progress indicator
         const progressContainer = this.headerEl.createDiv('sfp-progress-container');
@@ -122,7 +139,13 @@ export class TemplateWizardModal extends Modal {
 
         switch (this.currentStep) {
             case 1:
-                this.renderStep1_CreationMethod(stepContainer);
+                if (this.isEditMode) {
+                    // Skip to template info for edit mode
+                    this.currentStep = 2;
+                    this.renderStep2_TemplateInfo(stepContainer);
+                } else {
+                    this.renderStep1_CreationMethod(stepContainer);
+                }
                 break;
             case 2:
                 this.renderStep2_TemplateInfo(stepContainer);
@@ -433,6 +456,9 @@ export class TemplateWizardModal extends Modal {
                 textarea.inputEl.rows = 12;
                 textarea.inputEl.addClass('sfp-template-content-area');
             });
+
+        // Add placeholder reference
+        this.renderPlaceholderReference(container);
     }
 
     private renderTemplateImportContent(container: HTMLElement): void {
@@ -504,14 +530,134 @@ export class TemplateWizardModal extends Modal {
     }
 
     private renderPredefinedStructureContent(container: HTMLElement): void {
-        container.createEl('p', { text: 'Select a predefined structure to generate template content:', cls: 'sfp-step-description' });
+        container.createEl('p', { text: 'Select a predefined structure to use as a starting point:', cls: 'sfp-step-description' });
 
-        // Placeholder for now
-        const placeholder = container.createDiv('sfp-predefined-placeholder');
-        placeholder.createEl('p', { 
-            text: 'Predefined structure selection will be implemented next.',
-            cls: 'sfp-placeholder-text'
+        // Predefined structures grid
+        const structuresGrid = container.createDiv('sfp-structures-grid');
+        
+        const predefinedStructures = [
+            {
+                id: 'flat-dual',
+                name: 'Flat Dual Callout',
+                description: 'Simple side-by-side journal entry and metrics',
+                content: `# Dream Journal Entry
+
+> [!journal-entry] {{date-month-day}}
+> ^{{date-compact}}
+> {{content}}
+
+> [!dream-metrics]
+> {{metrics-inline}}`
+            },
+            {
+                id: 'nested-2level',
+                name: '2-Level Nested',
+                description: 'Journal entry with nested dream diary and metrics',
+                content: `> [!journal-entry] {{date-month-day}}
+> ^{{date-compact}}
+> {{journal-content}}
+> 
+>> [!dream-diary] Dream Diary
+>> {{dream-content}}
+>> 
+>>> [!dream-metrics]
+>>> {{metrics}}`
+            },
+            {
+                id: 'nested-3level',
+                name: '3-Level Nested',
+                description: 'Separate content areas with nested dream section',
+                content: `> [!journal-entry] {{date-month-day}}
+> ^{{date-compact}}
+> {{journal-content}}
+>
+>> [!dream-diary] Dream Diary
+>> {{dream-content}}
+>>
+>>> [!dream-metrics]
+>>> {{metrics}}`
+            }
+        ];
+
+        predefinedStructures.forEach(structure => {
+            const structureCard = this.createStructureCard(
+                structure.id,
+                structure.name,
+                structure.description,
+                structure.content
+            );
+            structuresGrid.appendChild(structureCard);
         });
+
+        // Show editable content area if a structure is selected
+        if (this.templateContent) {
+            this.renderEditableStructureContent(container);
+        }
+    }
+
+    private createStructureCard(id: string, name: string, description: string, content: string): HTMLElement {
+        const card = document.createElement('div');
+        card.className = 'sfp-structure-card';
+        
+        if (this.selectedStructureId === id) {
+            card.addClass('sfp-structure-selected');
+        }
+
+        // Create title
+        card.createEl('h4', { text: name, cls: 'sfp-structure-title' });
+        
+        // Create description
+        card.createEl('p', { text: description, cls: 'sfp-structure-description' });
+        
+        // Create preview
+        const preview = card.createEl('pre', { cls: 'sfp-structure-preview' });
+        preview.textContent = content.substring(0, 100) + (content.length > 100 ? '...' : '');
+
+        card.addEventListener('click', () => {
+            // Remove selection from all cards
+            card.parentElement?.querySelectorAll('.sfp-structure-card').forEach(c => {
+                c.removeClass('sfp-structure-selected');
+            });
+            
+            // Select this card
+            card.addClass('sfp-structure-selected');
+            this.selectedStructureId = id;
+            this.templateContent = content;
+            
+            // Re-render to show editable content
+            this.renderCurrentStep();
+        });
+
+        return card;
+    }
+
+    private renderEditableStructureContent(container: HTMLElement): void {
+        const editSection = container.createDiv('sfp-editable-structure');
+        editSection.createEl('h3', { text: 'Customize Structure', cls: 'sfp-editable-title' });
+        editSection.createEl('p', { 
+            text: 'You can modify the structure below to fit your needs:', 
+            cls: 'sfp-editable-description' 
+        });
+
+        // Editable content area
+        new Setting(editSection)
+            .setName('Template Structure')
+            .setDesc('Modify the predefined structure or use it as-is')
+            .addTextArea(textarea => {
+                textarea
+                    .setValue(this.templateContent)
+                    .onChange(value => {
+                        this.templateContent = value;
+                        this.renderNavigation(); // Update button state
+                    });
+
+                // Make textarea larger and suitable for editing
+                textarea.inputEl.rows = 12;
+                textarea.inputEl.addClass('sfp-template-content-area');
+            });
+
+        // Add placeholder reference
+        this.renderPlaceholderReference(editSection);
     }
 
     private renderNavigation(): void {
@@ -521,8 +667,8 @@ export class TemplateWizardModal extends Modal {
         const stepIndicator = this.navigationEl.createDiv('sfp-step-indicator');
         const rightButtons = this.navigationEl.createDiv('sfp-nav-right');
 
-        // Back button
-        if (this.currentStep > 1) {
+        // Back button (but not for edit mode on step 2, since we skip step 1)
+        if (this.currentStep > 1 && !(this.isEditMode && this.currentStep === 2)) {
             new ButtonComponent(leftButtons)
                 .setButtonText('Back')
                 .onClick(() => {
@@ -543,8 +689,12 @@ export class TemplateWizardModal extends Modal {
         const isLastStep = this.currentStep === this.totalSteps;
         const canProceed = this.validateCurrentStep();
         
+        const buttonText = isLastStep 
+            ? (this.isEditMode ? 'Update Template' : 'Create Template')
+            : 'Next';
+        
         const nextButton = new ButtonComponent(rightButtons)
-            .setButtonText(isLastStep ? 'Create Template' : 'Next')
+            .setButtonText(buttonText)
             .setCta()
             .setDisabled(!canProceed);
 
@@ -561,7 +711,8 @@ export class TemplateWizardModal extends Modal {
     private validateCurrentStep(): boolean {
         switch (this.currentStep) {
             case 1:
-                return this.selectedCreationMethod !== null;
+                // Skip validation for edit mode since we skip this step
+                return this.isEditMode || this.selectedCreationMethod !== null;
             case 2:
                 return this.templateName.trim() !== '';
             case 3:
@@ -576,15 +727,29 @@ export class TemplateWizardModal extends Modal {
             return;
         }
 
-        const template: JournalTemplate = {
-            id: `template-${Date.now()}`,
-            name: this.templateName,
-            content: this.templateContent,
-            description: this.templateDescription || undefined
-        };
+        if (this.isEditMode && this.editingTemplate) {
+            // Update existing template
+            const index = this.plugin.settings.templates.findIndex(t => t.id === this.editingTemplate!.id);
+            if (index >= 0) {
+                this.plugin.settings.templates[index] = {
+                    ...this.editingTemplate,
+                    name: this.templateName,
+                    content: this.templateContent,
+                    description: this.templateDescription || undefined
+                };
+            }
+        } else {
+            // Create new template
+            const template: JournalTemplate = {
+                id: `template-${Date.now()}`,
+                name: this.templateName,
+                content: this.templateContent,
+                description: this.templateDescription || undefined
+            };
 
-        // Add to settings
-        this.plugin.settings.templates.push(template);
+            // Add to settings
+            this.plugin.settings.templates.push(template);
+        }
 
         // Save settings
         this.plugin.saveSettings().then(() => {
@@ -626,5 +791,40 @@ export class TemplateWizardModal extends Modal {
         const placeholder = '{{placeholder}}';
         this.templateContent += placeholder;
         this.renderCurrentStep();
+    }
+
+    private renderPlaceholderReference(container: HTMLElement): void {
+        const referenceSection = container.createDiv('sfp-placeholder-reference');
+        referenceSection.createEl('h3', { text: 'Available Placeholders', cls: 'sfp-reference-title' });
+        
+        const referenceGrid = referenceSection.createDiv('sfp-reference-grid');
+        
+        // Date placeholders
+        const dateColumn = referenceGrid.createDiv('sfp-reference-column');
+        dateColumn.createEl('h4', { text: 'Dates', cls: 'sfp-reference-category' });
+        const dateList = dateColumn.createEl('ul', { cls: 'sfp-reference-list' });
+        dateList.createEl('li').innerHTML = '<code>{{date}}</code> - 2025-06-28';
+        dateList.createEl('li').innerHTML = '<code>{{date-long}}</code> - June 28, 2025';
+        dateList.createEl('li').innerHTML = '<code>{{date-month-day}}</code> - June 28';
+        dateList.createEl('li').innerHTML = '<code>{{date-compact}}</code> - 20250628';
+        dateList.createEl('li').innerHTML = '<code>{{time}}</code> - 14:30';
+        
+        // Content placeholders
+        const contentColumn = referenceGrid.createDiv('sfp-reference-column');
+        contentColumn.createEl('h4', { text: 'Content', cls: 'sfp-reference-category' });
+        const contentList = contentColumn.createEl('ul', { cls: 'sfp-reference-list' });
+        contentList.createEl('li').innerHTML = '<code>{{content}}</code> - Combined journal + dream content';
+        contentList.createEl('li').innerHTML = '<code>{{journal-content}}</code> - Journal text only';
+        contentList.createEl('li').innerHTML = '<code>{{dream-content}}</code> - Dream text only';
+        contentList.createEl('li').innerHTML = '<code>{{title}}</code> - Dream title';
+        
+        // Metrics placeholders
+        const metricsColumn = referenceGrid.createDiv('sfp-reference-column');
+        metricsColumn.createEl('h4', { text: 'Metrics', cls: 'sfp-reference-category' });
+        const metricsList = metricsColumn.createEl('ul', { cls: 'sfp-reference-list' });
+        metricsList.createEl('li').innerHTML = '<code>{{metrics}}</code> - Multi-line format (includes word count)';
+        metricsList.createEl('li').innerHTML = '<code>{{metrics-inline}}</code> - Comma-separated (includes word count)';
+        metricsList.createEl('li').innerHTML = '<small>Individual metrics: <code>{{Metric Name}}</code></small>';
+        metricsList.createEl('li').innerHTML = '<small>Word count automatically included in metrics</small>';
     }
 }

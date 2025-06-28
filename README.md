@@ -59,7 +59,6 @@ Creates structured markdown with:
 - Embedded images with proper formatting and floating layout
 - Comprehensive dream metrics in organized callouts
 
-**Note**: For image callout floating to work properly, install the [MCL Multi Column](https://github.com/ckRobinson/multi-column-markdown) CSS snippet or equivalent multi-column support.
 
 ## Installation
 

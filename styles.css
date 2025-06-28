@@ -474,3 +474,25 @@
 .sfp-suggestion-item:last-child {
     border-bottom: none !important;
 }
+
+/* === Floating Callout Support === */
+/* Support for [!callout|right] and [!callout|left] metadata */
+
+@media (min-width: 500px) {
+    /* Float right support */
+    .markdown-reading-view div[data-callout-metadata*="right"].callout {
+        float: right; 
+        margin-left: 12px;
+    }
+    
+    /* Float left support */
+    .markdown-reading-view div[data-callout-metadata*="left"].callout {
+        float: left;
+        margin-right: 12px;
+    }
+    
+    /* Clear floats */
+    .embedded-backlinks { 
+        clear: both; 
+    }
+}

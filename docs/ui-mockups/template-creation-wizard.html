@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScribeFlow - Template Creation Wizard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            /* Material Design 3 Color Tokens */
+            --md-primary: #6750A4;
+            --md-primary-container: #EADDFF;
+            --md-on-primary: #FFFFFF;
+            --md-on-primary-container: #21005D;
+            --md-secondary: #625B71;
+            --md-secondary-container: #E8DEF8;
+            --md-on-secondary: #FFFFFF;
+            --md-on-secondary-container: #1D192B;
+            --md-tertiary: #7D5260;
+            --md-tertiary-container: #FFD8E4;
+            --md-on-tertiary: #FFFFFF;
+            --md-on-tertiary-container: #31111D;
+            --md-error: #BA1A1A;
+            --md-error-container: #FFDAD6;
+            --md-on-error: #FFFFFF;
+            --md-on-error-container: #410002;
+            --md-surface: #FEF7FF;
+            --md-surface-dim: #DED8E1;
+            --md-surface-bright: #FEF7FF;
+            --md-surface-container-lowest: #FFFFFF;
+            --md-surface-container-low: #F7F2FA;
+            --md-surface-container: #F1ECF4;
+            --md-surface-container-high: #ECE6F0;
+            --md-surface-container-highest: #E6E0E9;
+            --md-on-surface: #1C1B1F;
+            --md-on-surface-variant: #49454F;
+            --md-outline: #79747E;
+            --md-outline-variant: #CAC4D0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--md-surface);
+            color: var(--md-on-surface);
+            line-height: 1.5;
+            padding: 24px;
+        }
+
+        .wizard-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--md-surface-container-lowest);
+            border-radius: 28px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            overflow: hidden;
+        }
+
+        .wizard-header {
+            background: var(--md-primary-container);
+            color: var(--md-on-primary-container);
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--md-outline-variant);
+        }
+
+        .wizard-title {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .wizard-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 24px;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .progress-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .progress-circle.completed {
+            background: var(--md-primary);
+            color: var(--md-on-primary);
+        }
+
+        .progress-circle.current {
+            background: var(--md-secondary);
+            color: var(--md-on-secondary);
+        }
+
+        .progress-circle.pending {
+            background: var(--md-surface-container-high);
+            color: var(--md-on-surface-variant);
+            border: 2px solid var(--md-outline-variant);
+        }
+
+        .progress-line {
+            height: 2px;
+            background: var(--md-outline-variant);
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-line.completed::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--md-primary);
+        }
+
+        .progress-label {
+            font-size: 12px;
+            color: var(--md-on-surface-variant);
+            margin-top: 4px;
+        }
+
+        .wizard-content {
+            padding: 32px;
+        }
+
+        .step-content {
+            min-height: 400px;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--md-on-surface);
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: var(--md-on-surface-variant);
+            margin-bottom: 32px;
+        }
+
+        /* Method Selection Cards */
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .method-card {
+            background: var(--md-surface-container);
+            border: 2px solid var(--md-outline-variant);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            text-align: center;
+        }
+
+        .method-card:hover {
+            background: var(--md-surface-container-high);
+            border-color: var(--md-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .method-card.selected {
+            background: var(--md-primary-container);
+            border-color: var(--md-primary);
+            color: var(--md-on-primary-container);
+        }
+
+        .method-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            background: var(--md-secondary-container);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .method-card.selected .method-icon {
+            background: var(--md-primary);
+            color: var(--md-on-primary);
+        }
+
+        .method-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .method-description {
+            font-size: 14px;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        /* Form Fields */
+        .form-field {
+            margin-bottom: 24px;
+        }
+
+        .field-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--md-on-surface);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .field-description {
+            font-size: 12px;
+            color: var(--md-on-surface-variant);
+            margin-bottom: 8px;
+        }
+
+        .text-field {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--md-outline-variant);
+            border-radius: 12px;
+            background: var(--md-surface-container-lowest);
+            color: var(--md-on-surface);
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .text-field:focus {
+            outline: none;
+            border-color: var(--md-primary);
+            background: var(--md-surface-container-low);
+        }
+
+        .textarea-field {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            border: 2px solid var(--md-outline-variant);
+            border-radius: 12px;
+            background: var(--md-surface-container-lowest);
+            color: var(--md-on-surface);
+            font-size: 14px;
+            font-family: 'Roboto Mono', monospace;
+            resize: vertical;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .textarea-field:focus {
+            outline: none;
+            border-color: var(--md-primary);
+            background: var(--md-surface-container-low);
+        }
+
+        .dropdown-field {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--md-outline-variant);
+            border-radius: 12px;
+            background: var(--md-surface-container-lowest);
+            color: var(--md-on-surface);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .dropdown-field:focus {
+            outline: none;
+            border-color: var(--md-primary);
+            background: var(--md-surface-container-low);
+        }
+
+        /* Helper Tools */
+        .helper-tools {
+            background: var(--md-surface-container);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .helper-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: var(--md-on-surface);
+        }
+
+        .helper-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .helper-button {
+            padding: 8px 16px;
+            border: 1px solid var(--md-outline);
+            border-radius: 20px;
+            background: var(--md-surface-container-highest);
+            color: var(--md-on-surface);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .helper-button:hover {
+            background: var(--md-secondary-container);
+            color: var(--md-on-secondary-container);
+            border-color: var(--md-secondary);
+        }
+
+        /* Navigation */
+        .wizard-navigation {
+            background: var(--md-surface-container-low);
+            padding: 24px 32px;
+            border-top: 1px solid var(--md-outline-variant);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--md-primary);
+            color: var(--md-on-primary);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--md-primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--md-surface-container-highest);
+            color: var(--md-on-surface);
+            border: 1px solid var(--md-outline);
+        }
+
+        .btn-secondary:hover {
+            background: var(--md-surface-container-high);
+        }
+
+        .btn-text {
+            background: transparent;
+            color: var(--md-primary);
+        }
+
+        .btn-text:hover {
+            background: var(--md-primary-container);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .step-indicator {
+            font-size: 14px;
+            color: var(--md-on-surface-variant);
+        }
+
+        /* Template Source Section */
+        .template-source {
+            background: var(--md-tertiary-container);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .template-source-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--md-on-tertiary-container);
+            margin-bottom: 16px;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            background: var(--md-surface-container);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .preview-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: var(--md-on-surface);
+        }
+
+        .preview-content {
+            background: var(--md-surface-container-lowest);
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--md-on-surface);
+            border: 1px solid var(--md-outline-variant);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Material Icons */
+        .material-icons {
+            font-size: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .wizard-container {
+                margin: 16px;
+                border-radius: 16px;
+            }
+
+            .wizard-header,
+            .wizard-content,
+            .wizard-navigation {
+                padding: 16px;
+            }
+
+            .method-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .progress-step {
+                flex-direction: row;
+                justify-content: center;
+            }
+
+            .progress-line {
+                display: none;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .wizard-navigation {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+
+        /* Dark theme support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-primary: #D0BCFF;
+                --md-primary-container: #4F378B;
+                --md-on-primary: #371E73;
+                --md-on-primary-container: #EADDFF;
+                --md-secondary: #CCC2DC;
+                --md-secondary-container: #4A4458;
+                --md-on-secondary: #332D41;
+                --md-on-secondary-container: #E8DEF8;
+                --md-surface: #141218;
+                --md-surface-dim: #141218;
+                --md-surface-bright: #3B383E;
+                --md-surface-container-lowest: #0F0D13;
+                --md-surface-container-low: #1D1B20;
+                --md-surface-container: #211F26;
+                --md-surface-container-high: #2B2930;
+                --md-surface-container-highest: #36343B;
+                --md-on-surface: #E6E0E9;
+                --md-on-surface-variant: #CAC4D0;
+                --md-outline: #938F99;
+                --md-outline-variant: #49454F;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .step-content {
+            animation: slideIn 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+    </style>
+</head>
+<body>
+    <div class="wizard-container">
+        <!-- Wizard Header -->
+        <div class="wizard-header">
+            <h1 class="wizard-title">Template Creation Wizard</h1>
+            <p class="wizard-subtitle">Create a new journal template for ScribeFlow</p>
+            
+            <!-- Progress Indicator -->
+            <div class="progress-container">
+                <div class="progress-step">
+                    <div class="progress-circle current">1</div>
+                    <div class="progress-label">Creation Method</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="progress-circle pending">2</div>
+                    <div class="progress-label">Template Info</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="progress-circle pending">3</div>
+                    <div class="progress-label">Content</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wizard Content -->
+        <div class="wizard-content">
+            <!-- Step 1: Creation Method -->
+            <div class="step-content" id="step1">
+                <h2 class="step-title">Choose Creation Method</h2>
+                <p class="step-description">Select how you would like to create your template:</p>
+                
+                <div class="method-grid">
+                    <div class="method-card">
+                        <div class="method-icon">
+                            <span class="material-icons">edit</span>
+                        </div>
+                        <h3 class="method-title">Direct Input</h3>
+                        <p class="method-description">Create template content manually with helper tools and placeholders</p>
+                    </div>
+                    
+                    <div class="method-card selected">
+                        <div class="method-icon">
+                            <span class="material-icons">integration_instructions</span>
+                        </div>
+                        <h3 class="method-title">Template Integration</h3>
+                        <p class="method-description">Import from Templater or Core Templates plugin</p>
+                    </div>
+                    
+                    <div class="method-card">
+                        <div class="method-icon">
+                            <span class="material-icons">architecture</span>
+                        </div>
+                        <h3 class="method-title">Predefined Structures</h3>
+                        <p class="method-description">Generate from common journal entry patterns and layouts</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Template Information -->
+            <div class="step-content" id="step2" style="display: none;">
+                <h2 class="step-title">Template Information</h2>
+                <p class="step-description">Enter basic information about your template:</p>
+                
+                <div class="form-field">
+                    <label class="field-label">Template Name</label>
+                    <p class="field-description">A descriptive name for this template</p>
+                    <input type="text" class="text-field" placeholder="My Journal Template" value="Daily Dream Journal">
+                </div>
+                
+                <div class="form-field">
+                    <label class="field-label">Description (Optional)</label>
+                    <p class="field-description">Brief description of what this template is for</p>
+                    <input type="text" class="text-field" placeholder="Template for daily journal entries" value="Template for recording daily dreams with metrics">
+                </div>
+
+                <!-- Template Integration Options -->
+                <div class="template-source">
+                    <h3 class="template-source-title">Template Source</h3>
+                    
+                    <div class="form-field">
+                        <label class="field-label">Template Plugin</label>
+                        <p class="field-description">Select which plugin to import templates from</p>
+                        <select class="dropdown-field">
+                            <option value="">Select template source...</option>
+                            <option value="templater" selected>Templater</option>
+                            <option value="core">Core Templates</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-field">
+                        <label class="field-label">Templater Template</label>
+                        <p class="field-description">Select a Templater template to import</p>
+                        <select class="dropdown-field">
+                            <option value="">Select template...</option>
+                            <option value="daily-note" selected>Daily Note Template</option>
+                            <option value="dream-journal">Dream Journal Template</option>
+                            <option value="weekly-review">Weekly Review Template</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Content Creation -->
+            <div class="step-content" id="step3" style="display: none;">
+                <h2 class="step-title">Template Content</h2>
+                <p class="step-description">Review and customize your template content:</p>
+                
+                <!-- Helper Tools for Direct Input -->
+                <div class="helper-tools" style="display: none;">
+                    <h3 class="helper-title">Helper Tools</h3>
+                    <div class="helper-buttons">
+                        <button class="helper-button">
+                            <span class="material-icons">description</span>
+                            Insert Sample Entry
+                        </button>
+                        <button class="helper-button">
+                            <span class="material-icons">call_to_action</span>
+                            Insert Callout
+                        </button>
+                        <button class="helper-button">
+                            <span class="material-icons">label</span>
+                            Insert Placeholder
+                        </button>
+                        <button class="helper-button">
+                            <span class="material-icons">assessment</span>
+                            Add Metrics
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Content Editor -->
+                <div class="form-field">
+                    <label class="field-label">Template Content</label>
+                    <p class="field-description">Template content imported from Templater</p>
+                    <textarea class="textarea-field" readonly># {{date}} Daily Dream Journal
+
+> [!journal-entry]
+> **Date:** {{date}}
+> **Time:** {{time}}
+> 
+> {{content}}
+
+> [!dream-diary]
+> **Dream Title:** {{title}}
+> 
+> {{dream-content}}
+> 
+> > [!dream-metrics]
+> > **Sensory Detail:** {{sensory_detail}}
+> > **Emotional Recall:** {{emotional_recall}}
+> > **Confidence Score:** {{confidence}}
+> > **Characters:** {{characters}}
+
+## Reflection
+{{reflection}}
+
+## Tags
+{{tags}}</textarea>
+                </div>
+
+                <!-- Preview Section -->
+                <div class="preview-section">
+                    <h3 class="preview-title">
+                        <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">preview</span>
+                        Preview
+                    </h3>
+                    <div class="preview-content">
+# 2024-06-28 Daily Dream Journal
+
+> [!journal-entry]
+> **Date:** 2024-06-28
+> **Time:** 07:30
+> 
+> I had a vivid dream about flying over a mountain landscape...
+
+> [!dream-diary]
+> **Dream Title:** Mountain Flight
+> 
+> The dream started in a small cabin at the base of snow-capped mountains. 
+> I found myself able to fly by simply willing it, soaring above pine forests 
+> and rocky peaks. The sensation was incredibly realistic.
+> 
+> > [!dream-metrics]
+> > **Sensory Detail:** 5/5
+> > **Emotional Recall:** 4/5
+> > **Confidence Score:** 4/5
+> > **Characters:** 2
+
+## Reflection
+This dream felt particularly meaningful as I've been thinking about freedom 
+and breaking through limitations lately.
+
+## Tags
+#lucid-dream #flying #mountains #nature
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="wizard-navigation">
+            <div class="nav-buttons">
+                <button class="btn btn-text" id="backBtn" style="visibility: hidden;">
+                    <span class="material-icons">arrow_back</span>
+                    Back
+                </button>
+                <button class="btn btn-secondary">
+                    <span class="material-icons">close</span>
+                    Cancel
+                </button>
+            </div>
+            
+            <div class="step-indicator">
+                Step 1 of 3
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-primary" id="nextBtn">
+                    <span id="nextText">Next</span>
+                    <span class="material-icons">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple step navigation demo
+        let currentStep = 1;
+        
+        function showStep(stepNumber) {
+            currentStep = stepNumber;
+            
+            document.querySelectorAll('.step-content').forEach(step => {
+                step.style.display = 'none';
+            });
+            document.getElementById(`step${stepNumber}`).style.display = 'block';
+            
+            // Update progress indicators
+            document.querySelectorAll('.progress-circle').forEach((circle, index) => {
+                circle.className = 'progress-circle';
+                if (index < stepNumber - 1) {
+                    circle.classList.add('completed');
+                    circle.innerHTML = '<span class="material-icons">check</span>';
+                } else if (index === stepNumber - 1) {
+                    circle.classList.add('current');
+                    circle.textContent = stepNumber;
+                } else {
+                    circle.classList.add('pending');
+                    circle.textContent = index + 1;
+                }
+            });
+            
+            // Update progress lines
+            document.querySelectorAll('.progress-line').forEach((line, index) => {
+                if (index < stepNumber - 1) {
+                    line.classList.add('completed');
+                } else {
+                    line.classList.remove('completed');
+                }
+            });
+            
+            // Update step indicator
+            document.querySelector('.step-indicator').textContent = `Step ${stepNumber} of 3`;
+            
+            // Update navigation buttons
+            const backBtn = document.getElementById('backBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const nextText = document.getElementById('nextText');
+            
+            // Show/hide back button
+            backBtn.style.visibility = stepNumber > 1 ? 'visible' : 'hidden';
+            
+            // Update next button text
+            if (stepNumber === 3) {
+                nextText.textContent = 'Create Template';
+            } else {
+                nextText.textContent = 'Next';
+            }
+        }
+        
+        // Navigation handlers
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentStep < 3) {
+                showStep(currentStep + 1);
+            }
+        });
+        
+        document.getElementById('backBtn').addEventListener('click', () => {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
+        });
+
+        // Method card selection
+        document.querySelectorAll('.method-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+            });
+        });
+
+        // Initialize with step 1
+        showStep(1);
+    </script>
+</body>
+</html>

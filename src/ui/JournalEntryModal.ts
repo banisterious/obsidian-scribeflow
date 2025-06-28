@@ -6,12 +6,13 @@ import { JournalSettingsTab } from './tabs/JournalSettingsTab';
 import { JournalStructuresTab } from './tabs/JournalStructuresTab';
 import { InspirationsTab } from './tabs/InspirationsTab';
 import { MetricTab } from './tabs/MetricTab';
-import { AVAILABLE_METRICS } from '../types';
+import { AVAILABLE_METRICS, JournalTemplate } from '../types';
 
 export class JournalEntryModal extends Modal {
     plugin: ScribeFlowPlugin;
     private activeTab: string = 'entry';
     private tabs: Map<string, any> = new Map();
+    private selectedTemplate: JournalTemplate | null = null;
 
     constructor(app: App, plugin: ScribeFlowPlugin) {
         super(app);
@@ -27,6 +28,14 @@ export class JournalEntryModal extends Modal {
         const headerContent = headerEl.createDiv('sfp-header-content');
         headerContent.createEl('h2', { text: 'Create ScribeFlow Entry' });
         
+        // Templates dropdown
+        const templatesContainer = headerEl.createDiv('sfp-templates-container');
+        const templatesLabel = templatesContainer.createEl('label', { text: 'Template:' });
+        const templatesSelect = templatesContainer.createEl('select', { cls: 'sfp-templates-select' });
+        
+        // Populate templates dropdown
+        this.populateTemplatesDropdown(templatesSelect);
+        
         const headerButtons = headerEl.createDiv('sfp-header-buttons');
         const clearButton = headerButtons.createEl('button', {
             text: 'Clear form',
@@ -35,6 +44,14 @@ export class JournalEntryModal extends Modal {
         const insertButton = headerButtons.createEl('button', {
             text: 'Insert entry',
             cls: 'sfp-btn sfp-btn-primary'
+        });
+        
+        // Set initial Insert button state based on templates availability
+        this.updateInsertButtonState(insertButton);
+        
+        // Handle template selection
+        templatesSelect.addEventListener('change', () => {
+            this.handleTemplateSelection(templatesSelect, insertButton);
         });
 
         const mainContentEl = contentEl.createDiv('sfp-modal-main-content');
@@ -112,6 +129,54 @@ export class JournalEntryModal extends Modal {
         if (selectedTab && selectedTab.display) {
             await selectedTab.display();
         }
+    }
+
+    private populateTemplatesDropdown(selectEl: HTMLSelectElement): void {
+        selectEl.empty();
+        
+        const templates = this.plugin.settings.templates;
+        
+        if (templates.length === 0) {
+            const option = selectEl.createEl('option', { text: 'No templates available' });
+            option.value = '';
+            option.disabled = true;
+            option.selected = true;
+            return;
+        }
+        
+        // Add first template as default selection
+        templates.forEach((template, index) => {
+            const option = selectEl.createEl('option', { text: template.name });
+            option.value = template.id;
+            if (index === 0) {
+                option.selected = true;
+                this.selectedTemplate = template;
+            }
+        });
+    }
+
+    private updateInsertButtonState(insertButton: HTMLButtonElement): void {
+        const hasTemplates = this.plugin.settings.templates.length > 0;
+        insertButton.disabled = !hasTemplates;
+        
+        if (!hasTemplates) {
+            insertButton.addClass('sfp-btn-disabled');
+            insertButton.title = 'Create templates in Journal Structures tab to enable entry insertion';
+        } else {
+            insertButton.removeClass('sfp-btn-disabled');
+            insertButton.title = '';
+        }
+    }
+
+    private handleTemplateSelection(selectEl: HTMLSelectElement, insertButton: HTMLButtonElement): void {
+        const selectedId = selectEl.value;
+        if (selectedId) {
+            this.selectedTemplate = this.plugin.settings.templates.find(t => t.id === selectedId) || null;
+        } else {
+            this.selectedTemplate = null;
+        }
+        
+        this.updateInsertButtonState(insertButton);
     }
 
     onClose() {

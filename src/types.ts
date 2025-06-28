@@ -1,4 +1,11 @@
 
+export interface JournalTemplate {
+    id: string;
+    name: string;
+    content: string;
+    description?: string;
+}
+
 export interface ScribeFlowPluginSettings {
     calloutNames: {
         journalEntry: string;
@@ -7,6 +14,7 @@ export interface ScribeFlowPluginSettings {
     imageFolderPath: string;
     allowedImageTypes: string[];
     selectedMetrics: MetricDefinition[];
+    templates: JournalTemplate[];
     tocSettings: {
         updateYearNote: boolean;
         updateMasterJournals: boolean;

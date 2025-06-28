@@ -1,6 +1,6 @@
 
 import { App, PluginSettingTab, Setting } from 'obsidian';
-import { ScribeFlowPluginSettings, AVAILABLE_METRICS, AVAILABLE_IMAGE_TYPES } from './types';
+import { ScribeFlowPluginSettings, AVAILABLE_METRICS, AVAILABLE_IMAGE_TYPES, JournalTemplate } from './types';
 import ScribeFlowPlugin from './main';
 import { FolderSuggest } from './ui/FolderSuggest';
 import { FileSuggest } from './ui/FileSuggest';
@@ -13,6 +13,7 @@ export const DEFAULT_SETTINGS: ScribeFlowPluginSettings = {
     imageFolderPath: '',
     allowedImageTypes: ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'], // Default common image types
     selectedMetrics: AVAILABLE_METRICS.slice(0, 5), // Default selection, users can add more
+    templates: [], // Start with empty templates array
     tocSettings: {
         updateYearNote: false,
         updateMasterJournals: false,

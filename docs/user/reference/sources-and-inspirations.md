@@ -2,11 +2,11 @@
 
 ## Foundational Concepts
 
-The metrics and tracking concepts in OneiroMetrics are inspired by established practices in dream research, psychology, and qualitative data analysis. While no single source dictates the exact formulation of each metric, the development has been informed by general principles found in these fields:
+The metrics and tracking concepts in ScribeFlow are inspired by established practices in dream research, psychology, and qualitative data analysis. While no single source dictates the exact formulation of each metric, the development has been informed by general principles found in these fields:
 
 ### Dream Journaling Practices
 
-The practice of recording dream content, including sensory details, emotions, and narrative flow, is a well-established method for improving dream recall and understanding. OneiroMetrics builds on these traditional approaches by adding structure and quantification to the journaling process.
+The practice of recording dream content, including sensory details, emotions, and narrative flow, is a well-established method for improving dream recall and understanding. ScribeFlow builds on these traditional approaches by adding structure and quantification to the journaling process.
 
 Dream journaling has been inspired by the broader principles of numerous researchers and practitioners, including:
 
@@ -16,7 +16,7 @@ Dream journaling has been inspired by the broader principles of numerous researc
 
 ### Qualitative Research Methodologies
 
-Several approaches from qualitative research have influenced how OneiroMetrics breaks down dream experiences into measurable components:
+Several approaches from qualitative research have influenced how ScribeFlow breaks down dream experiences into measurable components:
 
 - **Content Analysis**: Systematically categorizing elements within narratives
 - **Thematic Analysis**: Identifying patterns and themes across multiple accounts
@@ -26,7 +26,7 @@ These methodologies provide the theoretical foundation for transforming subjecti
 
 ### Cognitive Psychology and Memory Research
 
-Understanding how memory works, particularly the nature of dream recall and its fallibility, informs several OneiroMetrics features:
+Understanding how memory works, particularly the nature of dream recall and its fallibility, informs several ScribeFlow features:
 
 - Metrics like "Lost Segments" acknowledge the fragmentary nature of dream recall
 - "Confidence Score" reflects research on metamemory (how we assess our own memory accuracy)
@@ -75,6 +75,6 @@ The calendar visualization and metrics displays are informed by:
 
 ## Conclusion
 
-OneiroMetrics provides a flexible framework built upon these general understandings, allowing individuals to tailor their dream tracking to their personal exploration goals. The specific metrics and their scoring guidelines were developed through an iterative process aimed at creating a practical and insightful tool for Obsidian users.
+ScribeFlow provides a flexible framework built upon these general understandings, allowing individuals to tailor their dream tracking to their personal exploration goals. The specific metrics and their scoring guidelines were developed through an iterative process aimed at creating a practical and insightful tool for Obsidian users.
 
 The plugin does not prescribe any particular interpretation or meaning to dream content - it simply provides tools to help users discover their own patterns and insights through consistent tracking and reflection. 

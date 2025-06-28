@@ -6,32 +6,32 @@ export class MetricTab {
     plugin: ScribeFlowPlugin;
     metricId: string;
     metricName: string;
+    private contentEl: HTMLElement;
 
     constructor(containerEl: HTMLElement, plugin: ScribeFlowPlugin, metricId: string, metricName: string) {
         this.containerEl = containerEl;
         this.plugin = plugin;
         this.metricId = metricId;
         this.metricName = metricName;
+        
+        // Create dedicated content element for this tab
+        this.contentEl = containerEl.createDiv('sfp-tab-content sfp-metric-tab');
+        this.contentEl.style.display = 'none';
     }
 
     async display(): Promise<void> {
-        this.containerEl.empty();
-        this.containerEl.style.overflowY = 'auto';
-        this.containerEl.style.maxHeight = '100%';
-
-        const content = this.getMetricContent(this.metricId);
-        await MarkdownRenderer.renderMarkdown(content, this.containerEl, '', this.plugin);
+        this.contentEl.style.display = 'block';
+        // Only render if not already rendered
+        if (this.contentEl.children.length === 0) {
+            const content = this.getMetricContent(this.metricId);
+            await MarkdownRenderer.renderMarkdown(content, this.contentEl, '', this.plugin);
+        }
     }
 
     private getMetricContent(metricId: string): string {
         const metricContents: Record<string, string> = {
             'sensory': `## Sensory Detail (Score 1-5)
 
-**Helper text:**
-
-The richness and vividness of the sensory information you recall from your dream.
-
-**Detailed description:**
 
 This metric captures the **richness and vividness of the sensory information** you recall from your dream experience. It's about how much detail you remember across your five senses—what you saw, heard, felt, smelled, and tasted. Tracking this helps you gauge the overall immersive quality of your dreams and can indicate improvements in your recall abilities.
 
@@ -45,11 +45,6 @@ This metric captures the **richness and vividness of the sensory information** y
 
             'emotional': `## Emotional Recall (Score 1-5)
 
-**Helper text:**
-
-Focuses on your ability to remember and articulate the emotions you experienced within the dream.
-
-**Detailed description:**
 
 This metric focuses on your **ability to remember and articulate the emotions you experienced while dreaming**. Dreams are often rich with feelings, and tracking them can provide profound insights into your subconscious state, anxieties, joys, and unresolved issues. This metric helps you assess not just _what_ emotions were present, but also their clarity, intensity, and how they evolved throughout the dream narrative.
 
@@ -63,11 +58,7 @@ This metric focuses on your **ability to remember and articulate the emotions yo
 
             'lost': `## Lost Segments (Number)
 
-**Helper text:**
 
-The number of distinct instances where you have a clear feeling or awareness that a part of the dream is missing or has been forgotten.
-
-**Detailed description:**
 
 This metric tracks the number of distinct instances where you have a clear feeling or awareness that a part of the dream is missing or has been forgotten. This isn't about omitting fragments you never recalled in the first place. It's about those "gaps" in your recalled narrative where you feel like "there was something else there," or you have a fleeting image or feeling that then vanishes.
 
@@ -77,11 +68,7 @@ If you have a distinct feeling of one or more breaks or missing chunks in the dr
 
             'descriptive': `## Descriptiveness (Score 1-5)
 
-**Helper text:**
 
-Assesses the level of detail and elaboration in your written dream capture, beyond just sensory details.
-
-**Detailed description:**
 
 This metric assesses the **level of detail and elaboration in your written dream capture**. It goes beyond just raw sensory details (which are covered by the "Sensory Detail" metric) to evaluate how thoroughly you describe the events, actions, characters' behaviors, interactions, and the overall narrative flow of your dream. A higher score means your dream entry paints a more complete and vivid picture for yourself or anyone reading it.
 
@@ -95,11 +82,7 @@ This metric assesses the **level of detail and elaboration in your written dream
 
             'confidence': `## Confidence Score (Score 1-5)
 
-**Helper text:**
 
-Subjective metric reflecting your overall sense of how complete and accurate your dream recall feels immediately after waking.
-
-**Detailed description:**
 
 This is a **subjective metric reflecting your overall sense of how complete and accurate your dream recall feels** immediately after waking. It gauges your personal certainty about how much of the dream's content, narrative, and details you've managed to retrieve and record. Tracking your confidence can offer insights into the stability of your dream memory and highlight patterns in how thoroughly your dreams are being retained.
 
@@ -113,11 +96,7 @@ This is a **subjective metric reflecting your overall sense of how complete and 
 
             'characterRoles': `## Character Roles (Score 1-5)
 
-**Helper text:**
 
-The presence and significance of all individuals (both familiar and unfamiliar) appearing in your dream's narrative.
-
-**Detailed description:**
 
 This metric tracks the **presence and significance of all individuals** (both familiar and unfamiliar) appearing in your dream's narrative. It assesses how central characters are to the dream's events, plot, and overall experience, regardless of whether you recognize them from waking life.
 
@@ -131,7 +110,6 @@ This metric tracks the **presence and significance of all individuals** (both fa
 
             'charactersCount': `## Characters Count (Number)
 
-**Helper text:**
 
 Represents the total number of characters in your dream. (Automatically calculated as the sum of Familiar Count and Unfamiliar Count.)
 
@@ -148,7 +126,6 @@ This metric tracks the **total number of distinct individual characters** that a
 
             'familiarCount': `## Familiar Count (1-100 score)
 
-**Helper text:**
 
 The number of characters you know from your waking life that appear in the dream. Includes people, pets, or any other familiar beings.
 
@@ -164,7 +141,6 @@ This metric tracks the **total number of distinct individuals appearing in your 
 
             'unfamiliarCount': `## Unfamiliar Count (1-100 score)
 
-**Helper text:**
 
 Tracks the number of characters you don't know from your waking life that appear in the dream. Includes strangers, fictional characters, or any other unfamiliar beings.
 
@@ -180,11 +156,9 @@ This metric tracks the **total number of distinct individuals appearing in your 
 
             'charactersList': `## Characters List
 
-**Helper text:**
 
 Allows you to list all characters that appeared in your dream.
 
-**Detailed description:**
 
 This metric serves as a **qualitative record of all distinct individual characters** that appeared in your dream. It's a place to note the names (if known), descriptions, and familiar/unfamiliar status of each character, providing rich context to your numerical counts and role scores. This list helps you to specifically identify recurring figures, analyze their characteristics, and provide a detailed roster of your dream's cast.
 
@@ -199,11 +173,9 @@ This metric serves as a **qualitative record of all distinct individual characte
 
             'characterClarity': `## Character Clarity/Familiarity (1-5 score)
 
-**Helper text:**
 
 The distinctness and recognizability of the individual characters (both familiar and unfamiliar) appearing in your dream.
 
-**Detailed description:**
 
 This metric assesses the distinctness and recognizability of the individual characters (both familiar and unfamiliar) appearing in your dream. It focuses on how clearly you perceived their features, identity, or presence. When used in conjunction with the other Characters metrics, this metric adds the dimension of _how well you saw/perceived them_.
 
@@ -217,11 +189,9 @@ This metric assesses the distinctness and recognizability of the individual char
 
             'dreamTheme': `## Dream Theme (Categorical/Keywords)
 
-**Helper text:**
 
 The dominant subjects, ideas, or emotional undercurrents present in your dream.
 
-**Detailed description:**
 
 This metric aims to identify the dominant subjects, ideas, or emotional undercurrents present in your dream. Instead of a numerical score, you will select one or more keywords or categories that best represent the core themes of the dream.
 
@@ -250,21 +220,17 @@ This metric aims to identify the dominant subjects, ideas, or emotional undercur
 
             'symbolicContent': `## Symbolic Content (Categorical/Keywords)
 
-**Helper text:**
 
 Note specific objects, figures, actions, or animals in the dream that felt meaningful or symbolic.
 
-**Detailed description:**
 
 This metric helps you identify and track the specific symbols that appear in your dreams. While your Dream Theme might capture the overall subject, Symbolic Content focuses on individual elements like a lion, a red door, or a recurring specific action that seems to carry deeper meaning. This can be recorded as a list of keywords or tags, allowing you to recognize your unique symbolic language and discover recurring motifs over time.`,
 
             'lucidityLevel': `## Lucidity Level (Score 1-5)
 
-**Helper text:**
 
 Tracks your degree of awareness that you are dreaming while the dream is in progress.
 
-**Detailed description:**
 
 This metric tracks your **degree of awareness that you are dreaming while the dream is in progress**. Lucid dreaming is a state where you know you're in a dream, and this metric helps you monitor how often and how clearly you achieve this awareness. Understanding your lucidity levels can be crucial for those interested in exploring, influencing, or even controlling their dream experiences.
 
@@ -278,11 +244,9 @@ This metric tracks your **degree of awareness that you are dreaming while the dr
 
             'dreamCoherence': `## Dream Coherence (Score 1-5)
 
-**Helper text:**
 
 Assesses the logical consistency and narrative flow of your dream.
 
-**Detailed description:**
 
 This metric assesses the **logical consistency and narrative flow of your dream**. It helps you gauge how well the dream's events, characters, and settings connect and make sense within its own internal "logic," even if that logic is surreal by waking standards. Tracking coherence can reveal patterns in your mind's ability to construct stable, unified narratives during sleep.
 
@@ -296,11 +260,9 @@ This metric assesses the **logical consistency and narrative flow of your dream*
 
             'environmentalFamiliarity': `## Environmental Familiarity (Score 1-5)
 
-**Helper text:**
 
 Tracks the degree to which the locations and environments in your dream are recognizable from your waking life.
 
-**Detailed description:**
 
 This metric assesses the degree to which the locations and environments within your dream are **recognizable or familiar from your waking life**. It helps you track whether your dreams place you in known surroundings, completely novel landscapes, or a mix of both. Understanding the familiarity of your dream settings can offer insights into how your mind processes daily experiences and explores unknown territories during sleep.
 
@@ -314,11 +276,9 @@ This metric assesses the degree to which the locations and environments within y
 
             'timeDistortion': `## Time Distortion (Score 1-5)
 
-**Helper text:**
 
 Rate how unusually time behaved in the dream's narrative.
 
-**Detailed description:**
 
 Time Distortion assesses the surreal nature of time's flow within your dream. Unlike waking life, dream time can speed up, slow down, jump abruptly, or even have events happening simultaneously. This 1-5 scale helps you quantify how linear or chaotic the passage of time felt, offering insights into how your mind processes temporal experiences in different dream states.
 
@@ -332,11 +292,9 @@ Time Distortion assesses the surreal nature of time's flow within your dream. Un
 
             'easeOfRecall': `## Ease of Recall (Score 1-5)
 
-**Helper text:**
 
 Assesses how readily and effortlessly you can remember the dream upon waking.
 
-**Detailed description:**
 
 This metric assesses **how readily and effortlessly you could remember the dream upon waking**. It measures the immediate accessibility of the dream content, from fleeting impressions to vivid, detailed narratives. Tracking your ease of recall can help you identify trends in your dream memory and gauge the effectiveness of recall-boosting practices.
 
@@ -350,11 +308,9 @@ This metric assesses **how readily and effortlessly you could remember the dream
 
             'recallStability': `## Recall Stability (Score 1-5)
 
-**Helper text:**
 
 Assesses how well your memory of the dream holds up in the minutes immediately following waking.
 
-**Detailed description:**
 
 This metric assesses **how well your memory of the dream holds up and remains consistent in the minutes and hours immediately following waking**. It measures the resilience of your dream recall against the natural process of forgetting. Tracking recall stability can help you understand if your current dream capture methods are sufficient to preserve details before they fade, and highlight whether certain dreams are inherently more "sticky" than others.
 
@@ -373,6 +329,6 @@ Content not available for this metric.`;
     }
 
     hide(): void {
-        this.containerEl.empty();
+        this.contentEl.style.display = 'none';
     }
 }

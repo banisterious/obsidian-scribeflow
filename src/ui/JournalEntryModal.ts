@@ -3,6 +3,7 @@ import { App, Modal } from 'obsidian';
 import ScribeFlowPlugin from '../main';
 import { JournalEntryTab } from './tabs/JournalEntryTab';
 import { JournalSettingsTab } from './tabs/JournalSettingsTab';
+import { JournalStructuresTab } from './tabs/JournalStructuresTab';
 import { InspirationsTab } from './tabs/InspirationsTab';
 import { MetricTab } from './tabs/MetricTab';
 import { AVAILABLE_METRICS } from '../types';
@@ -43,6 +44,7 @@ export class JournalEntryModal extends Modal {
         // Core tabs
         const entryTab = navEl.createDiv({ text: 'Journal Entry', cls: 'sfp-nav-item sfp-active' });
         const settingsTab = navEl.createDiv({ text: 'Settings', cls: 'sfp-nav-item' });
+        const journalStructuresTab = navEl.createDiv({ text: 'Journal Structures', cls: 'sfp-nav-item' });
         
         // Reference section heading
         const referenceHeading = navEl.createDiv({ text: 'Reference', cls: 'sfp-nav-heading' });
@@ -61,11 +63,13 @@ export class JournalEntryModal extends Modal {
 
         const entryTabContent = new JournalEntryTab(contentContainerEl, this.plugin, { clearButton, insertButton });
         const settingsTabContent = new JournalSettingsTab(contentContainerEl, this.plugin);
+        const journalStructuresTabContent = new JournalStructuresTab(contentContainerEl, this.plugin);
         const inspirationsTabContent = new InspirationsTab(contentContainerEl, this.plugin);
         
         // Store all tabs
         this.tabs.set('entry', entryTabContent);
         this.tabs.set('settings', settingsTabContent);
+        this.tabs.set('journal-structures', journalStructuresTabContent);
         this.tabs.set('inspirations', inspirationsTabContent);
         
         // Create metric tab contents
@@ -79,6 +83,7 @@ export class JournalEntryModal extends Modal {
         
         entryTab.addEventListener('click', () => this.switchTab('entry', entryTab, allNavItems));
         settingsTab.addEventListener('click', () => this.switchTab('settings', settingsTab, allNavItems));
+        journalStructuresTab.addEventListener('click', () => this.switchTab('journal-structures', journalStructuresTab, allNavItems));
         inspirationsTab.addEventListener('click', () => this.switchTab('inspirations', inspirationsTab, allNavItems));
         
         metricTabs.forEach((tab, index) => {
@@ -90,7 +95,7 @@ export class JournalEntryModal extends Modal {
         entryTabContent.display();
     }
     
-    private switchTab(tabId: string, clickedTab: HTMLElement, allNavItems: NodeListOf<Element>): void {
+    private async switchTab(tabId: string, clickedTab: HTMLElement, allNavItems: NodeListOf<Element>): Promise<void> {
         // Hide all tabs
         this.tabs.forEach(tab => {
             if (tab.hide) tab.hide();
@@ -105,7 +110,7 @@ export class JournalEntryModal extends Modal {
         
         const selectedTab = this.tabs.get(tabId);
         if (selectedTab && selectedTab.display) {
-            selectedTab.display();
+            await selectedTab.display();
         }
     }
 

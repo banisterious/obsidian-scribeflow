@@ -6,6 +6,7 @@ export class JournalEntryTab {
     containerEl: HTMLElement;
     plugin: ScribeFlowPlugin;
     formState: FormState;
+    private contentEl: HTMLElement;
     private journalImagePreview: HTMLElement | null = null;
     private dreamImagePreview: HTMLElement | null = null;
     private clearButton?: HTMLButtonElement;
@@ -16,6 +17,10 @@ export class JournalEntryTab {
         this.plugin = plugin;
         this.clearButton = buttons?.clearButton;
         this.insertButton = buttons?.insertButton;
+        
+        // Create dedicated content element for this tab
+        this.contentEl = containerEl.createDiv('sfp-tab-content sfp-journal-entry-tab');
+        this.contentEl.style.display = 'block'; // Initially visible
         
         // Initialize form state with defaults or load from draft
         const defaultMetrics: Record<string, number | string> = {};
@@ -65,8 +70,11 @@ export class JournalEntryTab {
     }
 
     display(): void {
-        this.containerEl.empty();
-        this.renderFormElements(this.containerEl);
+        this.contentEl.style.display = 'block';
+        // Only render if not already rendered
+        if (this.contentEl.children.length === 0) {
+            this.renderFormElements(this.contentEl);
+        }
     }
 
     private renderFormElements(container: HTMLElement): void {
@@ -759,6 +767,6 @@ export class JournalEntryTab {
     }
 
     hide(): void {
-        this.containerEl.empty();
+        this.contentEl.style.display = 'none';
     }
 }

@@ -8,22 +8,27 @@ import { FileSuggest } from '../FileSuggest';
 export class JournalSettingsTab {
     containerEl: HTMLElement;
     plugin: ScribeFlowPlugin;
+    private contentEl: HTMLElement;
     private imageTypesContainer: HTMLElement;
 
     constructor(containerEl: HTMLElement, plugin: ScribeFlowPlugin) {
         this.containerEl = containerEl;
         this.plugin = plugin;
+        
+        // Create dedicated content element for this tab
+        this.contentEl = containerEl.createDiv('sfp-tab-content sfp-settings-tab');
+        this.contentEl.style.display = 'none';
     }
 
     display(): void {
-        this.containerEl.empty();
-
-        this.containerEl.createEl('h4', { text: 'Settings' });
+        this.contentEl.style.display = 'block';
+        // Always refresh settings content
+        this.contentEl.empty();
         
-        this.createCalloutNamesSettings(this.containerEl);
-        this.createImageFolderSettings(this.containerEl);
-        this.createTOCSettings(this.containerEl);
-        this.createMetricsSettings(this.containerEl);
+        this.createCalloutNamesSettings(this.contentEl);
+        this.createImageFolderSettings(this.contentEl);
+        this.createTOCSettings(this.contentEl);
+        this.createMetricsSettings(this.contentEl);
     }
 
     private createCalloutNamesSettings(containerEl: HTMLElement): void {
@@ -299,6 +304,6 @@ export class JournalSettingsTab {
     }
 
     hide(): void {
-        this.containerEl.empty();
+        this.contentEl.style.display = 'none';
     }
 }

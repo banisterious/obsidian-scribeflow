@@ -1,16 +1,19 @@
 import { App, Modal, Setting, ButtonComponent, setIcon } from 'obsidian';
 import ScribeFlowPlugin from '../main';
 import { JournalTemplate } from '../types';
+import { TemplateIntegrationService, TemplateFile } from '../services/TemplateIntegrationService';
 
 export class TemplateWizardModal extends Modal {
     private plugin: ScribeFlowPlugin;
     private onSuccess: () => void;
+    private templateIntegrationService: TemplateIntegrationService;
     
     // Wizard state
     private currentStep: number = 1;
     private totalSteps: number = 3;
     private selectedCreationMethod: 'direct' | 'template' | 'predefined' | null = null;
     private templatePluginSource: 'templater' | 'core' | null = null;
+    private selectedTemplateFile: TemplateFile | null = null;
     
     // Template data
     private templateName: string = '';
@@ -26,6 +29,7 @@ export class TemplateWizardModal extends Modal {
         super(app);
         this.plugin = plugin;
         this.onSuccess = onSuccess;
+        this.templateIntegrationService = new TemplateIntegrationService(app);
     }
 
     onOpen() {
@@ -231,6 +235,27 @@ export class TemplateWizardModal extends Modal {
         const sourceSection = container.createDiv('sfp-template-source');
         sourceSection.createEl('h3', { text: 'Template Source', cls: 'sfp-template-source-title' });
 
+        // Check if any template plugins are available
+        const availablePlugins = this.templateIntegrationService.getAvailablePlugins();
+        const hasAvailablePlugins = availablePlugins.some(plugin => plugin.available);
+        
+        if (!hasAvailablePlugins) {
+            const noPluginsMessage = sourceSection.createDiv('sfp-no-plugins-message');
+            noPluginsMessage.createEl('p', { 
+                text: 'No template plugins detected. Please install and enable either:', 
+                cls: 'sfp-no-plugins-text' 
+            });
+            const pluginList = noPluginsMessage.createEl('ul', { cls: 'sfp-plugin-list' });
+            pluginList.createEl('li', { text: 'Templater plugin for advanced templating' });
+            pluginList.createEl('li', { text: 'Core Templates plugin (built into Obsidian)' });
+            
+            noPluginsMessage.createEl('p', { 
+                text: 'After enabling a template plugin, restart this wizard to import templates.', 
+                cls: 'sfp-no-plugins-text' 
+            });
+            return;
+        }
+
         new Setting(sourceSection)
             .setName('Template Plugin')
             .setDesc('Select which plugin to import templates from')
@@ -238,11 +263,20 @@ export class TemplateWizardModal extends Modal {
                 dropdown.addOption('', 'Select template source...');
                 
                 // Check for available plugins and add options
+                const availablePlugins = this.templateIntegrationService.getAvailablePlugins();
+                const hasAvailablePlugins = availablePlugins.some(plugin => plugin.available);
+                
                 if (this.isTemplaterAvailable()) {
-                    dropdown.addOption('templater', 'Templater');
+                    dropdown.addOption('templater', 'Templater Plugin');
                 }
                 if (this.isCoreTemplatesAvailable()) {
-                    dropdown.addOption('core', 'Core Templates');
+                    dropdown.addOption('core', 'Core Templates Plugin');
+                }
+                
+                // Show warning if no plugins are available
+                if (!hasAvailablePlugins) {
+                    dropdown.addOption('no-plugins', 'No template plugins detected');
+                    dropdown.setDisabled(true);
                 }
                 
                 if (this.templatePluginSource) {
@@ -262,12 +296,91 @@ export class TemplateWizardModal extends Modal {
     }
 
     private renderTemplateSelection(container: HTMLElement): void {
-        // Placeholder for now - will be implemented with actual plugin integration
-        const placeholder = container.createDiv('sfp-template-selection-placeholder');
-        placeholder.createEl('p', { 
-            text: `${this.templatePluginSource} template selection will be implemented next.`,
-            cls: 'sfp-placeholder-text'
-        });
+        if (!this.templatePluginSource) return;
+
+        const templateSection = container.createDiv('sfp-template-file-selection');
+        
+        // Dynamic label based on selected plugin
+        const pluginDisplayName = this.templatePluginSource === 'templater' ? 'Templater Plugin' : 'Core Templates Plugin';
+        
+        new Setting(templateSection)
+            .setName(`${pluginDisplayName} Template`)
+            .setDesc(`Select a template to import from ${pluginDisplayName}`)
+            .addDropdown(dropdown => {
+                dropdown.addOption('', `Select ${this.templatePluginSource === 'templater' ? 'Templater' : 'Core Templates'} template...`);
+                
+                // Load templates asynchronously
+                this.loadTemplateOptions(dropdown);
+                
+                dropdown.onChange(async (value) => {
+                    if (value) {
+                        await this.handleTemplateFileSelection(value);
+                    }
+                });
+            });
+    }
+
+    private async loadTemplateOptions(dropdown: any): Promise<void> {
+        if (!this.templatePluginSource) return;
+
+        try {
+            const templates = await this.templateIntegrationService.getTemplatesFromPlugin(this.templatePluginSource);
+            
+            // Clear existing options except the first one
+            while (dropdown.selectEl.options.length > 1) {
+                dropdown.selectEl.remove(1);
+            }
+            
+            if (templates.length === 0) {
+                const pluginName = this.templatePluginSource === 'templater' ? 'Templater' : 'Core Templates';
+                dropdown.addOption('no-templates', `No ${pluginName} templates found`);
+                dropdown.setDisabled(true);
+            } else {
+                dropdown.setDisabled(false);
+                templates.forEach(template => {
+                    dropdown.addOption(template.path, template.name);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading template options:', error);
+            dropdown.addOption('error', 'Error loading templates');
+            dropdown.setDisabled(true);
+        }
+    }
+
+    private async handleTemplateFileSelection(templatePath: string): Promise<void> {
+        if (!this.templatePluginSource) return;
+
+        try {
+            const templates = await this.templateIntegrationService.getTemplatesFromPlugin(this.templatePluginSource);
+            const selectedTemplate = templates.find(t => t.path === templatePath);
+            
+            if (selectedTemplate) {
+                this.selectedTemplateFile = selectedTemplate;
+                
+                // Set template name if not already set
+                if (!this.templateName.trim()) {
+                    this.templateName = selectedTemplate.name;
+                }
+                
+                // Store original content for conversion summary
+                const originalContent = selectedTemplate.content;
+                
+                // Process template content based on plugin type
+                if (this.templatePluginSource === 'templater') {
+                    // Convert Templater syntax to static placeholders
+                    this.templateContent = this.templateIntegrationService.processTemplaterToStatic(originalContent);
+                } else {
+                    // Core Templates use simpler syntax
+                    this.templateContent = originalContent;
+                }
+                
+                // Re-render navigation to update button state
+                this.renderNavigation();
+            }
+        } catch (error) {
+            console.error('Error handling template selection:', error);
+        }
     }
 
     private renderStep3_Content(container: HTMLElement): void {
@@ -323,14 +436,70 @@ export class TemplateWizardModal extends Modal {
     }
 
     private renderTemplateImportContent(container: HTMLElement): void {
-        container.createEl('p', { text: 'Template content will be imported from the selected plugin template.', cls: 'sfp-step-description' });
+        if (!this.templateContent) {
+            container.createEl('p', { 
+                text: 'Please select a template from the previous step to import content.', 
+                cls: 'sfp-step-description' 
+            });
+            return;
+        }
 
-        if (this.templateContent) {
-            const previewContainer = container.createDiv('sfp-content-preview');
-            previewContainer.createEl('h3', { text: 'Imported Content Preview', cls: 'sfp-preview-title' });
+        container.createEl('p', { 
+            text: 'Review and customize the imported template content:', 
+            cls: 'sfp-step-description' 
+        });
 
-            const preview = previewContainer.createEl('pre', { cls: 'sfp-template-preview' });
-            preview.textContent = this.templateContent;
+        // Show imported template info
+        if (this.selectedTemplateFile) {
+            const infoContainer = container.createDiv('sfp-template-info');
+            infoContainer.createEl('h3', { text: 'Imported Template', cls: 'sfp-preview-title' });
+            infoContainer.createEl('p', { 
+                text: `Source: ${this.selectedTemplateFile.name} (${this.templatePluginSource})`, 
+                cls: 'sfp-template-source-info' 
+            });
+        }
+
+        // Editable content area
+        new Setting(container)
+            .setName('Template Content')
+            .setDesc('You can edit the imported content or use it as-is')
+            .addTextArea(textarea => {
+                textarea
+                    .setValue(this.templateContent)
+                    .onChange(value => {
+                        this.templateContent = value;
+                        this.renderNavigation(); // Update button state
+                    });
+
+                // Make textarea larger and more suitable for editing
+                textarea.inputEl.rows = 15;
+                textarea.inputEl.addClass('sfp-template-content-area');
+            });
+
+        // Show conversion info if from Templater and there was original content
+        if (this.templatePluginSource === 'templater' && this.selectedTemplateFile) {
+            const originalContent = this.selectedTemplateFile.content;
+            const conversions = this.templateIntegrationService.getTemplaterConversionSummary(originalContent);
+            
+            if (conversions.length > 0) {
+                const conversionInfo = container.createDiv('sfp-conversion-info');
+                conversionInfo.createEl('h4', { text: 'Templater Conversion', cls: 'sfp-conversion-title' });
+                conversionInfo.createEl('p', { 
+                    text: 'The following Templater syntax was converted to ScribeFlow placeholders:', 
+                    cls: 'sfp-conversion-description' 
+                });
+                
+                const conversionList = conversionInfo.createEl('ul', { cls: 'sfp-conversion-list' });
+                conversions.forEach(conversion => {
+                    conversionList.createEl('li', { text: conversion });
+                });
+                
+                // Add note about editing
+                conversionInfo.createEl('p', { 
+                    text: 'You can edit the content above to customize placeholders or add ScribeFlow-specific features like callouts.', 
+                    cls: 'sfp-conversion-description' 
+                });
+            }
         }
     }
 
@@ -426,11 +595,11 @@ export class TemplateWizardModal extends Modal {
 
     // Helper methods for template integration
     private isTemplaterAvailable(): boolean {
-        return (this.plugin.app as any).plugins?.plugins?.['templater-obsidian'] !== undefined;
+        return this.templateIntegrationService.isTemplaterAvailable();
     }
 
     private isCoreTemplatesAvailable(): boolean {
-        return (this.plugin.app as any).internalPlugins?.plugins?.templates?.enabled === true;
+        return this.templateIntegrationService.isCoreTemplatesAvailable();
     }
 
     // Helper methods for content insertion

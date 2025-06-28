@@ -849,6 +849,84 @@
     margin: 16px 0;
 }
 
+/* Template Import Info */
+.sfp-template-info {
+    background: var(--background-secondary);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border-left: 4px solid var(--interactive-accent);
+}
+
+.sfp-template-source-info {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+    font-family: var(--font-monospace);
+}
+
+/* Conversion Info */
+.sfp-conversion-info {
+    background: var(--background-secondary);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+    border: 1px solid var(--background-modifier-border);
+}
+
+.sfp-conversion-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 8px 0;
+    color: var(--text-normal);
+}
+
+.sfp-conversion-description {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0 0 16px 0;
+}
+
+.sfp-conversion-list {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.sfp-conversion-list li {
+    font-family: var(--font-monospace);
+    font-size: 13px;
+    color: var(--text-normal);
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+/* No Plugins Message */
+.sfp-no-plugins-message {
+    background: var(--background-modifier-error);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 16px;
+    border-left: 4px solid var(--text-error);
+}
+
+.sfp-no-plugins-text {
+    font-size: 14px;
+    color: var(--text-normal);
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.sfp-plugin-list {
+    margin: 8px 0 16px 20px;
+    padding: 0;
+}
+
+.sfp-plugin-list li {
+    font-size: 14px;
+    color: var(--text-normal);
+    margin-bottom: 4px;
+}
+
 /* Wizard Navigation */
 .sfp-wizard-navigation {
     background: var(--background-secondary);

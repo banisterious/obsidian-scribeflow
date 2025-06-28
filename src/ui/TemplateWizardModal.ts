@@ -29,6 +29,7 @@ export class TemplateWizardModal extends Modal {
     private headerEl: HTMLElement;
     private stepContentEl: HTMLElement;
     private navigationEl: HTMLElement;
+    private currentTextarea: HTMLTextAreaElement | null = null;
 
     constructor(app: App, plugin: ScribeFlowPlugin, onSuccess: () => void) {
         super(app);
@@ -435,10 +436,6 @@ export class TemplateWizardModal extends Modal {
             .setButtonText('Insert Callout')
             .onClick(() => this.insertCallout());
 
-        new ButtonComponent(buttonsContainer)
-            .setButtonText('Insert Placeholder')
-            .onClick(() => this.insertPlaceholder());
-
         // Content textarea
         new Setting(container)
             .setName('Template Content')
@@ -455,10 +452,13 @@ export class TemplateWizardModal extends Modal {
                 // Make textarea larger
                 textarea.inputEl.rows = 12;
                 textarea.inputEl.addClass('sfp-template-content-area');
+                
+                // Store reference to textarea for placeholder insertion
+                this.currentTextarea = textarea.inputEl;
             });
 
-        // Add placeholder reference
-        this.renderPlaceholderReference(container);
+        // Add placeholder inserter
+        this.renderPlaceholderInserter(container);
     }
 
     private renderTemplateImportContent(container: HTMLElement): void {
@@ -654,10 +654,13 @@ export class TemplateWizardModal extends Modal {
                 // Make textarea larger and suitable for editing
                 textarea.inputEl.rows = 12;
                 textarea.inputEl.addClass('sfp-template-content-area');
+                
+                // Store reference to textarea for placeholder insertion
+                this.currentTextarea = textarea.inputEl;
             });
 
-        // Add placeholder reference
-        this.renderPlaceholderReference(editSection);
+        // Add placeholder inserter
+        this.renderPlaceholderInserter(editSection);
     }
 
     private renderNavigation(): void {
@@ -787,44 +790,106 @@ export class TemplateWizardModal extends Modal {
         this.renderCurrentStep();
     }
 
-    private insertPlaceholder(): void {
-        const placeholder = '{{placeholder}}';
-        this.templateContent += placeholder;
-        this.renderCurrentStep();
-    }
 
-    private renderPlaceholderReference(container: HTMLElement): void {
-        const referenceSection = container.createDiv('sfp-placeholder-reference');
-        referenceSection.createEl('h3', { text: 'Available Placeholders', cls: 'sfp-reference-title' });
+    private renderPlaceholderInserter(container: HTMLElement): void {
+        const inserterSection = container.createDiv('sfp-placeholder-inserter');
+        inserterSection.createEl('h3', { text: 'Insert Placeholders', cls: 'sfp-inserter-title' });
         
-        const referenceGrid = referenceSection.createDiv('sfp-reference-grid');
+        const inserterControls = inserterSection.createDiv('sfp-inserter-controls');
         
-        // Date placeholders
-        const dateColumn = referenceGrid.createDiv('sfp-reference-column');
-        dateColumn.createEl('h4', { text: 'Dates', cls: 'sfp-reference-category' });
-        const dateList = dateColumn.createEl('ul', { cls: 'sfp-reference-list' });
-        dateList.createEl('li').innerHTML = '<code>{{date}}</code> - 2025-06-28';
-        dateList.createEl('li').innerHTML = '<code>{{date-long}}</code> - June 28, 2025';
-        dateList.createEl('li').innerHTML = '<code>{{date-month-day}}</code> - June 28';
-        dateList.createEl('li').innerHTML = '<code>{{date-compact}}</code> - 20250628';
-        dateList.createEl('li').innerHTML = '<code>{{time}}</code> - 14:30';
+        // Create dropdown with placeholder options
+        const placeholderSelect = inserterControls.createEl('select', { cls: 'sfp-placeholder-select' });
         
-        // Content placeholders
-        const contentColumn = referenceGrid.createDiv('sfp-reference-column');
-        contentColumn.createEl('h4', { text: 'Content', cls: 'sfp-reference-category' });
-        const contentList = contentColumn.createEl('ul', { cls: 'sfp-reference-list' });
-        contentList.createEl('li').innerHTML = '<code>{{content}}</code> - Combined journal + dream content';
-        contentList.createEl('li').innerHTML = '<code>{{journal-content}}</code> - Journal text only';
-        contentList.createEl('li').innerHTML = '<code>{{dream-content}}</code> - Dream text only';
-        contentList.createEl('li').innerHTML = '<code>{{title}}</code> - Dream title';
+        // Group placeholders by category
+        const placeholderGroups = [
+            {
+                label: 'Date Placeholders',
+                options: [
+                    { value: '{{date}}', label: '{{date}} - Standard date (2025-06-28)' },
+                    { value: '{{date-long}}', label: '{{date-long}} - Long format (June 28, 2025)' },
+                    { value: '{{date-month-day}}', label: '{{date-month-day}} - Month and day (June 28)' },
+                    { value: '{{date-compact}}', label: '{{date-compact}} - Compact format (20250628)' },
+                    { value: '{{time}}', label: '{{time}} - Current time (14:30)' }
+                ]
+            },
+            {
+                label: 'Content Placeholders',
+                options: [
+                    { value: '{{content}}', label: '{{content}} - Combined journal + dream content' },
+                    { value: '{{journal-content}}', label: '{{journal-content}} - Journal text only' },
+                    { value: '{{dream-content}}', label: '{{dream-content}} - Dream text only' },
+                    { value: '{{title}}', label: '{{title}} - Dream title' }
+                ]
+            },
+            {
+                label: 'Metrics Placeholders',
+                options: [
+                    { value: '{{metrics}}', label: '{{metrics}} - Multi-line format (includes word count)' },
+                    { value: '{{metrics-inline}}', label: '{{metrics-inline}} - Comma-separated (includes word count)' }
+                ]
+            }
+        ];
         
-        // Metrics placeholders
-        const metricsColumn = referenceGrid.createDiv('sfp-reference-column');
-        metricsColumn.createEl('h4', { text: 'Metrics', cls: 'sfp-reference-category' });
-        const metricsList = metricsColumn.createEl('ul', { cls: 'sfp-reference-list' });
-        metricsList.createEl('li').innerHTML = '<code>{{metrics}}</code> - Multi-line format (includes word count)';
-        metricsList.createEl('li').innerHTML = '<code>{{metrics-inline}}</code> - Comma-separated (includes word count)';
-        metricsList.createEl('li').innerHTML = '<small>Individual metrics: <code>{{Metric Name}}</code></small>';
-        metricsList.createEl('li').innerHTML = '<small>Word count automatically included in metrics</small>';
+        // Add default option
+        placeholderSelect.createEl('option', { 
+            value: '', 
+            text: 'Choose a placeholder to insert...' 
+        });
+        
+        // Add grouped options
+        placeholderGroups.forEach(group => {
+            const optgroup = placeholderSelect.createEl('optgroup', { attr: { label: group.label } });
+            group.options.forEach(option => {
+                optgroup.createEl('option', { 
+                    value: option.value, 
+                    text: option.label 
+                });
+            });
+        });
+        
+        // Create insert button
+        const insertButton = new ButtonComponent(inserterControls)
+            .setButtonText('Insert')
+            .setCta()
+            .onClick(() => this.insertSelectedPlaceholder(placeholderSelect));
+        
+        // Initially disable the button
+        insertButton.setDisabled(true);
+        
+        // Enable/disable button based on selection
+        placeholderSelect.addEventListener('change', () => {
+            const hasSelection = placeholderSelect.value !== '';
+            insertButton.setDisabled(!hasSelection);
+        });
+    }
+    
+    private insertSelectedPlaceholder(selectElement: HTMLSelectElement): void {
+        const selectedPlaceholder = selectElement.value;
+        if (!selectedPlaceholder || !this.currentTextarea) {
+            return;
+        }
+        
+        // Get cursor position in textarea
+        const cursorPos = this.currentTextarea.selectionStart;
+        const textBefore = this.templateContent.substring(0, cursorPos);
+        const textAfter = this.templateContent.substring(this.currentTextarea.selectionEnd);
+        
+        // Insert placeholder at cursor position
+        this.templateContent = textBefore + selectedPlaceholder + textAfter;
+        
+        // Reset dropdown selection
+        selectElement.value = '';
+        
+        // Re-render to update textarea
+        this.renderCurrentStep();
+        
+        // Restore cursor position after the inserted placeholder
+        setTimeout(() => {
+            if (this.currentTextarea) {
+                const newCursorPos = cursorPos + selectedPlaceholder.length;
+                this.currentTextarea.setSelectionRange(newCursorPos, newCursorPos);
+                this.currentTextarea.focus();
+            }
+        }, 50);
     }
 }

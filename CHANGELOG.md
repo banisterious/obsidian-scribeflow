@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-06-28
+
+### Added
+- **Automatic Table of Contents System**: 
+  - Smart TOC link generation for year notes and master journals notes
+  - Dual toggle controls for independent update modes
+  - Specific callout targeting with customizable callout names
+  - Automatic dream diary sub-item links when dreams are included
+- **Enhanced Settings Interface**:
+  - File autosuggester for master journals note selection
+  - Callout name specification fields for precise TOC targeting
+  - Settings mirrored in both main plugin settings and modal interface
+- **Advanced Callout Parser**:
+  - Intelligent parsing of nested callout structures
+  - Support for indented list items and sub-entries
+  - Proper handling of complex markdown callout hierarchies
+- **Improved File Integration**:
+  - Custom `FileSuggest` component with proper event handling
+  - Enhanced `FolderSuggest` with consistent behavior
+  - Robust file selection with autocomplete functionality
+
+### Enhanced
+- **Date Handling**: Fixed timezone-aware date initialization to always show today's date
+- **Draft Management**: Proper draft loading and restoration in modal interface
+- **Error Handling**: Comprehensive error messages and graceful degradation for TOC operations
+- **User Experience**: Non-blocking TOC updates that don't interfere with journal entry workflow
+
+### Fixed
+- **Content Duplication**: Resolved race condition causing journal entries to be written twice
+- **Settings Persistence**: Fixed master journals note path not saving when selected from suggestions
+- **Date Field**: Corrected timezone issue causing date field to default to tomorrow
+- **TOC Insertion**: Fixed insertion point detection for callouts with indented sub-items
+
+### Technical
+- **Architecture**: Added new `utils/` directory with date formatting and callout parsing utilities
+- **Code Organization**: Modular TOC system with separate updater, parser, and formatter components
+- **Event Handling**: Improved suggestion component integration with settings system
+- **Async Operations**: Proper timing for TOC updates to ensure editor stability
+
 ## [0.2.1] - 2024-12-27
 
 ### Enhanced

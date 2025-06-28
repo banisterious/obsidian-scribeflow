@@ -17,7 +17,7 @@ export class JournalEntryTab {
         this.clearButton = buttons?.clearButton;
         this.insertButton = buttons?.insertButton;
         
-        // Initialize form state with defaults
+        // Initialize form state with defaults or load from draft
         const defaultMetrics: Record<string, number | string> = {};
         this.plugin.settings.selectedMetrics.forEach(metric => {
             if (metric.type === 'score' || metric.type === 'number') {
@@ -27,18 +27,41 @@ export class JournalEntryTab {
             }
         });
         
-        this.formState = {
-            date: new Date().toISOString().split('T')[0],
-            time: new Date().toTimeString().slice(0, 5),
-            journalContent: '',
-            journalImagePath: '',
-            journalImageWidth: 400,
-            dreamTitle: '',
-            dreamContent: '',
-            dreamImagePath: '',
-            dreamImageWidth: 400,
-            metrics: defaultMetrics,
-        };
+        // Use draft if available, otherwise use defaults
+        const today = new Date();
+        // Use local date instead of UTC to avoid timezone issues
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayString = `${year}-${month}-${day}`;
+        const timeString = today.toTimeString().slice(0, 5);
+        
+        if (this.plugin.draft) {
+            this.formState = { ...this.plugin.draft };
+            // Update metrics in case settings changed
+            this.plugin.settings.selectedMetrics.forEach(metric => {
+                if (this.formState.metrics[metric.id] === undefined) {
+                    if (metric.type === 'score' || metric.type === 'number') {
+                        this.formState.metrics[metric.id] = metric.min || 1;
+                    } else {
+                        this.formState.metrics[metric.id] = '';
+                    }
+                }
+            });
+        } else {
+            this.formState = {
+                date: todayString,
+                time: timeString,
+                journalContent: '',
+                journalImagePath: '',
+                journalImageWidth: 400,
+                dreamTitle: '',
+                dreamContent: '',
+                dreamImagePath: '',
+                dreamImageWidth: 400,
+                metrics: defaultMetrics,
+            };
+        }
     }
 
     display(): void {

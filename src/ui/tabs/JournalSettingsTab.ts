@@ -3,6 +3,7 @@ import { Setting } from 'obsidian';
 import ScribeFlowPlugin from '../../main';
 import { AVAILABLE_METRICS, AVAILABLE_IMAGE_TYPES } from '../../types';
 import { FolderSuggest } from '../FolderSuggest';
+import { FileSuggest } from '../FileSuggest';
 
 export class JournalSettingsTab {
     containerEl: HTMLElement;
@@ -21,6 +22,7 @@ export class JournalSettingsTab {
         
         this.createCalloutNamesSettings(this.containerEl);
         this.createImageFolderSettings(this.containerEl);
+        this.createTOCSettings(this.containerEl);
         this.createMetricsSettings(this.containerEl);
     }
 
@@ -78,28 +80,13 @@ export class JournalSettingsTab {
 
         new Setting(containerEl)
             .setName('Allowed image file types')
-            .setDesc('Select which image file types to show in the image picker')
-            .addDropdown(dropdown => {
-                dropdown.addOption('', 'Click to manage file types...');
-                dropdown.onChange(() => {
-                    this.showImageTypesManager();
-                });
-            });
+            .setDesc('Select which image file types to show in the image picker');
 
         // Create a dedicated container for the image types manager within this section
         this.imageTypesContainer = containerEl.createDiv('sfp-image-types-container');
         this.renderImageTypesSelection();
     }
 
-    private showImageTypesManager(): void {
-        const existing = this.imageTypesContainer.querySelector('.sfp-image-types-manager');
-        if (existing) {
-            existing.remove();
-            return;
-        }
-
-        this.renderImageTypesSelection();
-    }
 
     private renderImageTypesSelection(): void {
         const existingManager = this.imageTypesContainer.querySelector('.sfp-image-types-manager');
@@ -155,6 +142,91 @@ export class JournalSettingsTab {
         }
     }
 
+    private createTOCSettings(containerEl: HTMLElement): void {
+        const heading = containerEl.createDiv('setting-item setting-item-heading');
+        const info = heading.createDiv('setting-item-info');
+        info.createDiv({ text: 'Table of contents', cls: 'setting-item-name' });
+        info.createDiv({ text: '', cls: 'setting-item-description' });
+        heading.createDiv('setting-item-control');
+        
+        // 1. Update active note table of contents
+        new Setting(containerEl)
+            .setName('Update active note table of contents')
+            .setDesc('Automatically add journal entry links to the active note\'s TOC')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.tocSettings.updateYearNote)
+                .onChange(async (value) => {
+                    this.plugin.settings.tocSettings.updateYearNote = value;
+                    await this.plugin.saveSettings();
+                    // Refresh the display to show/hide the callout name field
+                    this.display();
+                }));
+
+        // 2. Active note TOC callout name (conditional)
+        if (this.plugin.settings.tocSettings.updateYearNote) {
+            new Setting(containerEl)
+                .setName('Active note TOC callout name')
+                .setDesc('Name of the callout in active note to insert table of contents links into (leave empty for first callout with list)')
+                .addText(text => text
+                    .setPlaceholder('table-of-contents')
+                    .setValue(this.plugin.settings.tocSettings.yearNoteCalloutName)
+                    .onChange(async (value) => {
+                        this.plugin.settings.tocSettings.yearNoteCalloutName = value;
+                        await this.plugin.saveSettings();
+                    }));
+        }
+
+        // 3. Update master journals table of contents
+        new Setting(containerEl)
+            .setName('Update master journals table of contents')
+            .setDesc('Automatically add journal entry links to the master journals note\'s TOC')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.tocSettings.updateMasterJournals)
+                .onChange(async (value) => {
+                    this.plugin.settings.tocSettings.updateMasterJournals = value;
+                    await this.plugin.saveSettings();
+                    // Refresh the display to show/hide the master journals fields
+                    this.display();
+                }));
+
+        // 4. Master journals note (conditional)
+        if (this.plugin.settings.tocSettings.updateMasterJournals) {
+            new Setting(containerEl)
+                .setName('Master journals note')
+                .setDesc('Select the note containing the master table of contents')
+                .addText(text => {
+                    text
+                        .setPlaceholder('path/to/master-journals.md')
+                        .setValue(this.plugin.settings.tocSettings.masterJournalsNotePath)
+                        .onChange(async (value) => {
+                            this.plugin.settings.tocSettings.masterJournalsNotePath = value;
+                            await this.plugin.saveSettings();
+                        });
+
+                    const fileSuggest = new FileSuggest(this.plugin.app, text.inputEl);
+                    fileSuggest.onSelect(async () => {
+                        // Trigger the onChange event manually to save the setting
+                        setTimeout(() => {
+                            const changeEvent = new Event('input', { bubbles: true });
+                            text.inputEl.dispatchEvent(changeEvent);
+                        }, 10);
+                    });
+                });
+
+            // 5. Master journals TOC callout name (conditional)
+            new Setting(containerEl)
+                .setName('Master journals TOC callout name')
+                .setDesc('Name of the callout in master journals note to insert table of contents links into (leave empty for first callout with list)')
+                .addText(text => text
+                    .setPlaceholder('journals')
+                    .setValue(this.plugin.settings.tocSettings.masterJournalsCalloutName)
+                    .onChange(async (value) => {
+                        this.plugin.settings.tocSettings.masterJournalsCalloutName = value;
+                        await this.plugin.saveSettings();
+                    }));
+        }
+    }
+
     private createMetricsSettings(containerEl: HTMLElement): void {
         const heading = containerEl.createDiv('setting-item setting-item-heading');
         const info = heading.createDiv('setting-item-info');
@@ -186,6 +258,9 @@ export class JournalSettingsTab {
             
             const name = item.createDiv('sfp-metric-name');
             name.textContent = metric.name;
+            
+            const desc = item.createDiv('sfp-metric-desc');
+            desc.textContent = metric.description;
             
             const removeBtn = item.createEl('button', { text: '×', cls: 'sfp-remove-btn' });
             removeBtn.addEventListener('click', async () => {

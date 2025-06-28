@@ -24,6 +24,12 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - Unlimited selectable metrics with drag-to-reorder
 - Settings available both in plugin settings and modal interface
 
+### 🔗 **Automatic Table of Contents**
+- Smart TOC link generation for year notes and master journals
+- Dual toggle controls for independent update modes
+- Specific callout targeting with customizable names
+- Automatic dream diary sub-links when dreams are included
+
 <p align="left">
   <img src="docs/images/scribeflow-journal-entry-01.png" alt="ScribeFlow journal entry example" width="300"/>
 </p>
@@ -40,6 +46,7 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 ## Settings
 
 - **Callout Names**: Customize the names used for journal-entry and dream-diary callouts
+- **Table of Contents**: Configure automatic TOC updates for year notes and master journals
 - **Image Folder**: Set default folder for image selection with autosuggester
 - **File Types**: Choose which image formats to show in the picker (PNG, JPG, SVG, etc.)
 - **Dream Metrics**: Select and reorder up to any number of dream tracking metrics

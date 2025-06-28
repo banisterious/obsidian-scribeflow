@@ -17,12 +17,20 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
 ├── src/
 │   ├── logic/
 │   │   ├── draft-manager.ts
-│   │   └── entry-writer.ts
+│   │   ├── entry-writer.ts
+│   │   └── toc-updater.ts
 │   ├── ui/
 │   │   ├── tabs/
 │   │   │   ├── JournalEntryTab.ts
-│   │   │   └── JournalSettingsTab.ts
-│   │   └── JournalEntryModal.ts
+│   │   │   ├── JournalSettingsTab.ts
+│   │   │   ├── InspirationsTab.ts
+│   │   │   └── MetricTab.ts
+│   │   ├── JournalEntryModal.ts
+│   │   ├── FileSuggest.ts
+│   │   └── FolderSuggest.ts
+│   ├── utils/
+│   │   ├── callout-parser.ts
+│   │   └── date-formatter.ts
 │   ├── main.ts
 │   ├── settings.ts
 │   └── types.ts
@@ -45,12 +53,21 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
 *   **`src/logic/`**: This directory contains the "business logic" of the plugin, completely decoupled from the UI.
     *   **`draft-manager.ts`**: Handles the logic for saving, loading, and clearing the state of the journal entry form, enabling the draft functionality.
     *   **`entry-writer.ts`**: Responsible for generating the final Markdown string based on the selected template and form data. It also handles the logic for inserting the content at the cursor position or appending it to the specified journal file.
+    *   **`toc-updater.ts`**: Manages automatic table of contents link generation for both year notes and master journals notes, with support for specific callout targeting and proper error handling.
 
 *   **`src/ui/`**: This directory contains all the code related to the user interface.
     *   **`JournalEntryModal.ts`**: The core of the new UI. This class creates the main modal window with Material Design styling, implements the two-pane layout with vertical navigation tabs, and manages action buttons in the header region. It handles the lifecycle of the tabs and passes button references to active tabs.
+    *   **`FileSuggest.ts`**: Provides file suggestion functionality for markdown files with proper event handling for settings integration.
+    *   **`FolderSuggest.ts`**: Provides folder suggestion functionality for image path settings.
     *   **`tabs/`**: Each file in this subdirectory represents a single vertical tab in the modal, ensuring the UI is modular and easy to expand.
         *   **`JournalEntryTab.ts`**: Contains the primary form for writing a journal entry with modern Material Design elements including horizontal date/time fields, side-by-side content/preview sections with resizable image previews, and interactive grid-based metrics with visual sliders. Handles image selection from vault files and real-time preview updates.
-        *   **`JournalSettingsTab.ts`**: Contains the in-modal settings for fine-tuning entry creation on the fly.
+        *   **`JournalSettingsTab.ts`**: Contains the in-modal settings for fine-tuning entry creation on the fly, including TOC settings management.
+        *   **`InspirationsTab.ts`**: Provides reference content and inspiration for journal entries.
+        *   **`MetricTab.ts`**: Individual metric configuration and information tabs.
+
+*   **`src/utils/`**: Utility functions for data processing and formatting.
+    *   **`date-formatter.ts`**: Handles date formatting for display and TOC link generation with proper localization.
+    *   **`callout-parser.ts`**: Parses markdown callout structures to find insertion points for TOC links with support for nested lists and indentation.
 
 *   **`styles.css`**: All CSS rules are now located in this file, completely separate from the TypeScript code. It contains comprehensive Material Design styling for the modal, tabs, form elements, interactive components, and responsive layouts. The styling uses Obsidian's CSS custom properties for theme compatibility.
 
@@ -64,7 +81,43 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
 6.  The state is passed to the `entry-writer.ts` module.
 7.  `entry-writer.ts` generates the appropriate Markdown string based on the selected template.
 8.  The Markdown is inserted into the active note at the cursor position or appended to the journal file.
-9.  The draft is cleared by `draft-manager.ts`.
+9.  If TOC settings are enabled, `toc-updater.ts` automatically updates the specified table of contents in year notes and/or master journals notes with appropriately formatted links.
+10. The draft is cleared by `draft-manager.ts`.
+
+## Table of Contents (TOC) System
+
+The ScribeFlow plugin includes an intelligent table of contents system that automatically maintains navigation links across journal organization notes:
+
+### TOC Features
+*   **Dual Update Modes**: Supports updating both year notes and master journals notes simultaneously or independently
+*   **Specific Callout Targeting**: Can target specific callouts by name or default to the first callout with a list structure
+*   **Smart Link Generation**: Creates appropriately formatted links with date displays and dream diary sub-items when applicable
+*   **Error Handling**: Graceful degradation with user notifications when TOC updates fail
+*   **Async Updates**: Non-blocking TOC updates that don't interfere with the main journal entry workflow
+
+### Technical Implementation
+*   **Callout Parser**: Advanced parsing logic that handles nested callout structures and indented list items
+*   **Date Formatting**: Locale-aware date formatting for display consistency across different link formats
+*   **File Suggestion**: Integrated file picker for selecting master journals notes with autocomplete functionality
+*   **Event Timing**: Carefully timed updates to ensure editor stability and prevent race conditions
+
+### User Experience
+*   **Toggle Controls**: Simple on/off switches for each TOC update mode in both main settings and modal settings
+*   **File Selection**: User-friendly file picker with autocomplete for master journals note selection
+*   **Callout Specification**: Optional callout name fields to target specific TOC sections
+*   **Automatic Links**: Seamless link generation including main journal entries and dream diary references
+
+### Link Format Examples
+Year Note TOC format:
+```markdown
+>> - [[2025#^20250627|June 27, 2025]]
+>>     - (Dream: [[Journals/Dream Diary/Dream Diary#^20250627-dream-title|Dream Title]])
+```
+
+Master Journals Note format:
+```markdown
+>> - [[2025#^20250627|June 27]]
+```
 
 ## Image Preview System
 

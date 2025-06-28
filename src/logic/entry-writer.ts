@@ -1,5 +1,6 @@
 import { FormState, ScribeFlowPluginSettings } from '../types';
 import { App, Notice, MarkdownView } from 'obsidian';
+import { updateTableOfContents } from './toc-updater';
 
 export async function writeJournalEntry(app: App, settings: ScribeFlowPluginSettings, state: FormState): Promise<void> {
     const content = generateMarkdown(settings, state);
@@ -21,6 +22,20 @@ export async function writeJournalEntry(app: App, settings: ScribeFlowPluginSett
         ch: lines.length === 1 ? cursor.ch + content.length : lines[lines.length - 1].length
     };
     editor.setCursor(newCursor);
+    
+    const dateBlockID = `^${state.date.replace(/-/g, '')}`;
+    
+    // Update TOC after a delay to ensure editor changes are committed
+    if (settings.tocSettings.updateMasterJournals || settings.tocSettings.updateYearNote) {
+        // Wait for editor to commit changes, then update TOCs
+        setTimeout(async () => {
+            try {
+                await updateTableOfContents(app, settings, state, dateBlockID);
+            } catch (error) {
+                console.error('TOC update failed:', error);
+            }
+        }, 500);
+    }
 }
 
 function generateMarkdown(settings: ScribeFlowPluginSettings, state: FormState): string {

@@ -7,6 +7,13 @@ export interface ScribeFlowPluginSettings {
     imageFolderPath: string;
     allowedImageTypes: string[];
     selectedMetrics: MetricDefinition[];
+    tocSettings: {
+        updateYearNote: boolean;
+        updateMasterJournals: boolean;
+        masterJournalsNotePath: string;
+        yearNoteCalloutName: string;
+        masterJournalsCalloutName: string;
+    };
 }
 
 export interface MetricDefinition {

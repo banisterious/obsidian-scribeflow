@@ -1,6 +1,6 @@
 {
     "name": "obsidian-scribeflow",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "Streamlined journaling with structured entries, dream diary tracking, and insightful metrics",
     "main": "main.js",
     "scripts": {

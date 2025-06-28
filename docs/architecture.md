@@ -19,13 +19,18 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
 │   │   ├── draft-manager.ts
 │   │   ├── entry-writer.ts
 │   │   └── toc-updater.ts
+│   ├── services/
+│   │   ├── TemplateIntegrationService.ts
+│   │   └── TemplateProcessingService.ts
 │   ├── ui/
 │   │   ├── tabs/
 │   │   │   ├── JournalEntryTab.ts
 │   │   │   ├── JournalSettingsTab.ts
+│   │   │   ├── JournalStructuresTab.ts
 │   │   │   ├── InspirationsTab.ts
 │   │   │   └── MetricTab.ts
 │   │   ├── JournalEntryModal.ts
+│   │   ├── TemplateWizardModal.ts
 │   │   ├── FileSuggest.ts
 │   │   └── FolderSuggest.ts
 │   ├── utils/
@@ -55,13 +60,19 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
     *   **`entry-writer.ts`**: Responsible for generating the final Markdown string based on the selected template and form data. It also handles the logic for inserting the content at the cursor position or appending it to the specified journal file.
     *   **`toc-updater.ts`**: Manages automatic table of contents link generation for both year notes and master journals notes, with support for specific callout targeting and proper error handling.
 
+*   **`src/services/`**: Contains specialized services for template management and processing.
+    *   **`TemplateIntegrationService.ts`**: Handles integration with external template plugins (Templater and Core Templates). Provides plugin detection, template file discovery, and conversion from external template syntax to ScribeFlow placeholders with comprehensive structured logging for debugging.
+    *   **`TemplateProcessingService.ts`**: Core template processing engine that replaces placeholders with actual content. Handles date formatting, content mapping, metrics processing with automatic word counting, and OneiroMetrics-compatible numeric output formatting.
+
 *   **`src/ui/`**: This directory contains all the code related to the user interface.
-    *   **`JournalEntryModal.ts`**: The core of the new UI. This class creates the main modal window with Material Design styling, implements the two-pane layout with vertical navigation tabs, and manages action buttons in the header region. It handles the lifecycle of the tabs and passes button references to active tabs.
+    *   **`JournalEntryModal.ts`**: The core of the new UI. This class creates the main modal window with Material Design styling, implements the two-pane layout with vertical navigation tabs, and manages action buttons in the header region. It handles the lifecycle of the tabs and passes button references to active tabs. Includes template selection dropdown with dynamic state management.
+    *   **`TemplateWizardModal.ts`**: Comprehensive template creation and editing wizard with 3-step workflow. Features creation method selection (direct input, plugin integration, predefined structures), template information forms, and content editing with placeholder reference guides. Supports edit mode for existing templates with smart navigation and validation.
     *   **`FileSuggest.ts`**: Provides file suggestion functionality for markdown files with proper event handling for settings integration.
     *   **`FolderSuggest.ts`**: Provides folder suggestion functionality for image path settings.
     *   **`tabs/`**: Each file in this subdirectory represents a single vertical tab in the modal, ensuring the UI is modular and easy to expand.
-        *   **`JournalEntryTab.ts`**: Contains the primary form for writing a journal entry with modern Material Design elements including horizontal date/time fields, side-by-side content/preview sections with resizable image previews, and interactive grid-based metrics with visual sliders. Handles image selection from vault files and real-time preview updates.
+        *   **`JournalEntryTab.ts`**: Contains the primary form for writing a journal entry with modern Material Design elements including horizontal date/time fields, side-by-side content/preview sections with resizable image previews, and interactive grid-based metrics with visual sliders. Handles image selection from vault files, real-time preview updates, and template processing with placeholder replacement for entry insertion.
         *   **`JournalSettingsTab.ts`**: Contains the in-modal settings for fine-tuning entry creation on the fly, including TOC settings management.
+        *   **`JournalStructuresTab.ts`**: Complete template management interface with icon-based CRUD operations (Create, Read, Update, Delete, Copy). Features professional template cards with descriptions, template wizard integration, confirmation dialogs, and responsive grid layouts.
         *   **`InspirationsTab.ts`**: Provides reference content and inspiration for journal entries.
         *   **`MetricTab.ts`**: Individual metric configuration and information tabs.
 
@@ -73,16 +84,93 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
 
 ## Data Flow
 
+### Journal Entry Creation Flow
 1.  The user triggers the `Create Journal Entry` command.
 2.  `main.ts` instantiates and opens the `JournalEntryModal`.
-3.  `JournalEntryModal` creates the main layout with header containing title and action buttons, initializes the active tab (`JournalEntryTab`), and passes button references to the tab.
-4.  The user interacts with the modern form interface including date/time inputs, content areas with resizable image preview containers (supporting click-to-select from vault files with width controls), and interactive metric sliders. The state is periodically saved as a draft by the `draft-manager.ts`.
-5.  When the user clicks "Insert Entry" (now located in the header), the modal gathers the final `FormState`.
-6.  The state is passed to the `entry-writer.ts` module.
-7.  `entry-writer.ts` generates the appropriate Markdown string based on the selected template.
-8.  The Markdown is inserted into the active note at the cursor position or appended to the journal file.
+3.  `JournalEntryModal` creates the main layout with header containing title, template selection dropdown, and action buttons, initializes the active tab (`JournalEntryTab`), and passes button references to the tab.
+4.  The user selects a template from the dropdown, which updates the modal's selected template state.
+5.  The user interacts with the modern form interface including date/time inputs, content areas with resizable image preview containers (supporting click-to-select from vault files with width controls), and interactive metric sliders. The state is periodically saved as a draft by the `draft-manager.ts`.
+6.  When the user clicks "Insert Entry" (now located in the header), the `JournalEntryTab` gathers the final `FormState` and selected template.
+7.  The `TemplateProcessingService` processes the template by replacing all placeholders with actual content including automatic word count calculation and OneiroMetrics-compatible formatting.
+8.  The processed content is inserted into the active note at the cursor position using Obsidian's editor API.
 9.  If TOC settings are enabled, `toc-updater.ts` automatically updates the specified table of contents in year notes and/or master journals notes with appropriately formatted links.
 10. The draft is cleared by `draft-manager.ts`.
+
+### Template Management Flow
+1.  The user navigates to the "Journal Structures" tab in the modal.
+2.  `JournalStructuresTab` displays existing templates with professional template cards showing names, descriptions, and icon-based action buttons.
+3.  For template creation, the user clicks "Start Template Wizard" which opens the `TemplateWizardModal`.
+4.  The wizard guides through a 3-step process: creation method selection, template information, and content editing.
+5.  For plugin integration, `TemplateIntegrationService` detects available plugins and imports templates with syntax conversion.
+6.  Templates are saved to plugin settings and the list is refreshed with new template cards.
+7.  For template editing, the wizard opens in edit mode with pre-populated data and modified navigation flow.
+8.  Template copying creates duplicates with modified names and new unique IDs.
+9.  Template deletion shows confirmation dialogs before removal from settings.
+
+## Template System
+
+The ScribeFlow plugin features a comprehensive template management and processing system that enables users to create, edit, and manage journal entry templates with dynamic placeholder replacement.
+
+### Template Management Features
+*   **Professional Template Interface**: Clean template cards with names, descriptions, and icon-based action buttons (Edit, Copy, Delete)
+*   **Template Wizard**: 3-step guided creation process with method selection, information entry, and content editing
+*   **Plugin Integration**: Seamless import from Templater and Core Templates plugins with automatic syntax conversion
+*   **Predefined Structures**: Ready-to-use templates for common journal layouts (flat dual callout, nested 2-level, nested 3-level)
+*   **Edit Mode**: Comprehensive editing support with pre-populated forms and smart navigation
+*   **Template Copying**: One-click duplication with automatic name modification and unique ID generation
+*   **Confirmation Dialogs**: Safe deletion with user confirmation to prevent accidental loss
+
+### Template Processing Engine
+*   **Dynamic Placeholder Replacement**: Real-time processing of template placeholders with form data
+*   **Date Formatting**: Multiple date format options (YYYY-MM-DD, long form, month-day, compact, time)
+*   **Content Mapping**: Flexible content placeholders for journal, dream, and combined content
+*   **Automatic Word Counting**: Real-time word count calculation from dream content
+*   **Metrics Integration**: Support for both multi-line and inline metrics formatting
+*   **OneiroMetrics Compatibility**: Clean numeric output for external analysis tools
+*   **Individual Metric Placeholders**: Direct access to specific metric values by name
+
+### Placeholder Reference System
+*   **Comprehensive Documentation**: Built-in reference guide showing all available placeholders
+*   **Categorized Organization**: Placeholders grouped by type (Dates, Content, Metrics)
+*   **Live Examples**: Real-time placeholder examples with expected output formats
+*   **Usage Guidance**: Clear descriptions and formatting expectations for each placeholder
+
+### Technical Architecture
+*   **Service-Oriented Design**: Separation of template integration and processing concerns
+*   **Plugin Detection**: Robust detection of Templater and Core Templates with fallback mechanisms
+*   **Syntax Conversion**: Intelligent conversion from Templater syntax to ScribeFlow placeholders
+*   **Template Validation**: Built-in validation for template content and placeholder usage
+*   **Error Handling**: Graceful degradation with informative error messages
+*   **Structured Logging**: Comprehensive debug logging for troubleshooting template issues
+
+### User Experience
+*   **Intuitive Workflow**: Step-by-step guidance through template creation and editing
+*   **Visual Feedback**: Hover effects, tooltips, and status indicators throughout the interface
+*   **Responsive Design**: Adaptive layouts that work across different screen sizes
+*   **Theme Integration**: Full compatibility with Obsidian's theme system and CSS custom properties
+*   **Keyboard Accessibility**: Proper tab navigation and keyboard shortcuts
+*   **Progress Indicators**: Clear visual progress through multi-step workflows
+
+### Template Placeholder Reference
+Available placeholders for template content:
+
+**Date Placeholders:**
+- `{{date}}` - 2025-06-28
+- `{{date-long}}` - June 28, 2025
+- `{{date-month-day}}` - June 28
+- `{{date-compact}}` - 20250628
+- `{{time}}` - 14:30
+
+**Content Placeholders:**
+- `{{content}}` - Combined journal + dream content
+- `{{journal-content}}` - Journal text only
+- `{{dream-content}}` - Dream text only
+- `{{title}}` - Dream title
+
+**Metrics Placeholders:**
+- `{{metrics}}` - Multi-line format with automatic word count
+- `{{metrics-inline}}` - Comma-separated format with automatic word count
+- `{{Metric Name}}` - Individual metric values (e.g., `{{Sensory Detail}}`)
 
 ## Table of Contents (TOC) System
 
@@ -144,42 +232,76 @@ The ScribeFlow plugin features an advanced image preview system integrated into 
 *   **Visual consistency**: Consistent styling with Material Design principles
 *   **Theme integration**: Respects Obsidian's color schemes and CSS custom properties
 
-## Example callout structure
+## Template Examples
 
+The ScribeFlow template system supports various journal structures using placeholder syntax. Here are examples of templates and their processed output:
+
+### Template Input Example
 ```markdown
-> [!journal-entry] {date} [[Journals|John's Journal]] *Words: {wordCount}*
-> ^{dateBlockID}
+> [!journal-entry] {{date-month-day}} [[Journals|John's Journal]]
+> ^{{date-compact}}
 > 
->> [!journal-page|right]
->> [[image.png|400]
-> 
-> Journal content here
-> 
->> [!dream-diary] {dreamTitle} [[Journals/Dream Diary/Dream Diary#^{dateId}-{dreamTitle}|Dream Diary]]
->>
->>> [!journal-page|right]
->>> [[image2.png|400]
->>
->> Dream content here
+> {{journal-content}}
+>
+>> [!dream-diary] {{title}} [[Journals/Dream Diary/Dream Diary#^{{date-compact}}-{{title}}|Dream Diary]]
+>> 
+>> {{dream-content}}
 >>
 >>> [!dream-metrics]
->>> Words: {dreamWordCount}, Sensory Detail: {sensory}, Emotional Recall: {emotional}, Lost Segments: {lost}, Descriptiveness: {descriptive}, Confidence Score: {confidence}
+>>> {{metrics-inline}}
 ```
 
-## Template Format B ✓
+### Processed Output Example
 ```markdown
-> [!journal-entry] {date} [[Journals|John's Journal]] *Words: {wordCount}*
-> ^{dateBlockID}
+> [!journal-entry] June 28 [[Journals|John's Journal]]
+> ^20250628
 > 
-> ### {time}
-> 
->> [!dream-diary] {dreamTitle} [[Journals/Dream Diary/Dream Diary#^{dateId}-{dreamTitle}|Dream Diary]]
->>
->>> [!journal-page|right]
->>> [[image2.png|400]
->>
->> Dream content here
+> Today I had an interesting conversation about the nature of dreams and consciousness.
+>
+>> [!dream-diary] Flying Over Mountains [[Journals/Dream Diary/Dream Diary#^20250628-Flying Over Mountains|Dream Diary]]
+>> 
+>> I found myself soaring above snow-capped peaks with incredible clarity and control over my flight path.
 >>
 >>> [!dream-metrics]
->>> Words: {dreamWordCount}, Sensory Detail: {sensory}, Emotional Recall: {emotional}, Lost Segments: {lost}, Descriptiveness: {descriptive}, Confidence Score: {confidence}
+>>> Words: 18, Sensory Detail: 4, Emotional Recall: 5, Lost Segments: 1, Descriptiveness: 4, Confidence Score: 5
+```
+
+### Predefined Structure Templates
+
+**Flat Dual Callout:**
+```markdown
+# Dream Journal Entry
+
+> [!journal-entry] {{date-month-day}}
+> ^{{date-compact}}
+> {{content}}
+
+> [!dream-metrics]
+> {{metrics-inline}}
+```
+
+**2-Level Nested Structure:**
+```markdown
+> [!journal-entry] {{date-month-day}}
+> ^{{date-compact}}
+> {{journal-content}}
+> 
+>> [!dream-diary] Dream Diary
+>> {{dream-content}}
+>> 
+>>> [!dream-metrics]
+>>> {{metrics}}
+```
+
+**3-Level Nested Structure:**
+```markdown
+> [!journal-entry] {{date-month-day}}
+> ^{{date-compact}}
+> {{journal-content}}
+>
+>> [!dream-diary] Dream Diary
+>> {{dream-content}}
+>>
+>>> [!dream-metrics]
+>>> {{metrics}}
 ```

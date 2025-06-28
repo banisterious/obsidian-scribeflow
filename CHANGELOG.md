@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0-alpha] - 2025-06-28
+
+### Added
+- **Complete Template System**:
+  - Template management interface with professional template cards
+  - CRUD operations (Create, Read, Update, Delete, Copy) with icon-based buttons
+  - 3-step template creation wizard with guided workflow
+  - Multiple creation methods: Direct input, plugin integration, predefined structures
+- **Template Plugin Integration**:
+  - Templater plugin support with automatic syntax conversion
+  - Core Templates plugin compatibility
+  - Smart template import with structured logging for debugging
+- **Interactive Placeholder System**:
+  - Dropdown placeholder selector with organized categories
+  - Smart cursor-based insertion with position preservation
+  - Comprehensive placeholder reference with live examples
+- **Enhanced Template Processing**:
+  - Automatic word counting from dream content
+  - Multiple metrics formatting options (multi-line and inline)
+  - OneiroMetrics compatibility with clean numeric output
+  - Dynamic date formatting with multiple format options
+- **Predefined Template Structures**:
+  - Flat dual callout layout
+  - 2-level and 3-level nested structures
+  - Editable content customization after selection
+
+### Enhanced
+- **User Interface**: Professional icon-based buttons with tooltips and hover effects
+- **Template Management**: Edit mode support with pre-populated forms and smart navigation
+- **Metrics Processing**: Word count automatically included in all metrics output
+- **Validation**: Comprehensive template content validation with informative error messages
+- **Responsive Design**: Adaptive layouts for different screen sizes with theme integration
+
+### Technical
+- **Service Architecture**: New `TemplateIntegrationService` and `TemplateProcessingService`
+- **Plugin Detection**: Robust detection of external template plugins with fallback mechanisms
+- **Error Handling**: Graceful degradation with structured logging throughout template operations
+- **Documentation**: Complete architecture documentation update with template system coverage
+
 ## [0.3.0] - 2025-06-28
 
 ### Added

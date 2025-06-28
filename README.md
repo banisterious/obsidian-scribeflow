@@ -24,6 +24,14 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - Unlimited selectable metrics with drag-to-reorder
 - Settings available both in plugin settings and modal interface
 
+### 📋 **Template System** *(New in 0.4.0-alpha)*
+- **Template Management** - Create, edit, copy, and delete custom journal templates
+- **Creation Wizard** - 3-step guided workflow for template creation
+- **Plugin Integration** - Import templates from Templater and Core Templates plugins
+- **Predefined Structures** - Ready-to-use templates for common journal layouts
+- **Interactive Placeholders** - Dropdown selector for easy placeholder insertion
+- **Dynamic Processing** - Automatic word counting and metrics formatting
+
 ### 🔗 **Automatic Table of Contents**
 - Smart TOC link generation for year notes and master journals
 - Dual toggle controls for independent update modes
@@ -39,9 +47,11 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 ## Quick Start
 
 1. **Access ScribeFlow**: Right-click in any note → "ScribeFlow: insert journal entry"
-2. **Create Entry**: Fill in your journal content and optionally add dream details
-3. **Add Images**: Use the smart image picker with folder and file type filtering
-4. **Configure**: Customize metrics, callout names, and image preferences in settings
+2. **Choose Template**: Select from existing templates or use the default format
+3. **Create Entry**: Fill in your journal content and optionally add dream details
+4. **Add Images**: Use the smart image picker with folder and file type filtering
+5. **Create Templates**: Use the "Journal Structures" tab to create custom templates
+6. **Configure**: Customize metrics, callout names, and image preferences in settings
 
 ## Settings
 

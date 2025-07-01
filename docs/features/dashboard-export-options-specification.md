@@ -2,7 +2,7 @@
 
 **Document Version:** 1.0
 **Date:** July 1, 2025
-**Author:** AI Assistant / [Your Name]
+**Author:** John Banister
 **Project:** ScribeFlow Plugin for Obsidian
 **Feature:** Export Options (Scribe Dashboard Data & Individual Entries)
 

@@ -240,31 +240,31 @@ private static countEntriesWithDreamDiary(entries: DashboardEntry[]): number {
 ## 6. CSS Styling Structure
 
 ```css
-.dashboard-statistics-container {
+.sfp-dashboard-statistics-container {
   /* Container styling */
 }
 
-.dashboard-statistics-group {
+.sfp-dashboard-statistics-group {
   /* Group container */
 }
 
-.dashboard-statistics-group-title {
+.sfp-dashboard-statistics-group-title {
   /* Group header styling */
 }
 
-.dashboard-statistics-grid {
+.sfp-dashboard-statistics-grid {
   /* Card grid layout */
 }
 
-.dashboard-stat-card {
+.sfp-dashboard-stat-card {
   /* Individual card styling */
 }
 
-.dashboard-stat-card .stat-value {
+.sfp-dashboard-stat-card .stat-value {
   /* Primary value styling */
 }
 
-.dashboard-stat-card .stat-label {
+.sfp-dashboard-stat-card .stat-label {
   /* Label styling */
 }
 ```

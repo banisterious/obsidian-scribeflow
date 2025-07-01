@@ -32,7 +32,7 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - **Interactive Placeholders** - Dropdown selector for easy placeholder insertion
 - **Dynamic Processing** - Automatic word counting and metrics formatting
 
-### 📊 **Scribe Dashboard** *(Export Features Added in 0.5.0)*
+### **Scribe Dashboard** *(Export Features Added in 0.6.0)*
 - **Template-driven Parsing** - Automatically extracts journal entries from configured folders and templates
 - **Advanced Search System** - Native Obsidian search with real-time filtering, highlighting, and keyboard shortcuts
 - **Sortable Data Table** - View entries by date, journal content, word count, images, and source file
@@ -43,7 +43,7 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - **Dream Content Inclusion** - Captures both journal and dream diary content while excluding metrics
 - **Quick Access** - New ribbon buttons for instant dashboard and journal entry access
 
-### 📤 **Export System** *(New in 0.5.0)*
+### **Export System** *(New in 0.6.0)*
 - **Dashboard Data Export** - Export filtered table data in 3 formats (Markdown table, CSV, JSON)
 - **Individual Entry Export** - Export complete journal entries in 4 formats (Markdown, Plain Text, PDF, Image)
 - **Professional UI** - Export dropdown button with Lucide icons and right-click context menus

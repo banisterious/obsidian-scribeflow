@@ -1,9 +1,9 @@
 # Dashboard Statistics Cards - Implementation Document
 
-**Document Version:** 1.0  
-**Date:** July 1, 2025  
-**Project:** ScribeFlow Plugin for Obsidian  
-**Feature:** Dashboard Statistics Cards Implementation  
+- **Document Version:** 1.0  
+- **Date:** July 1, 2025  
+- **Project:** ScribeFlow Plugin for Obsidian  
+- **Feature:** Dashboard Statistics Cards Implementation  
 
 ## 1. Implementation Overview
 

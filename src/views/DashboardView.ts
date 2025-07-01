@@ -62,7 +62,7 @@ export class DashboardView extends ItemView {
         this.dashboardContentEl.empty();
         
         // Create main container
-        const container = this.dashboardContentEl.createDiv('scribeflow-dashboard');
+        const container = this.dashboardContentEl.createDiv('sfp-scribeflow-dashboard');
         
         // Render header
         this.renderHeader(container);
@@ -90,22 +90,22 @@ export class DashboardView extends ItemView {
     }
 
     private renderHeader(container: HTMLElement): void {
-        const header = container.createDiv('dashboard-header');
+        const header = container.createDiv('sfp-dashboard-header');
         
         // Header top bar with title and toggle
-        const headerTop = header.createDiv('dashboard-header-top');
+        const headerTop = header.createDiv('sfp-dashboard-header-top');
         
-        const titleSection = headerTop.createDiv('dashboard-title-section');
+        const titleSection = headerTop.createDiv('sfp-dashboard-title-section');
         titleSection.createEl('h1', { text: 'Scribe Dashboard' });
         
         // Add controls (toggle + refresh)
-        const controls = headerTop.createDiv('dashboard-header-controls');
+        const controls = headerTop.createDiv('sfp-dashboard-header-controls');
         
         // Collapse/expand toggle (left of refresh)
         const toggleBtnText = this.state.headerCollapsed ? 'Expand' : 'Collapse';
         const toggleBtn = controls.createEl('button', { 
             text: toggleBtnText,
-            cls: 'dashboard-toggle-btn'
+            cls: 'sfp-dashboard-toggle-btn'
         });
         toggleBtn.addEventListener('click', () => {
             this.state.headerCollapsed = !this.state.headerCollapsed;
@@ -132,11 +132,11 @@ export class DashboardView extends ItemView {
         
         // Collapsible content
         if (!this.state.headerCollapsed) {
-            const headerContent = header.createDiv('dashboard-header-content');
+            const headerContent = header.createDiv('sfp-dashboard-header-content');
             
             headerContent.createEl('p', { 
                 text: 'Overview of your journaling activity and trends',
-                cls: 'dashboard-subtitle'
+                cls: 'sfp-dashboard-subtitle'
             });
         }
     }
@@ -172,13 +172,13 @@ export class DashboardView extends ItemView {
     }
     
     private renderSearchSection(container: HTMLElement): void {
-        const searchSection = container.createDiv('search-section');
+        const searchSection = container.createDiv('sfp-search-section');
         
         // Search container
-        const searchContainer = searchSection.createDiv('search-container');
+        const searchContainer = searchSection.createDiv('sfp-search-container');
         
         // Search input wrapper
-        const searchInputWrapper = searchContainer.createDiv('search-input-wrapper');
+        const searchInputWrapper = searchContainer.createDiv('sfp-search-input-wrapper');
         
         // Create Obsidian's native SearchComponent
         const searchComponent = new SearchComponent(searchInputWrapper);
@@ -188,9 +188,9 @@ export class DashboardView extends ItemView {
         }
         
         // Search options
-        const searchOptions = searchContainer.createDiv('search-options');
+        const searchOptions = searchContainer.createDiv('sfp-search-options');
         this.state.searchFields.forEach(field => {
-            const option = searchOptions.createDiv('search-option');
+            const option = searchOptions.createDiv('sfp-search-option');
             const checkbox = option.createEl('input', {
                 attr: { type: 'checkbox', id: `search-${field.name}` }
             });
@@ -263,7 +263,7 @@ export class DashboardView extends ItemView {
     }
 
     private renderControls(container: HTMLElement): void {
-        const controls = container.createDiv('dashboard-controls');
+        const controls = container.createDiv('sfp-dashboard-controls');
         
         // Date filter dropdown
         const filterContainer = controls.createDiv('filter-container');
@@ -306,13 +306,13 @@ export class DashboardView extends ItemView {
 
     private renderTable(container: HTMLElement): void {
         // Remove existing table
-        const existingTable = container.querySelector('.dashboard-table-container');
+        const existingTable = container.querySelector('.sfp-dashboard-table-container');
         if (existingTable) {
             existingTable.remove();
         }
         
-        const tableContainer = container.createDiv('dashboard-table-container');
-        const table = tableContainer.createEl('table', { cls: 'dashboard-table' });
+        const tableContainer = container.createDiv('sfp-dashboard-table-container');
+        const table = tableContainer.createEl('table', { cls: 'sfp-dashboard-table' });
         
         // Render table header
         this.renderTableHeader(table);
@@ -720,7 +720,7 @@ export class DashboardView extends ItemView {
                 case 'r':
                     e.preventDefault();
                     // Find refresh button and trigger its click to maintain consistent state handling
-                    const refreshBtn = this.containerEl.querySelector('.dashboard-header-controls button');
+                    const refreshBtn = this.containerEl.querySelector('.sfp-dashboard-header-controls button');
                     if (refreshBtn) {
                         (refreshBtn as HTMLButtonElement).click();
                     }
@@ -738,9 +738,9 @@ export class DashboardView extends ItemView {
     }
 
     private showLoadingState(): void {
-        const container = this.dashboardContentEl.querySelector('.scribeflow-dashboard');
+        const container = this.dashboardContentEl.querySelector('.sfp-scribeflow-dashboard');
         if (container) {
-            const tableContainer = container.querySelector('.dashboard-table-container');
+            const tableContainer = container.querySelector('.sfp-dashboard-table-container');
             if (tableContainer) {
                 tableContainer.innerHTML = '<div style="text-align: center; padding: 2rem;">Loading journal entries...</div>';
             }
@@ -748,14 +748,14 @@ export class DashboardView extends ItemView {
     }
 
     private showErrorState(error: any): void {
-        const container = this.dashboardContentEl.querySelector('.scribeflow-dashboard');
+        const container = this.dashboardContentEl.querySelector('.sfp-scribeflow-dashboard');
         if (container) {
-            const tableContainer = container.querySelector('.dashboard-table-container');
+            const tableContainer = container.querySelector('.sfp-dashboard-table-container');
             if (tableContainer) {
                 tableContainer.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--text-error);">
                     Error loading entries: ${error.message || 'Unknown error'}
                     <br><br>
-                    <button onclick="this.closest('.scribeflow-dashboard').dispatchEvent(new Event('refresh'))">Retry</button>
+                    <button onclick="this.closest('.sfp-scribeflow-dashboard').dispatchEvent(new Event('refresh'))">Retry</button>
                 </div>`;
             }
         }
@@ -909,16 +909,16 @@ export class DashboardView extends ItemView {
             statisticsContainer.remove();
         }
         
-        const container = this.dashboardContentEl.querySelector('.scribeflow-dashboard') as HTMLElement;
+        const container = this.dashboardContentEl.querySelector('.sfp-scribeflow-dashboard') as HTMLElement;
         if (container) {
             // Find the header and insert statistics after it
-            const header = container.querySelector('.dashboard-header');
+            const header = container.querySelector('.sfp-dashboard-header');
             if (header && !this.state.headerCollapsed) {
                 // Create the statistics container manually and insert it after the header
                 const statisticsContainer = container.createDiv('sfp-dashboard-statistics-container');
                 
                 // Move it to the correct position (after header, before search)
-                const searchSection = container.querySelector('.search-section');
+                const searchSection = container.querySelector('.sfp-search-section');
                 if (searchSection) {
                     container.insertBefore(statisticsContainer, searchSection);
                 } else {

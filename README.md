@@ -49,11 +49,22 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - Specific callout targeting with customizable names
 - Automatic dream diary sub-links when dreams are included
 
-<p align="left">
-  <img src="docs/images/scribeflow-journal-entry-01.png" alt="ScribeFlow journal entry example" width="300"/>
-</p>
-
-<p align="left"><em>ScribeFlow journal entry example</em></p>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="docs/images/scribeflow-journal-entry-01.png" alt="ScribeFlow Journal Entry" width="400"/>
+        <br>
+        <em>Journal Entry Interface</em>
+      </td>
+      <td align="center">
+        <img src="docs/images/scribeflow-dashboard-01.png" alt="ScribeFlow Dashboard with Analytics" width="400"/>
+        <br>
+        <em>Dashboard with Analytics & Search</em>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ## Quick Start
 

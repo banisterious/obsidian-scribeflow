@@ -20,6 +20,11 @@ export const DEFAULT_SETTINGS: ScribeFlowPluginSettings = {
         masterJournalsNotePath: '',
         yearNoteCalloutName: '',
         masterJournalsCalloutName: ''
+    },
+    dashboardSettings: {
+        scanFolders: [],
+        parseTemplates: [],
+        previewWordLimit: 50
     }
 };
 

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScribeFlow: Scribe Dashboard Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #1e1e1e;
+            color: #dcddde;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #2f3136;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-header {
+            padding: 20px 24px;
+            background: #36393f;
+            border-bottom: 1px solid #4f545c;
+        }
+
+        .dashboard-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .dashboard-subtitle {
+            font-size: 14px;
+            color: #b9bbbe;
+            margin-bottom: 16px;
+        }
+
+        .dashboard-stats {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #72767d;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #00d4aa;
+        }
+
+        .dashboard-content {
+            padding: 0;
+        }
+
+        .dashboard-controls {
+            padding: 16px 24px;
+            background: #36393f;
+            border-bottom: 1px solid #4f545c;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #b9bbbe;
+        }
+
+        .filter-select {
+            background: #2f3136;
+            border: 1px solid #4f545c;
+            border-radius: 4px;
+            color: #dcddde;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .filter-select:focus {
+            border-color: #7289da;
+        }
+
+        .filter-select option {
+            background: #2f3136;
+            color: #dcddde;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background: #36393f;
+            z-index: 10;
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #ffffff;
+            border-bottom: 2px solid #4f545c;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+
+        th:hover {
+            background-color: #40444b;
+        }
+
+        th.sortable::after {
+            content: ' ↕';
+            color: #72767d;
+            font-size: 12px;
+        }
+
+        th.sort-asc::after {
+            content: ' ↑';
+            color: #00d4aa;
+        }
+
+        th.sort-desc::after {
+            content: ' ↓';
+            color: #00d4aa;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #4f545c;
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:hover {
+            background-color: #36393f;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #32353b;
+        }
+
+        tbody tr:nth-child(even):hover {
+            background-color: #36393f;
+        }
+
+        td {
+            padding: 12px 16px;
+            vertical-align: top;
+        }
+
+        .date-cell {
+            font-weight: 500;
+            color: #00d4aa;
+            white-space: nowrap;
+        }
+
+        .title-cell {
+            font-weight: 500;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .preview-cell {
+            max-width: 400px;
+            color: #b9bbbe;
+            line-height: 1.4;
+        }
+
+        .preview-text {
+            margin-bottom: 8px;
+        }
+
+        .preview-text.collapsed {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .preview-text.expanded {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .show-more-btn {
+            background: #7289da;
+            border: none;
+            border-radius: 3px;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 4px 8px;
+            transition: background-color 0.2s;
+        }
+
+        .show-more-btn:hover {
+            background: #677bc4;
+        }
+
+        .count-cell {
+            text-align: center;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .file-link {
+            color: #7289da;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .file-link:hover {
+            color: #99aab5;
+            text-decoration: underline;
+        }
+
+        .file-icon {
+            width: 14px;
+            height: 14px;
+            opacity: 0.7;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: #72767d;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #b9bbbe;
+        }
+
+        .empty-state-description {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-stats {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .stat-item {
+                flex-direction: row;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .table-container {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 12px;
+            }
+
+            .preview-cell {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Scribe Dashboard</h1>
+            <p class="dashboard-subtitle">Overview of your journaling activity and trends</p>
+            
+            <div class="dashboard-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total Entries</span>
+                    <span class="stat-value">47</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Average Words</span>
+                    <span class="stat-value">142</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">This Month</span>
+                    <span class="stat-value">12</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Longest Streak</span>
+                    <span class="stat-value">8 days</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="dashboard-controls">
+                <div class="filter-group">
+                    <label class="filter-label" for="date-filter">Filter:</label>
+                    <select id="date-filter" class="filter-select">
+                        <option value="this-month" selected>This Month</option>
+                        <option value="today">Today</option>
+                        <option value="this-week">This Week</option>
+                        <option value="last-30-days">Last 30 Days</option>
+                        <option value="this-year">This Year</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="sortable sort-desc">Date</th>
+                            <th class="sortable">Title</th>
+                            <th>Journal Entry</th>
+                            <th class="sortable">Word Count</th>
+                            <th class="sortable">Images</th>
+                            <th class="sortable">File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="date-cell">2025-06-30</td>
+                            <td class="title-cell">Monday Morning Reflections</td>
+                            <td class="preview-cell">
+                                <div class="preview-text collapsed" data-full-text="Started the day with a long walk around the neighborhood. The weather was perfect for thinking about my goals for the week. I've been feeling more motivated lately and want to channel that energy into productive activities. The fresh air always helps clear my mind and gives me perspective on what's truly important. Today I'm focusing on organizing my workspace and planning out the next few projects I want to tackle.">
+                                    Started the day with a long walk around the neighborhood. The weather was perfect for thinking about my goals for the week. I've been feeling more...
+                                </div>
+                                <button class="show-more-btn" onclick="toggleExpansion(this)">Show More</button>
+                            </td>
+                            <td class="count-cell">234</td>
+                            <td class="count-cell">2</td>
+                            <td><a href="#" class="file-link">
+                                <svg class="file-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                </svg>
+                                2025-06-30.md
+                            </a></td>
+                        </tr>
+                        <tr>
+                            <td class="date-cell">2025-06-29</td>
+                            <td class="title-cell">Weekend Adventures</td>
+                            <td class="preview-cell">
+                                <div class="preview-text collapsed" data-full-text="Had an amazing weekend exploring the local farmers market. Met some interesting vendors and learned about sustainable farming practices. The fresh produce was incredible and I ended up buying way too much. Spent the afternoon cooking with my new ingredients and trying out some recipes I found online. It's wonderful to connect with where our food comes from.">
+                                    Had an amazing weekend exploring the local farmers market. Met some interesting vendors and learned about sustainable farming practices. The fresh...
+                                </div>
+                                <button class="show-more-btn" onclick="toggleExpansion(this)">Show More</button>
+                            </td>
+                            <td class="count-cell">187</td>
+                            <td class="count-cell">4</td>
+                            <td><a href="#" class="file-link">
+                                <svg class="file-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                </svg>
+                                2025-06-29.md
+                            </a></td>
+                        </tr>
+                        <tr>
+                            <td class="date-cell">2025-06-28</td>
+                            <td class="title-cell">Productive Friday</td>
+                            <td class="preview-cell">
+                                <div class="preview-text collapsed" data-full-text="Finally finished that project I've been working on for weeks. The sense of accomplishment is incredible. Looking forward to starting something new next week. The whole process taught me a lot about persistence and breaking down complex tasks into manageable pieces. I'm proud of how far I've come.">
+                                    Finally finished that project I've been working on for weeks. The sense of accomplishment is incredible. Looking forward to starting something new...
+                                </div>
+                                <button class="show-more-btn" onclick="toggleExpansion(this)">Show More</button>
+                            </td>
+                            <td class="count-cell">156</td>
+                            <td class="count-cell">1</td>
+                            <td><a href="#" class="file-link">
+                                <svg class="file-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                </svg>
+                                2025-06-28.md
+                            </a></td>
+                        </tr>
+                        <tr>
+                            <td class="date-cell">2025-06-27</td>
+                            <td class="title-cell">Quiet Thursday</td>
+                            <td class="preview-cell">
+                                <div class="preview-text collapsed" data-full-text="Sometimes the quiet days are the most valuable. Spent time reading and just thinking about life. No major events, but that's perfectly fine. These contemplative moments help me appreciate the simple things and reset my perspective.">
+                                    Sometimes the quiet days are the most valuable. Spent time reading and just thinking about life. No major events, but that's perfectly fine...
+                                </div>
+                                <button class="show-more-btn" onclick="toggleExpansion(this)">Show More</button>
+                            </td>
+                            <td class="count-cell">98</td>
+                            <td class="count-cell">0</td>
+                            <td><a href="#" class="file-link">
+                                <svg class="file-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                </svg>
+                                2025-06-27.md
+                            </a></td>
+                        </tr>
+                        <tr>
+                            <td class="date-cell">2025-06-26</td>
+                            <td class="title-cell">Midweek Check-in</td>
+                            <td class="preview-cell">
+                                <div class="preview-text collapsed" data-full-text="Halfway through the week and feeling good about the progress so far. Had a great conversation with a friend about future plans and possibilities. It's amazing how talking through ideas with someone else can clarify your own thoughts and open up new directions.">
+                                    Halfway through the week and feeling good about the progress so far. Had a great conversation with a friend about future plans and possibilities...
+                                </div>
+                                <button class="show-more-btn" onclick="toggleExpansion(this)">Show More</button>
+                            </td>
+                            <td class="count-cell">203</td>
+                            <td class="count-cell">1</td>
+                            <td><a href="#" class="file-link">
+                                <svg class="file-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                </svg>
+                                2025-06-26.md
+                            </a></td>
+                        </tr>
+                        <tr>
+                            <td class="date-cell">2025-06-25</td>
+                            <td class="title-cell">Tuesday Thoughts</td>
+                            <td class="preview-cell">
+                                <div class="preview-text collapsed" data-full-text="Been reflecting on my writing habits lately. I think I'm starting to find my rhythm with this daily journaling practice. It's becoming more natural and less forced. The key seems to be writing without judgment and just letting thoughts flow onto the page.">
+                                    Been reflecting on my writing habits lately. I think I'm starting to find my rhythm with this daily journaling practice. It's becoming more natural...
+                                </div>
+                                <button class="show-more-btn" onclick="toggleExpansion(this)">Show More</button>
+                            </td>
+                            <td class="count-cell">174</td>
+                            <td class="count-cell">0</td>
+                            <td><a href="#" class="file-link">
+                                <svg class="file-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                </svg>
+                                2025-06-25.md
+                            </a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple sort functionality for mockup demonstration
+        document.querySelectorAll('th.sortable').forEach(header => {
+            header.addEventListener('click', function() {
+                // Remove sort classes from other headers
+                document.querySelectorAll('th.sortable').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('sort-asc', 'sort-desc');
+                    }
+                });
+
+                // Toggle sort class on clicked header
+                if (this.classList.contains('sort-asc')) {
+                    this.classList.remove('sort-asc');
+                    this.classList.add('sort-desc');
+                } else if (this.classList.contains('sort-desc')) {
+                    this.classList.remove('sort-desc');
+                    this.classList.add('sort-asc');
+                } else {
+                    this.classList.add('sort-asc');
+                }
+            });
+        });
+
+        // File link click handler
+        document.querySelectorAll('.file-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('In the actual plugin, this would navigate to: ' + this.textContent.trim());
+            });
+        });
+
+        // Filter dropdown handler
+        document.getElementById('date-filter').addEventListener('change', function() {
+            alert('Filter changed to: ' + this.options[this.selectedIndex].text);
+        });
+
+        // Toggle expansion functionality
+        function toggleExpansion(button) {
+            const previewDiv = button.previousElementSibling;
+            const isCollapsed = previewDiv.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                // Expand
+                previewDiv.textContent = previewDiv.getAttribute('data-full-text');
+                previewDiv.classList.remove('collapsed');
+                previewDiv.classList.add('expanded');
+                button.textContent = 'Show Less';
+            } else {
+                // Collapse
+                const fullText = previewDiv.getAttribute('data-full-text');
+                const truncated = fullText.substring(0, 100) + '...';
+                previewDiv.textContent = truncated;
+                previewDiv.classList.remove('expanded');
+                previewDiv.classList.add('collapsed');
+                button.textContent = 'Show More';
+            }
+        }
+    </script>
+</body>
+</html>

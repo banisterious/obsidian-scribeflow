@@ -20,8 +20,12 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
 │   │   ├── entry-writer.ts
 │   │   └── toc-updater.ts
 │   ├── services/
+│   │   ├── DashboardParser.ts
+│   │   ├── TemplateAnalyzer.ts
 │   │   ├── TemplateIntegrationService.ts
 │   │   └── TemplateProcessingService.ts
+│   ├── types/
+│   │   └── dashboard.ts
 │   ├── ui/
 │   │   ├── tabs/
 │   │   │   ├── JournalEntryTab.ts
@@ -36,6 +40,8 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
 │   ├── utils/
 │   │   ├── callout-parser.ts
 │   │   └── date-formatter.ts
+│   ├── views/
+│   │   └── DashboardView.ts
 │   ├── main.ts
 │   ├── settings.ts
 │   └── types.ts
@@ -61,6 +67,8 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
     *   **`toc-updater.ts`**: Manages automatic table of contents link generation for both year notes and master journals notes, with support for specific callout targeting and proper error handling.
 
 *   **`src/services/`**: Contains specialized services for template management and processing.
+    *   **`DashboardParser.ts`**: Comprehensive parsing service that scans folders recursively for journal entries, extracts content based on template structures, and generates dashboard data. Handles multiple date formats, callout parsing, and content extraction from structured markdown.
+    *   **`TemplateAnalyzer.ts`**: Analyzes templates to identify required placeholders and validates template compatibility for dashboard parsing. Ensures templates contain necessary elements for content extraction.
     *   **`TemplateIntegrationService.ts`**: Handles integration with external template plugins (Templater and Core Templates). Provides plugin detection, template file discovery, and conversion from external template syntax to ScribeFlow placeholders with comprehensive structured logging for debugging.
     *   **`TemplateProcessingService.ts`**: Core template processing engine that replaces placeholders with actual content. Handles date formatting, content mapping, metrics processing with automatic word counting, and OneiroMetrics-compatible numeric output formatting.
 
@@ -76,9 +84,15 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
         *   **`InspirationsTab.ts`**: Provides reference content and inspiration for journal entries.
         *   **`MetricTab.ts`**: Individual metric configuration and information tabs.
 
+*   **`src/types/`**: Specialized type definitions for different plugin features.
+    *   **`dashboard.ts`**: Type definitions for dashboard functionality including DashboardEntry, DashboardState, DateFilter, and ParsedTemplate interfaces.
+
 *   **`src/utils/`**: Utility functions for data processing and formatting.
     *   **`date-formatter.ts`**: Handles date formatting for display and TOC link generation with proper localization.
     *   **`callout-parser.ts`**: Parses markdown callout structures to find insertion points for TOC links with support for nested lists and indentation.
+
+*   **`src/views/`**: Contains view implementations for different plugin interfaces.
+    *   **`DashboardView.ts`**: Main dashboard view implementation featuring sortable tables, date filtering, content previews, and summary statistics. Provides comprehensive journal entry overview with native Obsidian styling and responsive design.
 
 *   **`styles.css`**: All CSS rules are now located in this file, completely separate from the TypeScript code. It contains comprehensive Material Design styling for the modal, tabs, form elements, interactive components, and responsive layouts. The styling uses Obsidian's CSS custom properties for theme compatibility.
 
@@ -160,17 +174,115 @@ Available placeholders for template content:
 - `{{date-month-day}}` - June 28
 - `{{date-compact}}` - 20250628
 - `{{time}}` - 14:30
+- `{{time-12}}` - 2:30 PM
+- `{{time-12-lower}}` - 2:30pm
 
 **Content Placeholders:**
 - `{{content}}` - Combined journal + dream content
 - `{{journal-content}}` - Journal text only
 - `{{dream-content}}` - Dream text only
 - `{{title}}` - Dream title
+- `{{dream-title-kebab}}` - Dream title in kebab-case
+
+**Image Placeholders:**
+- `{{journal-image}}` - Journal entry image embed
+- `{{dream-image}}` - Dream diary image embed
 
 **Metrics Placeholders:**
 - `{{metrics}}` - Multi-line format with automatic word count
 - `{{metrics-inline}}` - Comma-separated format with automatic word count
 - `{{Metric Name}}` - Individual metric values (e.g., `{{Sensory Detail}}`)
+
+## Scribe Dashboard System
+
+The ScribeFlow plugin features a comprehensive dashboard system that provides an overview of journaling activity and trends. The dashboard offers a data-driven, template-based approach to content analysis with native Obsidian styling and responsive design.
+
+### Dashboard Features
+*   **Template-Driven Parsing**: Analyzes journal entries based on selected templates to extract structured data
+*   **Multi-Folder Scanning**: Recursively scans configured folders for journal entries across all nested subdirectories
+*   **Date Range Filtering**: Provides preset date filters (Today, This Week, This Month, Last 30 Days, This Year) for content analysis
+*   **Sortable Data Tables**: Interactive tables with clickable column headers for sorting by date, title, word count, or image count
+*   **Content Previews**: Expandable content previews with configurable word limits and "show more/less" functionality
+*   **Summary Statistics**: Real-time statistics showing total entries, filtered results, average word count, and monthly activity
+*   **File Navigation**: Direct links to journal files for seamless editing workflow
+*   **Native Styling**: Consistent with Obsidian's theme system using CSS custom properties
+
+### Technical Architecture
+*   **Service-Oriented Design**: Separation of parsing, analysis, and view concerns across dedicated services
+*   **Recursive Folder Scanning**: Comprehensive file discovery that handles complex folder hierarchies
+*   **Template Validation**: Ensures selected templates contain required placeholders for content extraction
+*   **Multi-Format Date Support**: Handles ISO dates (YYYY-MM-DD), compact dates (YYYYMMDD), and natural language dates
+*   **Callout-Based Parsing**: Extracts content from structured markdown callouts using configurable callout names
+*   **Real-Time Updates**: Dynamic content filtering and statistics calculation without page reloads
+
+### Dashboard Components
+
+**DashboardView.ts:**
+*   **View Pane Integration**: Dedicated Obsidian view pane (not modal) for persistent dashboard access
+*   **Header Section**: Title, subtitle, refresh functionality, and summary statistics display
+*   **Filter Controls**: Date range selection with preset options and custom range support
+*   **Data Table**: Sortable columns for Date, Title, Journal Entry, Word Count, Images, and File
+*   **Responsive Layout**: Adaptive design that works across different screen sizes and themes
+
+**DashboardParser.ts:**
+*   **Content Extraction**: Parses journal callouts to extract dates, content, and metadata
+*   **Template Matching**: Attempts to match file content against selected template structures
+*   **Date Normalization**: Converts various date formats to standardized ISO format for consistency
+*   **Word Counting**: Calculates accurate word counts from extracted journal content
+*   **Image Detection**: Counts embedded images within journal callout blocks
+
+**TemplateAnalyzer.ts:**
+*   **Placeholder Detection**: Identifies required placeholders in templates for dashboard compatibility
+*   **Template Validation**: Ensures templates contain minimum required elements (journal-content, date placeholders)
+*   **Structure Analysis**: Analyzes template structure to determine optimal parsing strategies
+
+### Dashboard Settings Integration
+*   **Scan Folders Configuration**: Multi-folder selection with folder suggestion and validation
+*   **Template Selection**: Choose which templates to use for content parsing from available templates
+*   **Preview Word Limit**: Configurable word count for content previews (default: 50 words)
+*   **Settings Persistence**: All configuration saved to plugin settings with automatic refresh
+
+### User Experience
+*   **Command Integration**: Accessible via command palette ("Open Scribe Dashboard")
+*   **Ribbon Button**: Quick access via dashboard icon in Obsidian's ribbon bar
+*   **Loading States**: Visual feedback during data refresh operations
+*   **Empty State Handling**: Informative messages for missing configuration or no journal entries
+*   **Filter Feedback**: Clear indication of active filters and result counts
+*   **Keyboard Navigation**: Accessible table navigation and interaction
+
+### Dashboard Data Flow
+1.  **Configuration**: User configures scan folders and selects templates in dashboard settings
+2.  **Template Analysis**: TemplateAnalyzer validates selected templates for required placeholders
+3.  **File Discovery**: DashboardParser recursively scans configured folders for markdown files
+4.  **Content Parsing**: Each file is analyzed for journal entry callouts and template matching
+5.  **Data Extraction**: Dates, content, word counts, and metadata are extracted from matching entries
+6.  **View Rendering**: DashboardView displays data in sortable table with filtering and statistics
+7.  **Real-Time Updates**: Users can refresh data, apply filters, and navigate to source files
+
+### Date Format Support
+The dashboard handles multiple date formats commonly used in journal templates:
+
+**ISO Format**: `2025-01-14` (direct parsing)
+**Compact Format**: `^20250114` (converted to ISO)
+**Natural Language**: `Tuesday, January 14` (parsed and converted to current year ISO)
+
+### Content Structure Requirements
+For optimal dashboard functionality, journal entries should follow this structure:
+```markdown
+> [!journal-entry] Date Information
+> ^CompactDate (optional)
+> 
+> Journal content goes here...
+>
+>> [!dream-diary] Dream Title (optional)
+>> Dream content goes here...
+```
+
+### Performance Considerations
+*   **Lazy Loading**: Content is parsed on-demand when dashboard is opened
+*   **Caching Strategy**: Parsed data is cached until manual refresh or settings change
+*   **Efficient Filtering**: Client-side filtering for responsive user interaction
+*   **Memory Management**: Proper cleanup of file handles and parsed content
 
 ## Table of Contents (TOC) System
 

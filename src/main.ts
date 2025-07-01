@@ -4,6 +4,7 @@ import { JournalEntryModal } from './ui/JournalEntryModal';
 import { ScribeFlowPluginSettings, FormState } from './types';
 import { DEFAULT_SETTINGS, ScribeFlowSettingTab } from './settings';
 import { loadDraft, saveDraft } from './logic/draft-manager';
+import { DashboardView, DASHBOARD_VIEW_TYPE } from './views/DashboardView';
 
 export default class ScribeFlowPlugin extends Plugin {
     settings: ScribeFlowPluginSettings;
@@ -13,6 +14,12 @@ export default class ScribeFlowPlugin extends Plugin {
         await this.loadSettings();
         this.draft = await loadDraft(this);
 
+        // Register dashboard view
+        this.registerView(
+            DASHBOARD_VIEW_TYPE,
+            (leaf) => new DashboardView(leaf, this)
+        );
+
         this.addCommand({
             id: 'open-scribeflow-entry-modal',
             name: 'Create ScribeFlow Entry',
@@ -21,10 +28,27 @@ export default class ScribeFlowPlugin extends Plugin {
             },
         });
 
+        this.addCommand({
+            id: 'open-scribe-dashboard',
+            name: 'Open Scribe Dashboard',
+            callback: () => {
+                this.openDashboard();
+            },
+        });
+
+        // Add ribbon buttons
+        this.addRibbonIcon('notebook-pen', 'ScribeFlow Journal Entry', () => {
+            new JournalEntryModal(this.app, this).open();
+        });
+
+        this.addRibbonIcon('table', 'Scribe Dashboard', () => {
+            this.openDashboard();
+        });
+
         this.addSettingTab(new ScribeFlowSettingTab(this.app, this));
 
         this.registerEvent(
-            this.app.workspace.on('editor-menu', (menu, editor, view) => {
+            this.app.workspace.on('editor-menu', (menu, _editor, _view) => {
                 menu.addItem((item) => {
                     item
                         .setTitle('ScribeFlow: insert journal entry')
@@ -49,5 +73,21 @@ export default class ScribeFlowPlugin extends Plugin {
 
     async saveSettings() {
         await this.saveData(this.settings);
+    }
+
+    async openDashboard(): Promise<void> {
+        const existing = this.app.workspace.getLeavesOfType(DASHBOARD_VIEW_TYPE);
+        
+        if (existing.length > 0) {
+            // Dashboard already open, just focus it
+            this.app.workspace.revealLeaf(existing[0]);
+        } else {
+            // Open new dashboard
+            const leaf = this.app.workspace.getLeaf(true);
+            await leaf.setViewState({
+                type: DASHBOARD_VIEW_TYPE,
+                active: true
+            });
+        }
     }
 }

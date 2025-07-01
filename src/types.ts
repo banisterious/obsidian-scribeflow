@@ -22,6 +22,11 @@ export interface ScribeFlowPluginSettings {
         yearNoteCalloutName: string;
         masterJournalsCalloutName: string;
     };
+    dashboardSettings: {
+        scanFolders: string[];
+        parseTemplates: string[];
+        previewWordLimit: number;
+    };
 }
 
 export interface MetricDefinition {

@@ -29,6 +29,7 @@ export class JournalSettingsTab {
         this.createImageFolderSettings(this.contentEl);
         this.createTOCSettings(this.contentEl);
         this.createMetricsSettings(this.contentEl);
+        this.createDashboardSettings(this.contentEl);
     }
 
     private createCalloutNamesSettings(containerEl: HTMLElement): void {
@@ -298,6 +299,164 @@ export class JournalSettingsTab {
                     this.plugin.settings.selectedMetrics.push(metric);
                     await this.plugin.saveSettings();
                     this.renderMetricsSelection(container);
+                });
+            });
+        }
+    }
+
+    private createDashboardSettings(containerEl: HTMLElement): void {
+        const heading = containerEl.createDiv('setting-item setting-item-heading');
+        const info = heading.createDiv('setting-item-info');
+        info.createDiv({ text: 'Scribe Dashboard', cls: 'setting-item-name' });
+        info.createDiv({ text: 'Configure settings for the journal dashboard view', cls: 'setting-item-description' });
+        heading.createDiv('setting-item-control');
+        
+        // Preview word limit
+        new Setting(containerEl)
+            .setName('Preview word limit')
+            .setDesc('Number of words to show in the journal entry preview')
+            .addText(text => text
+                .setPlaceholder('50')
+                .setValue(String(this.plugin.settings.dashboardSettings.previewWordLimit))
+                .onChange(async (value) => {
+                    const numValue = parseInt(value) || 50;
+                    this.plugin.settings.dashboardSettings.previewWordLimit = numValue;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Scan folders
+        new Setting(containerEl)
+            .setName('Scan folders')
+            .setDesc('Folders to scan for journal entries (use folder selector below to add folders)');
+
+        // Folder selector for scan folders
+        new Setting(containerEl)
+            .setName('Add scan folder')
+            .setDesc('Select a folder to scan for journal entries')
+            .addText(text => {
+                text.setPlaceholder('path/to/journal/folder');
+                new FolderSuggest(this.plugin.app, text.inputEl);
+                
+                const addFolder = async () => {
+                    const folderPath = text.getValue().trim();
+                    if (folderPath && !this.plugin.settings.dashboardSettings.scanFolders.includes(folderPath)) {
+                        this.plugin.settings.dashboardSettings.scanFolders.push(folderPath);
+                        await this.plugin.saveSettings();
+                        text.setValue('');
+                        this.display(); // Refresh to show updated list
+                    }
+                };
+                
+                text.inputEl.addEventListener('keypress', async (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        await addFolder();
+                    }
+                });
+                
+                return text;
+            })
+            .addButton(button => {
+                button.setButtonText('Add')
+                    .setTooltip('Add folder to scan list')
+                    .onClick(async () => {
+                        const textComponent = button.buttonEl.previousElementSibling as HTMLInputElement;
+                        if (textComponent) {
+                            const folderPath = textComponent.value.trim();
+                            if (folderPath && !this.plugin.settings.dashboardSettings.scanFolders.includes(folderPath)) {
+                                this.plugin.settings.dashboardSettings.scanFolders.push(folderPath);
+                                await this.plugin.saveSettings();
+                                textComponent.value = '';
+                                this.display(); // Refresh to show updated list
+                            }
+                        }
+                    });
+            });
+
+        // Display current scan folders
+        if (this.plugin.settings.dashboardSettings.scanFolders.length > 0) {
+            const foldersContainer = containerEl.createDiv('sfp-scan-folders-list');
+            foldersContainer.createEl('h6', { text: 'Selected folders:', cls: 'sfp-section-header' });
+            
+            this.plugin.settings.dashboardSettings.scanFolders.forEach((folder, index) => {
+                const folderItem = foldersContainer.createDiv('sfp-folder-item');
+                folderItem.createSpan({ text: folder, cls: 'sfp-folder-name' });
+                
+                const removeBtn = folderItem.createEl('button', { text: '×', cls: 'sfp-remove-btn' });
+                removeBtn.addEventListener('click', async () => {
+                    this.plugin.settings.dashboardSettings.scanFolders.splice(index, 1);
+                    await this.plugin.saveSettings();
+                    this.display(); // Refresh to show updated list
+                });
+            });
+        }
+
+        // Parse templates
+        new Setting(containerEl)
+            .setName('Parse templates')
+            .setDesc('Select which templates to parse for journal entries');
+
+        // Display template selection
+        const templatesContainer = containerEl.createDiv('sfp-parse-templates-container');
+        this.renderTemplateSelection(templatesContainer);
+    }
+
+    private renderTemplateSelection(container: HTMLElement): void {
+        container.empty();
+        
+        if (this.plugin.settings.templates.length === 0) {
+            container.createDiv({ text: 'No templates available. Create templates first in the Templates tab.', cls: 'sfp-no-templates' });
+            return;
+        }
+        
+        // Selected templates section
+        if (this.plugin.settings.dashboardSettings.parseTemplates.length > 0) {
+            const selectedSection = container.createDiv();
+            selectedSection.createEl('h6', { text: 'Selected templates', cls: 'sfp-section-header' });
+            
+            const selectedList = selectedSection.createDiv('sfp-selected-templates');
+            this.plugin.settings.dashboardSettings.parseTemplates.forEach((templateId, index) => {
+                const template = this.plugin.settings.templates.find(t => t.id === templateId);
+                if (template) {
+                    const item = selectedList.createDiv('sfp-template-item');
+                    
+                    const name = item.createDiv('sfp-template-name');
+                    name.textContent = template.name;
+                    
+                    const removeBtn = item.createEl('button', { text: '×', cls: 'sfp-remove-btn' });
+                    removeBtn.addEventListener('click', async () => {
+                        this.plugin.settings.dashboardSettings.parseTemplates.splice(index, 1);
+                        await this.plugin.saveSettings();
+                        this.renderTemplateSelection(container);
+                    });
+                }
+            });
+        }
+        
+        // Available templates section
+        const selectedIds = new Set(this.plugin.settings.dashboardSettings.parseTemplates);
+        const availableTemplates = this.plugin.settings.templates.filter(t => !selectedIds.has(t.id));
+        
+        if (availableTemplates.length > 0) {
+            const availableSection = container.createDiv();
+            availableSection.createEl('h6', { text: 'Available templates', cls: 'sfp-section-header' });
+            
+            const availableList = availableSection.createDiv('sfp-available-templates');
+            availableTemplates.forEach(template => {
+                const item = availableList.createDiv('sfp-template-item');
+                
+                const name = item.createDiv('sfp-template-name');
+                name.textContent = template.name;
+                
+                const desc = item.createDiv('sfp-template-desc');
+                desc.textContent = template.description || 'No description';
+                
+                item.createEl('button', { text: '+', cls: 'sfp-add-btn' });
+                
+                item.addEventListener('click', async () => {
+                    this.plugin.settings.dashboardSettings.parseTemplates.push(template.id);
+                    await this.plugin.saveSettings();
+                    this.renderTemplateSelection(container);
                 });
             });
         }

@@ -1,0 +1,481 @@
+import { ItemView, WorkspaceLeaf } from 'obsidian';
+import ScribeFlowPlugin from '../main';
+import { DashboardEntry, DateFilter, DashboardState } from '../types/dashboard';
+import { DashboardParser } from '../services/DashboardParser';
+
+export const DASHBOARD_VIEW_TYPE = 'scribeflow-dashboard';
+
+export class DashboardView extends ItemView {
+    private plugin: ScribeFlowPlugin;
+    private state: DashboardState;
+    private dashboardContentEl: HTMLElement;
+    private parser: DashboardParser;
+
+    constructor(leaf: WorkspaceLeaf, plugin: ScribeFlowPlugin) {
+        super(leaf);
+        this.plugin = plugin;
+        this.parser = new DashboardParser(this.app, this.plugin.settings);
+        this.state = {
+            entries: [],
+            filteredEntries: [],
+            currentFilter: DateFilter.THIS_MONTH,
+            sortColumn: 'date',
+            sortDirection: 'desc'
+        };
+    }
+
+    getViewType(): string {
+        return DASHBOARD_VIEW_TYPE;
+    }
+
+    getDisplayText(): string {
+        return 'Scribe Dashboard';
+    }
+
+    getIcon(): string {
+        return 'table';
+    }
+
+    async onOpen(): Promise<void> {
+        this.dashboardContentEl = this.containerEl.children[1] as HTMLElement;
+        this.dashboardContentEl.empty();
+        
+        this.renderDashboard();
+        await this.loadEntries();
+    }
+
+    async onClose(): Promise<void> {
+        // Cleanup if needed
+    }
+
+    private renderDashboard(): void {
+        this.dashboardContentEl.empty();
+        
+        // Create main container
+        const container = this.dashboardContentEl.createDiv('scribeflow-dashboard');
+        
+        // Render header
+        this.renderHeader(container);
+        
+        // Render controls
+        this.renderControls(container);
+        
+        // Render table
+        this.renderTable(container);
+    }
+
+    private renderHeader(container: HTMLElement): void {
+        const header = container.createDiv('dashboard-header');
+        
+        const titleSection = header.createDiv('dashboard-title-section');
+        titleSection.createEl('h2', { text: 'Scribe Dashboard' });
+        
+        const subtitle = titleSection.createEl('p', { 
+            text: 'Overview of your journaling activity and trends',
+            cls: 'dashboard-subtitle'
+        });
+        
+        // Add refresh button
+        const controls = header.createDiv('dashboard-header-controls');
+        const refreshBtn = controls.createEl('button', { text: 'Refresh' });
+        refreshBtn.addEventListener('click', async () => {
+            refreshBtn.textContent = 'Refreshing...';
+            refreshBtn.disabled = true;
+            await this.refresh();
+            refreshBtn.textContent = 'Refresh';
+            refreshBtn.disabled = false;
+        });
+        
+        // Add summary stats
+        this.renderSummaryStats(header);
+    }
+    
+    private renderSummaryStats(header: HTMLElement): void {
+        const statsContainer = header.createDiv('dashboard-stats');
+        
+        const totalEntries = this.state.entries.length;
+        const filteredEntries = this.state.filteredEntries.length;
+        const avgWords = totalEntries > 0 ? 
+            Math.round(this.state.entries.reduce((sum, entry) => sum + entry.wordCount, 0) / totalEntries) : 0;
+        
+        // Calculate this month count
+        const now = new Date();
+        const thisMonthCount = this.state.entries.filter(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate.getFullYear() === now.getFullYear() && 
+                   entryDate.getMonth() === now.getMonth();
+        }).length;
+        
+        const stats = [
+            { label: 'Total Entries', value: totalEntries.toString() },
+            { label: 'Showing', value: filteredEntries.toString() },
+            { label: 'Average Words', value: avgWords.toString() },
+            { label: 'This Month', value: thisMonthCount.toString() }
+        ];
+        
+        stats.forEach(stat => {
+            const statItem = statsContainer.createDiv('stat-item');
+            statItem.createDiv({ text: stat.label, cls: 'stat-label' });
+            statItem.createDiv({ text: stat.value, cls: 'stat-value' });
+        });
+    }
+
+    private renderControls(container: HTMLElement): void {
+        const controls = container.createDiv('dashboard-controls');
+        
+        // Date filter dropdown
+        const filterContainer = controls.createDiv('filter-container');
+        filterContainer.createEl('label', { text: 'Filter: ' });
+        
+        const select = filterContainer.createEl('select');
+        const filterOptions = [
+            { value: DateFilter.TODAY, label: 'Today' },
+            { value: DateFilter.THIS_WEEK, label: 'This Week' },
+            { value: DateFilter.THIS_MONTH, label: 'This Month' },
+            { value: DateFilter.LAST_30_DAYS, label: 'Last 30 Days' },
+            { value: DateFilter.THIS_YEAR, label: 'This Year' }
+        ];
+        
+        filterOptions.forEach(option => {
+            const optionEl = select.createEl('option', { 
+                value: option.value, 
+                text: option.label 
+            });
+            if (option.value === this.state.currentFilter) {
+                optionEl.selected = true;
+            }
+        });
+        
+        select.addEventListener('change', () => {
+            this.state.currentFilter = select.value as DateFilter;
+            this.filterEntries();
+            this.renderTable(container);
+        });
+        
+        // Add keyboard shortcut info
+        const shortcutHint = controls.createDiv('keyboard-shortcuts');
+        shortcutHint.innerHTML = '<small>Press <kbd>R</kbd> to refresh, <kbd>/</kbd> to focus filter</small>';
+        
+        // Add refresh event listener
+        container.addEventListener('refresh', () => {
+            this.refresh();
+        });
+        
+        // Add keyboard shortcuts
+        this.setupKeyboardShortcuts(select);
+    }
+
+    private renderTable(container: HTMLElement): void {
+        // Remove existing table
+        const existingTable = container.querySelector('.dashboard-table-container');
+        if (existingTable) {
+            existingTable.remove();
+        }
+        
+        const tableContainer = container.createDiv('dashboard-table-container');
+        const table = tableContainer.createEl('table', { cls: 'dashboard-table' });
+        
+        // Render table header
+        this.renderTableHeader(table);
+        
+        // Render table body
+        this.renderTableBody(table);
+    }
+
+    private renderTableHeader(table: HTMLTableElement): void {
+        const thead = table.createEl('thead');
+        const headerRow = thead.createEl('tr');
+        
+        const columns = [
+            { key: 'date', label: 'Date', sortable: true },
+            { key: 'title', label: 'Title', sortable: true },
+            { key: 'content', label: 'Journal Entry', sortable: false },
+            { key: 'wordCount', label: 'Words', sortable: true },
+            { key: 'imageCount', label: 'Images', sortable: true },
+            { key: 'file', label: 'File', sortable: true }
+        ];
+        
+        columns.forEach(column => {
+            const th = headerRow.createEl('th');
+            th.textContent = column.label;
+            
+            if (column.sortable) {
+                th.classList.add('sortable');
+                th.addEventListener('click', () => {
+                    this.sortEntries(column.key);
+                    this.renderTable(table.parentElement!.parentElement!);
+                });
+                
+                // Add sort indicator
+                if (this.state.sortColumn === column.key) {
+                    th.classList.add(`sort-${this.state.sortDirection}`);
+                }
+            }
+        });
+    }
+
+    private renderTableBody(table: HTMLTableElement): void {
+        const tbody = table.createEl('tbody');
+        
+        if (this.state.filteredEntries.length === 0) {
+            const row = tbody.createEl('tr');
+            const cell = row.createEl('td', { attr: { colspan: '6' } });
+            
+            if (this.state.entries.length === 0) {
+                cell.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <div style="font-size: 16px; margin-bottom: 8px;">No journal entries found</div>
+                        <div style="font-size: 14px;">Configure your dashboard settings to scan folders and select templates</div>
+                    </div>
+                `;
+            } else {
+                cell.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <div style="font-size: 16px; margin-bottom: 8px;">No entries match the current filter</div>
+                        <div style="font-size: 14px;">Try selecting a different date range</div>
+                    </div>
+                `;
+            }
+            return;
+        }
+        
+        this.state.filteredEntries.forEach(entry => {
+            this.renderTableRow(tbody, entry);
+        });
+    }
+
+    private renderTableRow(tbody: HTMLTableSectionElement, entry: DashboardEntry): void {
+        const row = tbody.createEl('tr');
+        
+        // Date cell
+        const dateCell = row.createEl('td', { cls: 'date-cell' });
+        dateCell.textContent = entry.date;
+        
+        // Title cell
+        const titleCell = row.createEl('td', { cls: 'title-cell' });
+        titleCell.textContent = entry.title;
+        
+        // Content cell with expansion
+        const contentCell = row.createEl('td', { cls: 'content-cell' });
+        this.renderExpandableContent(contentCell, entry);
+        
+        // Word count cell
+        const wordCountCell = row.createEl('td', { cls: 'count-cell' });
+        wordCountCell.textContent = String(entry.wordCount);
+        
+        // Image count cell
+        const imageCountCell = row.createEl('td', { cls: 'count-cell' });
+        imageCountCell.textContent = String(entry.imageCount);
+        
+        // File link cell
+        const fileCell = row.createEl('td', { cls: 'file-cell' });
+        const fileLink = fileCell.createEl('a', { 
+            href: '#',
+            cls: 'internal-link',
+            text: this.getFileName(entry.filePath)
+        });
+        
+        fileLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.openFile(entry.filePath);
+        });
+    }
+
+    private renderExpandableContent(cell: HTMLElement, entry: DashboardEntry): void {
+        const previewDiv = cell.createDiv('preview-text collapsed');
+        previewDiv.textContent = entry.preview;
+        previewDiv.setAttribute('data-full-text', entry.fullContent);
+        
+        const button = cell.createEl('button');
+        button.textContent = 'more';
+        button.addEventListener('click', () => {
+            this.toggleContentExpansion(previewDiv, button);
+        });
+    }
+
+    private toggleContentExpansion(previewDiv: HTMLElement, button: HTMLButtonElement): void {
+        const isCollapsed = previewDiv.classList.contains('collapsed');
+        
+        if (isCollapsed) {
+            previewDiv.textContent = previewDiv.getAttribute('data-full-text') || '';
+            previewDiv.classList.remove('collapsed');
+            previewDiv.classList.add('expanded');
+            button.textContent = 'less';
+        } else {
+            const fullText = previewDiv.getAttribute('data-full-text') || '';
+            const words = fullText.split(/\s+/);
+            const previewWords = words.slice(0, this.plugin.settings.dashboardSettings.previewWordLimit);
+            const preview = previewWords.join(' ') + (words.length > previewWords.length ? '...' : '');
+            previewDiv.textContent = preview;
+            previewDiv.classList.remove('expanded');
+            previewDiv.classList.add('collapsed');
+            button.textContent = 'more';
+        }
+    }
+
+    private async loadEntries(): Promise<void> {
+        try {
+            // Show loading state
+            this.showLoadingState();
+            
+            // Update parser with current settings
+            this.parser.updateSettings(this.plugin.settings);
+            
+            // Parse all entries
+            this.state.entries = await this.parser.parseAllEntries();
+            
+            // Apply current filter and sort
+            this.filterEntries();
+            this.sortEntries(this.state.sortColumn);
+            
+            // Re-render entire dashboard to update stats
+            this.renderDashboard();
+            
+        } catch (error) {
+            console.error('Failed to load dashboard entries:', error);
+            this.showErrorState(error);
+        }
+    }
+
+    private filterEntries(): void {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        this.state.filteredEntries = this.state.entries.filter(entry => {
+            const entryDate = new Date(entry.date);
+            
+            switch (this.state.currentFilter) {
+                case DateFilter.TODAY:
+                    return entryDate.getTime() === today.getTime();
+                    
+                case DateFilter.THIS_WEEK:
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - today.getDay());
+                    const endOfWeek = new Date(startOfWeek);
+                    endOfWeek.setDate(startOfWeek.getDate() + 6);
+                    return entryDate >= startOfWeek && entryDate <= endOfWeek;
+                    
+                case DateFilter.THIS_MONTH:
+                    return entryDate.getFullYear() === now.getFullYear() && 
+                           entryDate.getMonth() === now.getMonth();
+                           
+                case DateFilter.LAST_30_DAYS:
+                    const thirtyDaysAgo = new Date(today);
+                    thirtyDaysAgo.setDate(today.getDate() - 30);
+                    return entryDate >= thirtyDaysAgo && entryDate <= today;
+                    
+                case DateFilter.THIS_YEAR:
+                    return entryDate.getFullYear() === now.getFullYear();
+                    
+                default:
+                    return true;
+            }
+        });
+    }
+
+    private sortEntries(column: string): void {
+        const direction = this.state.sortColumn === column && this.state.sortDirection === 'asc' ? 'desc' : 'asc';
+        this.state.sortColumn = column;
+        this.state.sortDirection = direction;
+        
+        this.state.filteredEntries.sort((a, b) => {
+            let aVal: any, bVal: any;
+            
+            switch (column) {
+                case 'date':
+                    aVal = new Date(a.date);
+                    bVal = new Date(b.date);
+                    break;
+                case 'title':
+                    aVal = a.title.toLowerCase();
+                    bVal = b.title.toLowerCase();
+                    break;
+                case 'wordCount':
+                    aVal = a.wordCount;
+                    bVal = b.wordCount;
+                    break;
+                case 'imageCount':
+                    aVal = a.imageCount;
+                    bVal = b.imageCount;
+                    break;
+                case 'file':
+                    aVal = this.getFileName(a.filePath).toLowerCase();
+                    bVal = this.getFileName(b.filePath).toLowerCase();
+                    break;
+                default:
+                    return 0;
+            }
+            
+            if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+            if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+    }
+
+    private getFileName(filePath: string): string {
+        return filePath.split('/').pop() || filePath;
+    }
+
+    private async openFile(filePath: string): Promise<void> {
+        const file = this.app.vault.getAbstractFileByPath(filePath);
+        if (file) {
+            await this.app.workspace.openLinkText(filePath, '', false);
+        }
+    }
+
+    async refresh(): Promise<void> {
+        await this.loadEntries();
+    }
+
+    private setupKeyboardShortcuts(selectEl: HTMLSelectElement): void {
+        this.containerEl.addEventListener('keydown', (e) => {
+            // Only handle if not typing in an input
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+                return;
+            }
+            
+            switch (e.key.toLowerCase()) {
+                case 'r':
+                    e.preventDefault();
+                    // Find refresh button and trigger its click to maintain consistent state handling
+                    const refreshBtn = this.containerEl.querySelector('.dashboard-header-controls button');
+                    if (refreshBtn) {
+                        (refreshBtn as HTMLButtonElement).click();
+                    }
+                    break;
+                case '/':
+                    e.preventDefault();
+                    selectEl.focus();
+                    break;
+                case 'escape':
+                    // Clear focus from any focused element
+                    (document.activeElement as HTMLElement)?.blur();
+                    break;
+            }
+        });
+    }
+
+    private showLoadingState(): void {
+        const container = this.dashboardContentEl.querySelector('.scribeflow-dashboard');
+        if (container) {
+            const tableContainer = container.querySelector('.dashboard-table-container');
+            if (tableContainer) {
+                tableContainer.innerHTML = '<div style="text-align: center; padding: 2rem;">Loading journal entries...</div>';
+            }
+        }
+    }
+
+    private showErrorState(error: any): void {
+        const container = this.dashboardContentEl.querySelector('.scribeflow-dashboard');
+        if (container) {
+            const tableContainer = container.querySelector('.dashboard-table-container');
+            if (tableContainer) {
+                tableContainer.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--text-error);">
+                    Error loading entries: ${error.message || 'Unknown error'}
+                    <br><br>
+                    <button onclick="this.closest('.scribeflow-dashboard').dispatchEvent(new Event('refresh'))">Retry</button>
+                </div>`;
+            }
+        }
+    }
+}

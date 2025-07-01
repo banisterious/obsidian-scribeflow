@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScribeFlow: Scribe Dashboard (Obsidian Native Styling)</title>
+    <style>
+        /* Obsidian CSS Variables - these would be inherited from Obsidian */
+        :root {
+            --background-primary: #202020;
+            --background-secondary: #161616;
+            --background-modifier-border: #333;
+            --background-modifier-form-field: #161616;
+            --text-normal: #dcddde;
+            --text-muted: #888;
+            --text-accent: #7c3aed;
+            --text-accent-hover: #8b5cf6;
+            --interactive-normal: #20242a;
+            --interactive-hover: #353940;
+            --interactive-accent: #7c3aed;
+            --interactive-accent-hover: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-interface);
+            background-color: var(--background-primary);
+            color: var(--text-normal);
+            padding: 0;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* Obsidian-style view container */
+        .view-content {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--background-primary);
+        }
+
+        .view-header {
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--background-modifier-border);
+            background-color: var(--background-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 36px;
+        }
+
+        .view-header-title {
+            font-weight: 500;
+            color: var(--text-normal);
+        }
+
+        /* Controls using Obsidian-style dropdowns */
+        .dashboard-controls {
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--background-modifier-border);
+            background-color: var(--background-primary);
+        }
+
+        .dropdown {
+            background-color: var(--background-modifier-form-field);
+            border: 1px solid var(--background-modifier-border);
+            border-radius: 6px;
+            color: var(--text-normal);
+            padding: 4px 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .dropdown:focus {
+            outline: none;
+            border-color: var(--interactive-accent);
+        }
+
+        /* Obsidian-style table */
+        .table-container {
+            flex: 1;
+            overflow: auto;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background-color: var(--background-primary);
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: var(--background-secondary);
+            z-index: 1;
+        }
+
+        th {
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 500;
+            color: var(--text-normal);
+            border-bottom: 1px solid var(--background-modifier-border);
+            cursor: pointer;
+            user-select: none;
+            background-color: var(--background-secondary);
+        }
+
+        th:hover {
+            background-color: var(--interactive-hover);
+        }
+
+        th.sortable::after {
+            content: ' ↕';
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        th.sort-asc::after {
+            content: ' ↑';
+            color: var(--interactive-accent);
+        }
+
+        th.sort-desc::after {
+            content: ' ↓';
+            color: var(--interactive-accent);
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--background-modifier-border);
+        }
+
+        tbody tr:hover {
+            background-color: var(--interactive-hover);
+        }
+
+        td {
+            padding: 8px 12px;
+            vertical-align: top;
+            color: var(--text-normal);
+        }
+
+        /* Date styling */
+        .date-cell {
+            color: var(--text-accent);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* Title styling */
+        .title-cell {
+            font-weight: 500;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Preview content */
+        .preview-cell {
+            max-width: 400px;
+            line-height: 1.4;
+        }
+
+        .preview-text {
+            color: var(--text-normal);
+            margin-bottom: 4px;
+        }
+
+        .preview-text.collapsed {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .preview-text.expanded {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Buttons inherit Obsidian's native styling automatically */
+
+        /* Count cells */
+        .count-cell {
+            text-align: center;
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* File links */
+        .internal-link {
+            color: var(--text-accent);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .internal-link:hover {
+            color: var(--text-accent-hover);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .preview-cell {
+                max-width: 250px;
+            }
+            
+            th, td {
+                padding: 6px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="view-content">
+        <div class="view-header">
+            <div class="view-header-title">Scribe Dashboard</div>
+        </div>
+
+        <div class="dashboard-controls">
+            <select class="dropdown" id="date-filter">
+                <option value="this-month" selected>This Month</option>
+                <option value="today">Today</option>
+                <option value="this-week">This Week</option>
+                <option value="last-30-days">Last 30 Days</option>
+                <option value="this-year">This Year</option>
+            </select>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sortable sort-desc">Date</th>
+                        <th class="sortable">Title</th>
+                        <th>Journal Entry</th>
+                        <th class="sortable">Words</th>
+                        <th class="sortable">Images</th>
+                        <th class="sortable">File</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="date-cell">2025-06-30</td>
+                        <td class="title-cell">Monday Morning Reflections</td>
+                        <td class="preview-cell">
+                            <div class="preview-text collapsed" data-full-text="Started the day with a long walk around the neighborhood. The weather was perfect for thinking about my goals for the week. I've been feeling more motivated lately and want to channel that energy into productive activities. The fresh air always helps clear my mind and gives me perspective on what's truly important.">
+                                Started the day with a long walk around the neighborhood. The weather was perfect for thinking about my goals for the week. I've been feeling more...
+                            </div>
+                            <button onclick="toggleExpansion(this)">more</button>
+                        </td>
+                        <td class="count-cell">234</td>
+                        <td class="count-cell">2</td>
+                        <td><a href="#" class="internal-link">2025-06-30.md</a></td>
+                    </tr>
+                    <tr>
+                        <td class="date-cell">2025-06-29</td>
+                        <td class="title-cell">Weekend Adventures</td>
+                        <td class="preview-cell">
+                            <div class="preview-text collapsed" data-full-text="Had an amazing weekend exploring the local farmers market. Met some interesting vendors and learned about sustainable farming practices. The fresh produce was incredible and I ended up buying way too much. Spent the afternoon cooking with my new ingredients.">
+                                Had an amazing weekend exploring the local farmers market. Met some interesting vendors and learned about sustainable farming practices. The fresh...
+                            </div>
+                            <button onclick="toggleExpansion(this)">more</button>
+                        </td>
+                        <td class="count-cell">187</td>
+                        <td class="count-cell">4</td>
+                        <td><a href="#" class="internal-link">2025-06-29.md</a></td>
+                    </tr>
+                    <tr>
+                        <td class="date-cell">2025-06-28</td>
+                        <td class="title-cell">Productive Friday</td>
+                        <td class="preview-cell">
+                            <div class="preview-text collapsed" data-full-text="Finally finished that project I've been working on for weeks. The sense of accomplishment is incredible. Looking forward to starting something new next week. The whole process taught me a lot about persistence and breaking down complex tasks.">
+                                Finally finished that project I've been working on for weeks. The sense of accomplishment is incredible. Looking forward to starting something new...
+                            </div>
+                            <button onclick="toggleExpansion(this)">more</button>
+                        </td>
+                        <td class="count-cell">156</td>
+                        <td class="count-cell">1</td>
+                        <td><a href="#" class="internal-link">2025-06-28.md</a></td>
+                    </tr>
+                    <tr>
+                        <td class="date-cell">2025-06-27</td>
+                        <td class="title-cell">Quiet Thursday</td>
+                        <td class="preview-cell">
+                            <div class="preview-text collapsed" data-full-text="Sometimes the quiet days are the most valuable. Spent time reading and just thinking about life. No major events, but that's perfectly fine. These contemplative moments help me appreciate the simple things and reset my perspective.">
+                                Sometimes the quiet days are the most valuable. Spent time reading and just thinking about life. No major events, but that's perfectly fine...
+                            </div>
+                            <button onclick="toggleExpansion(this)">more</button>
+                        </td>
+                        <td class="count-cell">98</td>
+                        <td class="count-cell">0</td>
+                        <td><a href="#" class="internal-link">2025-06-27.md</a></td>
+                    </tr>
+                    <tr>
+                        <td class="date-cell">2025-06-26</td>
+                        <td class="title-cell">Midweek Check-in</td>
+                        <td class="preview-cell">
+                            <div class="preview-text collapsed" data-full-text="Halfway through the week and feeling good about the progress so far. Had a great conversation with a friend about future plans and possibilities. It's amazing how talking through ideas with someone else can clarify your own thoughts.">
+                                Halfway through the week and feeling good about the progress so far. Had a great conversation with a friend about future plans and possibilities...
+                            </div>
+                            <button onclick="toggleExpansion(this)">more</button>
+                        </td>
+                        <td class="count-cell">203</td>
+                        <td class="count-cell">1</td>
+                        <td><a href="#" class="internal-link">2025-06-26.md</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Sort functionality
+        document.querySelectorAll('th.sortable').forEach(header => {
+            header.addEventListener('click', function() {
+                document.querySelectorAll('th.sortable').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('sort-asc', 'sort-desc');
+                    }
+                });
+
+                if (this.classList.contains('sort-asc')) {
+                    this.classList.remove('sort-asc');
+                    this.classList.add('sort-desc');
+                } else if (this.classList.contains('sort-desc')) {
+                    this.classList.remove('sort-desc');
+                    this.classList.add('sort-asc');
+                } else {
+                    this.classList.add('sort-asc');
+                }
+            });
+        });
+
+        // File link handler
+        document.querySelectorAll('.internal-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Navigate to: ' + this.textContent);
+            });
+        });
+
+        // Filter handler
+        document.getElementById('date-filter').addEventListener('change', function() {
+            console.log('Filter: ' + this.value);
+        });
+
+        // Toggle expansion
+        function toggleExpansion(button) {
+            const previewDiv = button.previousElementSibling;
+            const isCollapsed = previewDiv.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                previewDiv.textContent = previewDiv.getAttribute('data-full-text');
+                previewDiv.classList.remove('collapsed');
+                previewDiv.classList.add('expanded');
+                button.textContent = 'less';
+            } else {
+                const fullText = previewDiv.getAttribute('data-full-text');
+                const truncated = fullText.substring(0, 120) + '...';
+                previewDiv.textContent = truncated;
+                previewDiv.classList.remove('expanded');
+                previewDiv.classList.add('collapsed');
+                button.textContent = 'more';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,10 +1,10 @@
 ### **ScribeFlow Plugin: Export Options Feature Specification**
 
-**Document Version:** 1.0
-**Date:** July 1, 2025
-**Author:** John Banister
-**Project:** ScribeFlow Plugin for Obsidian
-**Feature:** Export Options (Scribe Dashboard Data & Individual Entries)
+- **Document Version:** 1.0
+- **Date:** July 1, 2025
+- **Author:** John Banister
+- **Project:** ScribeFlow Plugin for Obsidian
+- **Feature:** Export Options (Scribe Dashboard Data & Individual Entries)
 
 #### **1. High-Level Overview**
 

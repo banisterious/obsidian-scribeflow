@@ -30,7 +30,7 @@ export class DashboardView extends ItemView {
             ],
             headerCollapsed: false,
             statistics: DashboardStatisticsCalculator.calculateStatistics([], DateFilter.ALL_TIME),
-            statisticsGroupedView: this.plugin.settings.dashboardSettings.statisticsGroupedView
+            statisticsGroupedView: this.plugin.settings.dashboardSettings.statisticsGroupedView ?? false
         };
     }
 
@@ -69,7 +69,12 @@ export class DashboardView extends ItemView {
         
         // Render statistics cards (only if header not collapsed)
         if (!this.state.headerCollapsed) {
-            this.renderStatisticsCards(container);
+            try {
+                this.renderStatisticsCards(container);
+            } catch (error) {
+                console.error('ScribeFlow: Error rendering statistics cards:', error);
+                // Continue rendering the rest of the dashboard
+            }
         }
         
         // Render search section (only if header not collapsed)
@@ -133,9 +138,6 @@ export class DashboardView extends ItemView {
                 text: 'Overview of your journaling activity and trends',
                 cls: 'dashboard-subtitle'
             });
-            
-            // Add summary stats
-            this.renderSummaryStats(headerContent);
         }
     }
     
@@ -820,7 +822,9 @@ export class DashboardView extends ItemView {
 
     private renderFlatGridStatistics(container: HTMLElement): void {
         const gridContainer = container.createDiv('sfp-dashboard-statistics-grid');
-        this.getAllStatistics().forEach(stat => {
+        const stats = this.getAllStatistics();
+        
+        stats.forEach(stat => {
             this.renderStatCard(gridContainer, stat.label, stat.value, stat.suffix, stat.category);
         });
     }
@@ -899,7 +903,26 @@ export class DashboardView extends ItemView {
             // Find the header and insert statistics after it
             const header = container.querySelector('.dashboard-header');
             if (header && !this.state.headerCollapsed) {
-                this.renderStatisticsCards(container);
+                // Create the statistics container manually and insert it after the header
+                const statisticsContainer = container.createDiv('sfp-dashboard-statistics-container');
+                
+                // Move it to the correct position (after header, before search)
+                const searchSection = container.querySelector('.search-section');
+                if (searchSection) {
+                    container.insertBefore(statisticsContainer, searchSection);
+                } else {
+                    // If no search section, insert after header
+                    header.insertAdjacentElement('afterend', statisticsContainer);
+                }
+                
+                // Render the content into the correctly positioned container
+                this.renderStatisticsHeader(statisticsContainer);
+                
+                if (this.state.statisticsGroupedView) {
+                    this.renderGroupedStatistics(statisticsContainer);
+                } else {
+                    this.renderFlatGridStatistics(statisticsContainer);
+                }
             }
         }
     }

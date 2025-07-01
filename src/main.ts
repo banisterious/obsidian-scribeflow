@@ -75,6 +75,12 @@ export default class ScribeFlowPlugin extends Plugin {
             this.settings.dashboardSettings.previewWordLimit = 100;
             await this.saveSettings();
         }
+        
+        // Migrate settings: add statisticsGroupedView if missing
+        if (this.settings.dashboardSettings.statisticsGroupedView === undefined) {
+            this.settings.dashboardSettings.statisticsGroupedView = false;
+            await this.saveSettings();
+        }
     }
 
     async saveSettings() {

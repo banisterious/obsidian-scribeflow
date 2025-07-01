@@ -2176,3 +2176,186 @@
         font-size: 18px;
     }
 }
+
+/* ============================================
+   Export Button Styling
+   ============================================ */
+
+.sfp-export-container {
+    position: relative;
+    display: inline-block;
+}
+
+.sfp-export-button {
+    background: var(--interactive-accent);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    padding: 8px 16px;
+    color: var(--text-on-accent);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    outline: none;
+}
+
+.sfp-export-button:hover {
+    background: var(--interactive-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.sfp-export-button.sfp-export-button-active {
+    background: var(--interactive-accent-hover);
+}
+
+.sfp-export-button-icon {
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sfp-export-button-text {
+    font-weight: 500;
+}
+
+.sfp-export-button-chevron {
+    width: 12px;
+    height: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+}
+
+.sfp-export-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    min-width: 240px;
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.sfp-export-option {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-normal);
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.sfp-export-option:last-child {
+    border-bottom: none;
+}
+
+.sfp-export-option:hover {
+    background: var(--background-modifier-hover);
+}
+
+.sfp-export-option-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sfp-export-option-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.sfp-export-option-title {
+    font-weight: 500;
+    color: var(--text-normal);
+    line-height: 1.3;
+}
+
+.sfp-export-option-description {
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.9;
+    line-height: 1.3;
+}
+
+/* Export Container in Controls */
+.sfp-dashboard-controls .sfp-export-container {
+    margin-left: auto;
+}
+
+/* Responsive Design for Export */
+@media (max-width: 768px) {
+    .sfp-dashboard-controls .sfp-export-container {
+        margin-left: 0;
+        align-self: center;
+    }
+    
+    .sfp-export-dropdown {
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* ============================================
+   Context Menu Styling
+   ============================================ */
+
+.sfp-context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.sfp-context-menu-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Table Row Hover Effect for Context Menu */
+.sfp-dashboard-table tbody tr {
+    cursor: pointer;
+    position: relative;
+}
+
+.sfp-dashboard-table tbody tr:hover::after {
+    content: 'Right-click to export';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.8;
+    pointer-events: none;
+    background: var(--background-primary);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--background-modifier-border);
+}

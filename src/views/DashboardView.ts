@@ -3,6 +3,11 @@ import ScribeFlowPlugin from '../main';
 import { DashboardEntry, DateFilter, DashboardState, SearchResult, SearchMatch, DashboardStatistics, StatCard } from '../types/dashboard';
 import { DashboardParser } from '../services/DashboardParser';
 import { DashboardStatisticsCalculator } from '../services/DashboardStatisticsCalculator';
+import { DashboardExporter } from '../services/export/DashboardExporter';
+import { EntryExporter } from '../services/export/EntryExporter';
+import { ExportButton } from '../ui/components/ExportButton';
+import { ExportContextMenu } from '../ui/components/ExportContextMenu';
+import { DashboardExportFormat, EntryExportFormat } from '../services/export/types';
 
 export const DASHBOARD_VIEW_TYPE = 'scribeflow-dashboard';
 
@@ -11,11 +16,16 @@ export class DashboardView extends ItemView {
     private state: DashboardState;
     private dashboardContentEl: HTMLElement;
     private parser: DashboardParser;
+    private dashboardExporter: DashboardExporter;
+    private entryExporter: EntryExporter;
+    private exportButton: ExportButton;
 
     constructor(leaf: WorkspaceLeaf, plugin: ScribeFlowPlugin) {
         super(leaf);
         this.plugin = plugin;
         this.parser = new DashboardParser(this.app, this.plugin.settings);
+        this.dashboardExporter = new DashboardExporter(this.app);
+        this.entryExporter = new EntryExporter(this.app);
         this.state = {
             entries: [],
             filteredEntries: [],
@@ -55,7 +65,10 @@ export class DashboardView extends ItemView {
     }
 
     async onClose(): Promise<void> {
-        // Cleanup if needed
+        // Cleanup export button
+        if (this.exportButton) {
+            this.exportButton.unload();
+        }
     }
 
     private renderDashboard(): void {
@@ -213,6 +226,13 @@ export class DashboardView extends ItemView {
 
         // Right side: Search section (always visible)
         this.renderSearchInControls(controls, container);
+
+        // Export button (rightmost position)
+        this.exportButton = new ExportButton(
+            controls,
+            (format) => this.handleDashboardExport(format)
+        );
+        this.exportButton.load();
         
         // Add refresh event listener
         container.addEventListener('refresh', () => {
@@ -414,6 +434,16 @@ export class DashboardView extends ItemView {
         fileLink.addEventListener('click', (e) => {
             e.preventDefault();
             this.openFile(entry.filePath);
+        });
+
+        // Add right-click context menu for entry export
+        row.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const menu = ExportContextMenu.createSimple(
+                entry,
+                (entry, format) => this.handleEntryExport(entry, format)
+            );
+            menu.showAtMouseEvent(e);
         });
     }
 
@@ -934,5 +964,43 @@ export class DashboardView extends ItemView {
             this.state.currentFilter,
             this.state.searchQuery
         );
+    }
+
+    // Export handlers
+    private async handleDashboardExport(format: DashboardExportFormat): Promise<void> {
+        try {
+            const result = await this.dashboardExporter.exportDashboardData(
+                this.state.filteredEntries,
+                this.state.statistics,
+                this.state.currentFilter,
+                this.state.searchQuery,
+                {
+                    format,
+                    destination: format === DashboardExportFormat.MARKDOWN_TABLE ? 'clipboard' : 'file',
+                    includeStatistics: true
+                }
+            );
+
+            if (!result.success) {
+                console.error('Export failed:', result.message);
+            }
+        } catch (error) {
+            console.error('Export error:', error);
+        }
+    }
+
+    private async handleEntryExport(entry: DashboardEntry, format: EntryExportFormat): Promise<void> {
+        try {
+            const result = await this.entryExporter.exportEntry(entry, format, {
+                format,
+                destination: 'file'
+            });
+
+            if (!result.success) {
+                console.error('Entry export failed:', result.message);
+            }
+        } catch (error) {
+            console.error('Entry export error:', error);
+        }
     }
 }

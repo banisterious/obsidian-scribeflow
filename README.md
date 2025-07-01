@@ -32,7 +32,7 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - **Interactive Placeholders** - Dropdown selector for easy placeholder insertion
 - **Dynamic Processing** - Automatic word counting and metrics formatting
 
-### 📊 **Scribe Dashboard** *(Enhanced in 0.4.1)*
+### 📊 **Scribe Dashboard** *(Export Features Added in 0.5.0)*
 - **Template-driven Parsing** - Automatically extracts journal entries from configured folders and templates
 - **Advanced Search System** - Native Obsidian search with real-time filtering, highlighting, and keyboard shortcuts
 - **Sortable Data Table** - View entries by date, journal content, word count, images, and source file
@@ -42,6 +42,16 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - **Multi-entry Support** - Discovers multiple journal entries per file
 - **Dream Content Inclusion** - Captures both journal and dream diary content while excluding metrics
 - **Quick Access** - New ribbon buttons for instant dashboard and journal entry access
+
+### 📤 **Export System** *(New in 0.5.0)*
+- **Dashboard Data Export** - Export filtered table data in 3 formats (Markdown table, CSV, JSON)
+- **Individual Entry Export** - Export complete journal entries in 4 formats (Markdown, Plain Text, PDF, Image)
+- **Professional UI** - Export dropdown button with Lucide icons and right-click context menus
+- **Comprehensive Metadata** - All exports include timestamps, filter information, and content statistics
+- **Full Content Export** - All formats export complete journal content (not just previews)
+- **High-Quality PDF** - Professional PDF generation with styled layouts and proper formatting
+- **Image Export** - PNG image generation with consistent layout and high resolution
+- **Smart File Naming** - Timestamped filenames with compact format (YYYYMMDD-HHMMSS)
 
 ### 🔗 **Automatic Table of Contents**
 - Smart TOC link generation for year notes and master journals
@@ -73,8 +83,9 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 3. **Create Entry**: Fill in your journal content and optionally add dream details
 4. **Add Images**: Use the smart image picker with folder and file type filtering
 5. **View Dashboard**: Click the table icon in the ribbon to access your journal overview
-6. **Create Templates**: Use the "Journal Structures" tab to create custom templates
-7. **Configure**: Set up dashboard scan folders, templates, and other preferences in settings
+6. **Export Data**: Use the Export dropdown in dashboard for bulk data export or right-click entries for individual exports
+7. **Create Templates**: Use the "Journal Structures" tab to create custom templates
+8. **Configure**: Set up dashboard scan folders, templates, and other preferences in settings
 
 ## Settings
 

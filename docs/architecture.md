@@ -23,10 +23,18 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
 │   │   ├── DashboardParser.ts
 │   │   ├── TemplateAnalyzer.ts
 │   │   ├── TemplateIntegrationService.ts
-│   │   └── TemplateProcessingService.ts
+│   │   ├── TemplateProcessingService.ts
+│   │   └── export/
+│   │       ├── types.ts
+│   │       ├── ExportFormatters.ts
+│   │       ├── DashboardExporter.ts
+│   │       └── EntryExporter.ts
 │   ├── types/
 │   │   └── dashboard.ts
 │   ├── ui/
+│   │   ├── components/
+│   │   │   ├── ExportButton.ts
+│   │   │   └── ExportContextMenu.ts
 │   │   ├── tabs/
 │   │   │   ├── JournalEntryTab.ts
 │   │   │   ├── JournalSettingsTab.ts
@@ -66,17 +74,25 @@ The core logic of the plugin is housed within the `src/` directory. The old, mon
     *   **`entry-writer.ts`**: Responsible for generating the final Markdown string based on the selected template and form data. It also handles the logic for inserting the content at the cursor position or appending it to the specified journal file.
     *   **`toc-updater.ts`**: Manages automatic table of contents link generation for both year notes and master journals notes, with support for specific callout targeting and proper error handling.
 
-*   **`src/services/`**: Contains specialized services for template management and processing.
+*   **`src/services/`**: Contains specialized services for template management, processing, and data export.
     *   **`DashboardParser.ts`**: Comprehensive parsing service that scans folders recursively for journal entries, extracts content based on template structures, and generates dashboard data. Handles multiple date formats, callout parsing, and content extraction from structured markdown.
     *   **`TemplateAnalyzer.ts`**: Analyzes templates to identify required placeholders and validates template compatibility for dashboard parsing. Ensures templates contain necessary elements for content extraction.
     *   **`TemplateIntegrationService.ts`**: Handles integration with external template plugins (Templater and Core Templates). Provides plugin detection, template file discovery, and conversion from external template syntax to ScribeFlow placeholders with comprehensive structured logging for debugging.
     *   **`TemplateProcessingService.ts`**: Core template processing engine that replaces placeholders with actual content. Handles date formatting, content mapping, metrics processing with automatic word counting, and OneiroMetrics-compatible numeric output formatting.
+    *   **`export/`**: Export services for dashboard data and individual journal entries.
+        *   **`types.ts`**: TypeScript definitions for export formats, options, and result types with separate enums for dashboard and entry export formats.
+        *   **`ExportFormatters.ts`**: Format conversion service that transforms data into Markdown tables, CSV, and JSON formats with proper escaping and statistics integration.
+        *   **`DashboardExporter.ts`**: Orchestrates dashboard data exports in multiple formats (Markdown table, CSV, JSON) with comprehensive metadata and file download functionality.
+        *   **`EntryExporter.ts`**: Handles individual journal entry exports in multiple formats (Markdown, Plain Text, PDF, Image) with HTML conversion and third-party library integration.
 
 *   **`src/ui/`**: This directory contains all the code related to the user interface.
     *   **`JournalEntryModal.ts`**: The core of the new UI. This class creates the main modal window with Material Design styling, implements the two-pane layout with vertical navigation tabs, and manages action buttons in the header region. It handles the lifecycle of the tabs and passes button references to active tabs. Includes template selection dropdown with dynamic state management.
     *   **`TemplateWizardModal.ts`**: Comprehensive template creation and editing wizard with 3-step workflow. Features creation method selection (direct input, plugin integration, predefined structures), template information forms, and content editing with placeholder reference guides. Supports edit mode for existing templates with smart navigation and validation.
     *   **`FileSuggest.ts`**: Provides file suggestion functionality for markdown files with proper event handling for settings integration.
     *   **`FolderSuggest.ts`**: Provides folder suggestion functionality for image path settings.
+    *   **`components/`**: Reusable UI components for specific functionality.
+        *   **`ExportButton.ts`**: Professional dropdown export button for dashboard with Lucide icons, Material Design styling, and three format options (Markdown table, CSV, JSON).
+        *   **`ExportContextMenu.ts`**: Right-click context menu component for individual journal entries offering four export formats (Markdown, Plain Text, PDF, Image) with native Obsidian Menu API integration.
     *   **`tabs/`**: Each file in this subdirectory represents a single vertical tab in the modal, ensuring the UI is modular and easy to expand.
         *   **`JournalEntryTab.ts`**: Contains the primary form for writing a journal entry with modern Material Design elements including horizontal date/time fields, side-by-side content/preview sections with resizable image previews, and interactive grid-based metrics with visual sliders. Handles image selection from vault files, real-time preview updates, and template processing with placeholder replacement for entry insertion.
         *   **`JournalSettingsTab.ts`**: Contains the in-modal settings for fine-tuning entry creation on the fly, including TOC settings management.
@@ -322,6 +338,167 @@ For optimal dashboard functionality, journal entries should follow this structur
 *   **Caching Strategy**: Parsed data is cached until manual refresh or settings change
 *   **Efficient Filtering**: Client-side filtering for responsive user interaction
 *   **Memory Management**: Proper cleanup of file handles and parsed content
+
+## Export System
+
+The ScribeFlow plugin features a comprehensive export system that allows users to export both dashboard data and individual journal entries in multiple formats. The system is designed with a service-oriented architecture that separates format conversion, export orchestration, and user interface concerns.
+
+### Export Features
+*   **Dashboard Data Export**: Export filtered dashboard data in three formats (Markdown table, CSV, JSON)
+*   **Individual Entry Export**: Export single journal entries in four formats (Markdown, Plain Text, PDF, Image)
+*   **Professional UI Integration**: Dropdown export button with Lucide icons and right-click context menus
+*   **Comprehensive Metadata**: All exports include export timestamps, filter information, and content metadata
+*   **Native File Downloads**: Browser-based file download system with proper filename formatting
+*   **Statistics Integration**: Dashboard exports include comprehensive summary statistics when available
+
+### Export Formats
+
+**Dashboard Export Formats:**
+*   **Markdown Table**: Complete dashboard data formatted as a markdown table with statistics header and metadata
+*   **CSV**: Structured data suitable for Excel analysis with proper escaping and headers
+*   **JSON**: Structured data with full metadata, statistics, and entry details for programmatic access
+
+**Individual Entry Export Formats:**
+*   **Markdown**: Original markdown content with preserved formatting and structure
+*   **Plain Text**: Clean text version with markdown syntax stripped and proper line formatting
+*   **PDF**: Professional PDF document with styled layout, headers, and formatted content using html2pdf.js
+*   **Image**: High-resolution PNG image using html2canvas with proper layout and typography
+
+### Technical Architecture
+
+**Service-Oriented Design:**
+*   **ExportFormatters.ts**: Handles format-specific conversion logic with proper escaping and content processing
+*   **DashboardExporter.ts**: Orchestrates dashboard data exports with metadata generation and file operations
+*   **EntryExporter.ts**: Manages individual entry exports with HTML conversion and third-party library integration
+*   **types.ts**: Comprehensive TypeScript definitions with separate enums for dashboard and entry formats
+
+**UI Components:**
+*   **ExportButton.ts**: Professional dropdown component with three dashboard export options and Material Design styling
+*   **ExportContextMenu.ts**: Right-click context menu for individual entries using Obsidian's native Menu API
+*   **Dashboard Integration**: Export button integrated into dashboard controls section with consistent theming
+
+### Export Data Processing
+
+**Content Processing Pipeline:**
+*   **Data Preparation**: Extracts and structures data from dashboard entries with comprehensive metadata
+*   **Format Conversion**: Transforms data into target formats with proper escaping and syntax handling
+*   **Statistics Integration**: Includes summary statistics in dashboard exports with formatted presentation
+*   **Filename Generation**: Creates timestamped filenames with consistent naming conventions (YYYYMMDD-HHMMSS format)
+
+**Metadata Inclusion:**
+*   **Export Timestamps**: All exports include generation date and time for tracking
+*   **Filter Information**: Dashboard exports preserve active date filters and search queries
+*   **Content Statistics**: Word counts, image counts, and entry statistics included where applicable
+*   **Source Information**: File paths and entry dates maintained for reference
+
+### File Format Specifications
+
+**Dashboard Markdown Table Format:**
+```markdown
+# ScribeFlow Dashboard Export
+
+**Export Date:** [timestamp]
+**Filter:** [active filter]
+**Total Entries:** [count]
+
+## Summary Statistics
+[comprehensive statistics section]
+
+## Journal Entries
+| Date | Content | Words | Images | File |
+|------|---------|--------|--------|------|
+[table data with escaped markdown]
+```
+
+**CSV Format:**
+```csv
+"Date","Content","Word Count","Image Count","Filename"
+"2025-01-14","Escaped content...","256","2","journal-entry.md"
+```
+
+**JSON Format:**
+```json
+{
+  "metadata": {
+    "exportDate": "ISO timestamp",
+    "filter": "date filter",
+    "totalEntries": 123
+  },
+  "statistics": { /* complete statistics object */ },
+  "entries": [ /* array of entry objects */ ]
+}
+```
+
+### HTML-to-PDF/Image Conversion
+
+**PDF Generation:**
+*   **html2pdf.js Integration**: Third-party library for high-quality PDF generation
+*   **Styled Layout**: Professional typography with headers, metadata, and formatted content
+*   **Page Formatting**: Letter size with proper margins and page handling
+*   **Content Processing**: Markdown-to-HTML conversion with callout support and proper formatting
+
+**Image Generation:**
+*   **html2canvas Integration**: High-resolution canvas-based image generation
+*   **Layout Optimization**: Fixed-width layout (800px) for consistent image dimensions
+*   **Quality Settings**: High-resolution output (scale: 2) with PNG format for clarity
+*   **Memory Management**: Proper cleanup of temporary DOM elements and blob URLs
+
+### User Experience
+
+**Dashboard Export Workflow:**
+1.  User clicks export button in dashboard controls
+2.  Dropdown menu appears with three format options and descriptive text
+3.  User selects desired format (Markdown table, CSV, or JSON)
+4.  Export is processed with current filter and search settings
+5.  File downloads automatically with timestamped filename
+6.  Success notification confirms export completion
+
+**Individual Entry Export Workflow:**
+1.  User right-clicks on a journal entry row in the dashboard
+2.  Context menu appears with four export format options
+3.  User selects desired format (Markdown, Plain Text, PDF, or Image)
+4.  Individual entry content is processed and converted
+5.  File downloads with entry-specific filename (entry-date-exported-timestamp)
+6.  Success notification confirms export completion
+
+### Filename Conventions
+
+**Dashboard Exports:**
+*   Markdown Table: `markdown-table-YYYYMMDD-HHMMSS.md`
+*   CSV: `dashboard-export-YYYYMMDD-HHMMSS.csv`
+*   JSON: `dashboard-export-YYYYMMDD-HHMMSS.json`
+
+**Individual Entry Exports:**
+*   All formats: `YYYYMMDD-exported-YYYYMMDD-HHMMSS.extension`
+*   Example: `20250114-exported-20250701-143025.pdf`
+
+### Error Handling and Performance
+
+**Robust Error Handling:**
+*   Graceful degradation when export libraries fail to load
+*   Comprehensive error messages with specific failure information
+*   Fallback handling for missing or corrupted content
+*   User notifications for both success and failure scenarios
+
+**Performance Optimizations:**
+*   Efficient content processing with minimal memory usage
+*   Proper cleanup of blob URLs and temporary resources
+*   Asynchronous processing to prevent UI blocking
+*   Optimized HTML generation for large datasets
+
+### Integration Points
+
+**Dashboard Integration:**
+*   Export button positioned in dashboard controls section
+*   Respects current date filters and search queries
+*   Includes active statistics and filtered entry counts
+*   Consistent styling with dashboard theme and layout
+
+**Context Menu Integration:**
+*   Native Obsidian Menu API for consistent styling and behavior
+*   Keyboard accessibility and proper event handling
+*   Visual feedback with icons and descriptive text
+*   Seamless integration with existing table interactions
 
 ## Table of Contents (TOC) System
 

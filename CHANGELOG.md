@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-01-14
+
+### Added
+- **Scribe Dashboard**: Comprehensive journal overview with template-driven parsing
+  - Sortable data table displaying entries by date, title, word count, images, and source file
+  - Smart content preview with expandable journal content and configurable word limits
+  - Flexible date filtering (today, this week, month, year, all time)
+  - Multi-entry support to discover multiple journal entries per file
+  - Dream content inclusion capturing both journal and dream diary content while excluding metrics
+  - Quick access ribbon buttons for dashboard and journal entry creation
+  - Dashboard settings for configuring scan folders and parsing templates
+- **Enhanced Content Processing**:
+  - Advanced content cleaning to strip markdown/HTML syntax while preserving readable text
+  - Support for multiple date formats including ISO dates, compact dates (^20250114), and natural language
+  - Recursive folder scanning for comprehensive journal discovery
+  - Template-driven parsing with validation and analysis
+
+### Enhanced
+- **User Interface**: New ribbon buttons with notebook-pen and table icons for quick access
+- **Settings Interface**: Added comprehensive dashboard configuration section
+- **Content Extraction**: Improved parsing to handle nested callouts and complex markdown structures
+- **Template Integration**: Enhanced template analyzer for dashboard compatibility
+
+### Fixed
+- **Modal Scrolling**: Resolved settings tab cut-off issues with proper flexbox layout
+- **Template Processing**: Fixed date/time formatting and kebab-case title handling
+- **Content Display**: Enhanced "more/less" button functionality for content expansion
+
+### Technical
+- **New Services**: Added `DashboardParser` and `TemplateAnalyzer` for robust content processing
+- **View System**: Implemented `DashboardView` as native Obsidian view pane
+- **Type Definitions**: Added comprehensive dashboard-related type definitions
+- **CSS Integration**: Enhanced styling with native Obsidian CSS variables for theme compatibility
+
 ## [0.4.0-alpha] - 2025-06-28
 
 ### Added

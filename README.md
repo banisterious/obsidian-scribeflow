@@ -24,13 +24,22 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - Unlimited selectable metrics with drag-to-reorder
 - Settings available both in plugin settings and modal interface
 
-### 📋 **Template System** *(New in 0.4.0-alpha)*
+### 📋 **Template System**
 - **Template Management** - Create, edit, copy, and delete custom journal templates
 - **Creation Wizard** - 3-step guided workflow for template creation
 - **Plugin Integration** - Import templates from Templater and Core Templates plugins
 - **Predefined Structures** - Ready-to-use templates for common journal layouts
 - **Interactive Placeholders** - Dropdown selector for easy placeholder insertion
 - **Dynamic Processing** - Automatic word counting and metrics formatting
+
+### 📊 **Scribe Dashboard** *(New in 0.4.0)*
+- **Template-driven Parsing** - Automatically extracts journal entries from configured folders and templates
+- **Sortable Data Table** - View entries by date, title, word count, images, and source file
+- **Smart Content Preview** - Expandable journal content with configurable word limits
+- **Flexible Filtering** - Filter by date ranges (today, this week, month, year, or all time)
+- **Multi-entry Support** - Discovers multiple journal entries per file
+- **Dream Content Inclusion** - Captures both journal and dream diary content while excluding metrics
+- **Quick Access** - New ribbon buttons for instant dashboard and journal entry access
 
 ### 🔗 **Automatic Table of Contents**
 - Smart TOC link generation for year notes and master journals
@@ -46,12 +55,13 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 
 ## Quick Start
 
-1. **Access ScribeFlow**: Right-click in any note → "ScribeFlow: insert journal entry"
+1. **Access ScribeFlow**: Right-click in any note → "ScribeFlow: insert journal entry" or use the ribbon button
 2. **Choose Template**: Select from existing templates or use the default format
 3. **Create Entry**: Fill in your journal content and optionally add dream details
 4. **Add Images**: Use the smart image picker with folder and file type filtering
-5. **Create Templates**: Use the "Journal Structures" tab to create custom templates
-6. **Configure**: Customize metrics, callout names, and image preferences in settings
+5. **View Dashboard**: Click the table icon in the ribbon to access your journal overview
+6. **Create Templates**: Use the "Journal Structures" tab to create custom templates
+7. **Configure**: Set up dashboard scan folders, templates, and other preferences in settings
 
 ## Settings
 
@@ -60,6 +70,7 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - **Image Folder**: Set default folder for image selection with autosuggester
 - **File Types**: Choose which image formats to show in the picker (PNG, JPG, SVG, etc.)
 - **Dream Metrics**: Select and reorder up to any number of dream tracking metrics
+- **Scribe Dashboard**: Configure scan folders and templates for dashboard parsing, set preview word limits
 
 ## Output Format
 

@@ -9,7 +9,8 @@ export enum DashboardExportFormat {
 export enum EntryExportFormat {
     MARKDOWN = 'markdown',
     PLAIN_TEXT = 'plain-text',
-    PDF = 'pdf'
+    PDF = 'pdf',
+    IMAGE = 'image'
 }
 
 export interface DashboardExportData {

@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2025-07-01
+
+### Added
+- **Dashboard Export System**: Comprehensive export functionality for dashboard data and individual journal entries
+  - **Dashboard Data Export**: Export filtered table data in 3 formats (Markdown table, CSV, JSON)
+  - **Individual Entry Export**: Export complete journal entries in 4 formats (Markdown, Plain Text, PDF, Image)
+  - **Professional UI Integration**: Export dropdown button with Lucide icons and Material Design styling
+  - **Right-Click Context Menus**: Native Obsidian Menu API integration for individual entry exports
+  - **Comprehensive Metadata**: All exports include timestamps, filter information, and content statistics
+  - **Browser-Based Downloads**: Native file download system with timestamped filenames
+  - **Statistics Integration**: Dashboard exports include full summary statistics when available
+  - **Full Content Export**: All formats export complete journal content (not previews)
+
+### Enhanced
+- **PDF Generation**: High-quality PDF export for individual entries using html2pdf.js
+  - Professional typography with headers, metadata, and formatted content
+  - Markdown-to-HTML conversion with callout support and proper formatting
+  - Letter size formatting with proper margins and page handling
+- **Image Export**: PNG image generation using html2canvas for high-resolution output
+  - Fixed-width layout (800px) for consistent image dimensions
+  - High-resolution output (scale: 2) with proper memory management
+- **Export File Naming**: Compact timestamp format (YYYYMMDD-HHMMSS) for all exports
+  - Dashboard exports: `format-name-YYYYMMDD-HHMMSS.ext`
+  - Individual entries: `YYYYMMDD-exported-YYYYMMDD-HHMMSS.ext`
+- **Content Processing**: Enhanced format conversion with proper escaping and syntax handling
+  - Markdown table format with escaped pipe characters and preserved structure
+  - CSV format with proper quote escaping and headers
+  - JSON format with complete metadata and entry details
+
+### Performance
+- **Optimized Export System**: Efficient content processing for large datasets
+  - Asynchronous processing to prevent UI blocking
+  - Proper cleanup of blob URLs and temporary resources
+  - Memory-optimized HTML generation for better performance
+- **Bundle Size**: Increased to 1.7MB due to html2pdf.js and html2canvas libraries
+  - Performance vs functionality trade-off accepted for export capabilities
+
+### Fixed
+- **Dashboard PDF Performance**: Removed PDF export from dashboard dropdown due to performance issues
+  - Large datasets (600+ entries) would freeze Obsidian during PDF generation
+  - Maintained PDF export for individual entries where it works reliably
+- **Content Truncation**: Fixed abbreviated entries in dashboard exports
+  - All exports now use full journal content instead of preview summaries
+  - Proper paragraph preservation and formatting in exported content
+
+### Technical
+- **Service-Oriented Architecture**: Modular export system with clear separation of concerns
+  - `DashboardExporter`: Orchestrates dashboard data exports with metadata generation
+  - `EntryExporter`: Manages individual entry exports with HTML conversion
+  - `ExportFormatters`: Handles format-specific conversion logic with proper escaping
+  - `ExportButton` & `ExportContextMenu`: Professional UI components with consistent theming
+- **Type Safety**: Comprehensive TypeScript definitions with separate enums for dashboard and entry formats
+- **Error Handling**: Robust error handling with user notifications and graceful degradation
+- **Third-Party Integration**: html2pdf.js and html2canvas for professional PDF and image generation
+
 ## [0.4.1] - 2025-07-01
 
 ### Added

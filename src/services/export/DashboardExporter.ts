@@ -150,8 +150,12 @@ export class DashboardExporter {
 
     private generateFilename(prefix: string, extension: string): string {
         const now = new Date();
-        const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
-        const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS
+        const dateStr = now.getFullYear().toString() + 
+                       (now.getMonth() + 1).toString().padStart(2, '0') + 
+                       now.getDate().toString().padStart(2, '0'); // YYYYMMDD
+        const timeStr = now.getHours().toString().padStart(2, '0') + 
+                       now.getMinutes().toString().padStart(2, '0') + 
+                       now.getSeconds().toString().padStart(2, '0'); // HHMMSS
         return `${prefix}-${dateStr}-${timeStr}.${extension}`;
     }
 }

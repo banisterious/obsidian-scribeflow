@@ -21,13 +21,13 @@ export class ExportFormatters {
 
         // Main table
         content += `## Journal Entries\n\n`;
-        content += `| Date | Content Preview | Words | Images | File |\n`;
-        content += `|------|----------------|--------|--------|------|\n`;
+        content += `| Date | Content | Words | Images | File |\n`;
+        content += `|------|---------|--------|--------|------|\n`;
 
         data.entries.forEach(entry => {
-            const preview = this.escapeMarkdown(entry.preview);
+            const entryContent = this.escapeMarkdown(entry.fullContent);
             const filename = this.getFileName(entry.filePath);
-            content += `| ${entry.date} | ${preview} | ${entry.wordCount} | ${entry.imageCount} | ${filename} |\n`;
+            content += `| ${entry.date} | ${entryContent} | ${entry.wordCount} | ${entry.imageCount} | ${filename} |\n`;
         });
 
         return content;
@@ -37,13 +37,13 @@ export class ExportFormatters {
         let content = '';
         
         // CSV Header
-        content += '"Date","Content Preview","Word Count","Image Count","Filename"\n';
+        content += '"Date","Content","Word Count","Image Count","Filename"\n';
         
         // Data rows
         data.entries.forEach(entry => {
-            const preview = this.escapeCSV(entry.preview);
+            const entryContent = this.escapeCSV(entry.fullContent);
             const filename = this.escapeCSV(this.getFileName(entry.filePath));
-            content += `"${entry.date}","${preview}","${entry.wordCount}","${entry.imageCount}","${filename}"\n`;
+            content += `"${entry.date}","${entryContent}","${entry.wordCount}","${entry.imageCount}","${filename}"\n`;
         });
 
         return content;
@@ -62,7 +62,7 @@ export class ExportFormatters {
             entries: data.entries.map(entry => ({
                 date: entry.date,
                 title: entry.title,
-                preview: entry.preview,
+                fullContent: entry.fullContent,
                 wordCount: entry.wordCount,
                 imageCount: entry.imageCount,
                 filename: this.getFileName(entry.filePath),
@@ -113,8 +113,7 @@ export class ExportFormatters {
         return text
             .replace(/\|/g, '\\|')
             .replace(/\n/g, ' ')
-            .replace(/\r/g, ' ')
-            .substring(0, 100) + (text.length > 100 ? '...' : '');
+            .replace(/\r/g, ' ');
     }
 
     private escapeCSV(text: string): string {

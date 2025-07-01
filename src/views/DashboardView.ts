@@ -4,8 +4,10 @@ import { DashboardEntry, DateFilter, DashboardState, SearchResult, SearchMatch, 
 import { DashboardParser } from '../services/DashboardParser';
 import { DashboardStatisticsCalculator } from '../services/DashboardStatisticsCalculator';
 import { DashboardExporter } from '../services/export/DashboardExporter';
+import { EntryExporter } from '../services/export/EntryExporter';
 import { ExportButton } from '../ui/components/ExportButton';
-import { DashboardExportFormat } from '../services/export/types';
+import { ExportContextMenu } from '../ui/components/ExportContextMenu';
+import { DashboardExportFormat, EntryExportFormat } from '../services/export/types';
 
 export const DASHBOARD_VIEW_TYPE = 'scribeflow-dashboard';
 
@@ -15,6 +17,7 @@ export class DashboardView extends ItemView {
     private dashboardContentEl: HTMLElement;
     private parser: DashboardParser;
     private dashboardExporter: DashboardExporter;
+    private entryExporter: EntryExporter;
     private exportButton: ExportButton;
 
     constructor(leaf: WorkspaceLeaf, plugin: ScribeFlowPlugin) {
@@ -22,6 +25,7 @@ export class DashboardView extends ItemView {
         this.plugin = plugin;
         this.parser = new DashboardParser(this.app, this.plugin.settings);
         this.dashboardExporter = new DashboardExporter(this.app);
+        this.entryExporter = new EntryExporter(this.app);
         this.state = {
             entries: [],
             filteredEntries: [],
@@ -430,6 +434,16 @@ export class DashboardView extends ItemView {
         fileLink.addEventListener('click', (e) => {
             e.preventDefault();
             this.openFile(entry.filePath);
+        });
+
+        // Add right-click context menu for entry export
+        row.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const menu = ExportContextMenu.createSimple(
+                entry,
+                (entry, format) => this.handleEntryExport(entry, format)
+            );
+            menu.showAtMouseEvent(e);
         });
     }
 
@@ -972,6 +986,21 @@ export class DashboardView extends ItemView {
             }
         } catch (error) {
             console.error('Export error:', error);
+        }
+    }
+
+    private async handleEntryExport(entry: DashboardEntry, format: EntryExportFormat): Promise<void> {
+        try {
+            const result = await this.entryExporter.exportEntry(entry, format, {
+                format,
+                destination: 'file'
+            });
+
+            if (!result.success) {
+                console.error('Entry export failed:', result.message);
+            }
+        } catch (error) {
+            console.error('Entry export error:', error);
         }
     }
 }

@@ -28,11 +28,12 @@ export class DashboardParser {
         
         // Parse each file
         const entries: DashboardEntry[] = [];
+        
         for (const file of files) {
             try {
-                const entry = await this.parseJournalFile(file);
-                if (entry) {
-                    entries.push(entry);
+                const fileEntries = await this.parseJournalFile(file);
+                if (fileEntries.length > 0) {
+                    entries.push(...fileEntries);
                 }
             } catch (error) {
                 console.warn(`Failed to parse journal file ${file.path}:`, error);
@@ -96,23 +97,31 @@ export class DashboardParser {
     /**
      * Parse a single journal file to extract dashboard entry data
      */
-    private async parseJournalFile(file: TFile): Promise<DashboardEntry | null> {
+    private async parseJournalFile(file: TFile): Promise<DashboardEntry[]> {
         const content = await this.app.vault.read(file);
         
         // Check if this file contains a journal entry callout
         if (!this.containsJournalEntry(content)) {
-            return null;
+            return [];
         }
         
-        // Try to match against each parsed template
-        for (const [templateId, parsedTemplate] of this.parsedTemplates) {
-            const entry = this.tryParseWithTemplate(file, content, parsedTemplate);
-            if (entry) {
-                return entry;
+        // Extract all journal callout blocks from the file
+        const calloutBlocks = this.extractAllJournalCalloutBlocks(content);
+        const entries: DashboardEntry[] = [];
+        
+        // Process each callout block
+        for (const calloutBlock of calloutBlocks) {
+            // Try to match against each parsed template
+            for (const [templateId, parsedTemplate] of this.parsedTemplates) {
+                const entry = this.tryParseCalloutBlock(file, calloutBlock, parsedTemplate);
+                if (entry) {
+                    entries.push(entry);
+                    break; // Found a match for this callout, move to next
+                }
             }
         }
         
-        return null;
+        return entries;
     }
 
     /**
@@ -124,7 +133,7 @@ export class DashboardParser {
     }
 
     /**
-     * Try to parse file content using a specific template structure
+     * Try to parse file content using a specific template structure (legacy method)
      */
     private tryParseWithTemplate(
         file: TFile, 
@@ -138,29 +147,7 @@ export class DashboardParser {
                 return null;
             }
 
-            // Extract date from the callout header
-            const date = this.extractDateFromCallout(journalBlock);
-            if (!date) {
-                return null;
-            }
-
-            // Extract journal content (text between callout start and dream diary callout)
-            const journalContent = this.extractJournalContent(journalBlock);
-            
-            // Calculate metrics
-            const wordCount = this.calculateWordCount(journalContent);
-            const imageCount = this.countImages(journalBlock);
-            const preview = this.generatePreview(journalContent);
-
-            return {
-                date,
-                title: this.generateTitle(file),
-                preview,
-                fullContent: journalContent,
-                wordCount,
-                imageCount,
-                filePath: file.path
-            };
+            return this.tryParseCalloutBlock(file, journalBlock, template);
         } catch (error) {
             console.warn(`Failed to parse ${file.path} with template ${template.name}:`, error);
             return null;
@@ -168,37 +155,89 @@ export class DashboardParser {
     }
 
     /**
-     * Extract the journal entry callout block from file content
+     * Try to parse a specific callout block using a template structure
      */
-    private extractJournalCalloutBlock(content: string): string | null {
+    private tryParseCalloutBlock(
+        file: TFile,
+        calloutBlock: string,
+        template: ParsedTemplate
+    ): DashboardEntry | null {
+        try {
+            // Extract date from the callout header
+            const date = this.extractDateFromCallout(calloutBlock);
+            if (!date) {
+                return null;
+            }
+
+            // Extract journal content (text between callout start and dream diary callout)
+            const journalContent = this.extractJournalContent(calloutBlock);
+            
+            // Calculate metrics
+            const wordCount = this.calculateWordCount(journalContent);
+            const imageCount = this.countImages(calloutBlock);
+            const preview = this.generatePreview(journalContent);
+
+            // Generate title with date for multiple entries per file
+            const title = this.generateTitleWithDate(file, date);
+
+            return {
+                date,
+                title,
+                preview,
+                fullContent: journalContent,
+                wordCount,
+                imageCount,
+                filePath: file.path
+            };
+        } catch (error) {
+            console.warn(`Failed to parse callout block from ${file.path}:`, error);
+            return null;
+        }
+    }
+
+    /**
+     * Extract all journal entry callout blocks from file content
+     */
+    private extractAllJournalCalloutBlocks(content: string): string[] {
         const calloutName = this.settings.calloutNames.journalEntry;
         const startPattern = new RegExp(`> \\[!${calloutName}\\].*`, 'i');
         const lines = content.split('\n');
+        const calloutBlocks: string[] = [];
         
-        let startIndex = -1;
-        let endIndex = lines.length;
-        
-        // Find start of journal callout
-        for (let i = 0; i < lines.length; i++) {
+        let i = 0;
+        while (i < lines.length) {
+            // Find start of a journal callout
             if (startPattern.test(lines[i])) {
-                startIndex = i;
-                break;
+                const startIndex = i;
+                let endIndex = lines.length;
+                
+                // Find end of this callout (first line not starting with '>')
+                for (let j = startIndex + 1; j < lines.length; j++) {
+                    if (!lines[j].startsWith('>')) {
+                        endIndex = j;
+                        break;
+                    }
+                }
+                
+                const calloutBlock = lines.slice(startIndex, endIndex).join('\n');
+                calloutBlocks.push(calloutBlock);
+                
+                // Continue searching after this callout
+                i = endIndex;
+            } else {
+                i++;
             }
         }
         
-        if (startIndex === -1) {
-            return null;
-        }
-        
-        // Find end of callout (first line not starting with '>')
-        for (let i = startIndex + 1; i < lines.length; i++) {
-            if (!lines[i].startsWith('>')) {
-                endIndex = i;
-                break;
-            }
-        }
-        
-        return lines.slice(startIndex, endIndex).join('\n');
+        return calloutBlocks;
+    }
+
+    /**
+     * Extract the journal entry callout block from file content (legacy method for single callout)
+     */
+    private extractJournalCalloutBlock(content: string): string | null {
+        const blocks = this.extractAllJournalCalloutBlocks(content);
+        return blocks.length > 0 ? blocks[0] : null;
     }
 
     /**
@@ -248,14 +287,12 @@ export class DashboardParser {
     }
 
     /**
-     * Extract journal content (excluding dream diary section)
+     * Extract all content (journal + dream content) from callout block
      */
     private extractJournalContent(calloutBlock: string): string {
         const lines = calloutBlock.split('\n');
-        const journalLines: string[] = [];
-        
-        let inDreamSection = false;
-        const dreamCalloutPattern = new RegExp(`\\[!${this.settings.calloutNames.dreamDiary}\\]`, 'i');
+        const contentLines: string[] = [];
+        let inMetricsSection = false;
         
         for (const line of lines) {
             // Skip the header line and block ID line
@@ -263,29 +300,88 @@ export class DashboardParser {
                 continue;
             }
             
-            // Check if we're entering dream diary section
-            if (dreamCalloutPattern.test(line)) {
-                inDreamSection = true;
+            // Check if we're entering a dream-metrics section
+            if (line.includes('[!dream-metrics]')) {
+                inMetricsSection = true;
                 continue;
             }
             
-            // If we're not in dream section and line starts with '>', it's journal content
-            if (!inDreamSection && line.startsWith('>')) {
-                // Remove the '> ' prefix and any image callouts
-                let cleanLine = line.substring(1).trim();
+            // Check if we're exiting the metrics section (new callout or non-callout line)
+            if (inMetricsSection) {
+                // If we hit another callout or non-callout line, exit metrics section
+                if (line.includes('[!') && !line.includes('[!dream-metrics]')) {
+                    inMetricsSection = false;
+                } else if (!line.startsWith('>')) {
+                    inMetricsSection = false;
+                } else {
+                    // Still in metrics section, skip this line
+                    continue;
+                }
+            }
+            
+            // Process any line that starts with '>' (callout content)
+            if (line.startsWith('>') && !inMetricsSection) {
+                // Remove all '> ' prefixes to handle nested callouts
+                let cleanLine = line.replace(/^>+\s*/, '');
                 
-                // Skip image callout lines
-                if (cleanLine.startsWith('[!journal-page') || cleanLine.startsWith('![[')) {
+                // Skip callout headers (including nested ones like [!dream-diary], [!journal-page])
+                if (cleanLine.startsWith('[!')) {
                     continue;
                 }
                 
+                // Skip empty lines
+                if (!cleanLine) {
+                    continue;
+                }
+                
+                // Clean the line content
+                cleanLine = this.cleanLineContent(cleanLine);
+                
                 if (cleanLine) {
-                    journalLines.push(cleanLine);
+                    contentLines.push(cleanLine);
                 }
             }
         }
         
-        return journalLines.join(' ').trim();
+        return contentLines.join(' ').trim();
+    }
+
+    /**
+     * Clean line content by removing embeds and converting links to plain text
+     */
+    private cleanLineContent(line: string): string {
+        let cleaned = line;
+        
+        // Remove embeds: ![[image]] → (removed entirely)
+        cleaned = cleaned.replace(/!\[\[[^\]]+\]\]/g, '');
+        
+        // Convert wikilinks: [[link|text]] → text, [[link]] → link
+        cleaned = cleaned.replace(/\[\[([^\]|]+)(\|([^\]]+))?\]\]/g, (_match, link, _pipe, text) => {
+            return text || link;
+        });
+        
+        // Convert markdown links: [text](url) → text
+        cleaned = cleaned.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+        
+        // Strip markdown headings: ### text → text
+        cleaned = cleaned.replace(/^#{1,6}\s+/, '');
+        
+        // Convert HTML line breaks to actual line breaks
+        cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
+        
+        // Strip underline tags: <u>text</u> → text
+        cleaned = cleaned.replace(/<\/?u>/gi, '');
+        
+        // Strip span tags but keep content: <span class="...">text</span> → text
+        cleaned = cleaned.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
+        
+        // Strip any remaining callout syntax that might have slipped through
+        cleaned = cleaned.replace(/>\s*\[![^\]]*\]\s*/g, '');
+        
+        // Clean up multiple spaces but preserve line breaks
+        cleaned = cleaned.replace(/[ \t]+/g, ' ').trim();
+        
+        return cleaned;
     }
 
     /**
@@ -332,6 +428,11 @@ export class DashboardParser {
      */
     private generateTitle(file: TFile): string {
         return file.basename;
+    }
+
+    private generateTitleWithDate(file: TFile, date: string): string {
+        // Format: "filename - YYYY-MM-DD" for multiple entries per file
+        return `${file.basename} - ${date}`;
     }
 
     /**

@@ -26,7 +26,7 @@ export class JournalEntryModal extends Modal {
 
         const headerEl = contentEl.createDiv('sfp-modal-header');
         const headerContent = headerEl.createDiv('sfp-header-content');
-        headerContent.createEl('h2', { text: 'Create ScribeFlow Entry' });
+        headerContent.createEl('h2', { text: 'ScribeFlow Entry' });
         
         // Templates dropdown
         const templatesContainer = headerEl.createDiv('sfp-templates-container');

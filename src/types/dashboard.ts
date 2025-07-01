@@ -9,6 +9,7 @@ export interface DashboardEntry {
 }
 
 export enum DateFilter {
+    ALL_TIME = 'all-time',
     TODAY = 'today',
     THIS_WEEK = 'this-week',
     THIS_MONTH = 'this-month',

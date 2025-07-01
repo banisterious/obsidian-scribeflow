@@ -18,7 +18,7 @@ export class DashboardView extends ItemView {
         this.state = {
             entries: [],
             filteredEntries: [],
-            currentFilter: DateFilter.THIS_MONTH,
+            currentFilter: DateFilter.ALL_TIME,
             sortColumn: 'date',
             sortDirection: 'desc'
         };
@@ -129,6 +129,7 @@ export class DashboardView extends ItemView {
         
         const select = filterContainer.createEl('select');
         const filterOptions = [
+            { value: DateFilter.ALL_TIME, label: 'All Time' },
             { value: DateFilter.TODAY, label: 'Today' },
             { value: DateFilter.THIS_WEEK, label: 'This Week' },
             { value: DateFilter.THIS_MONTH, label: 'This Month' },
@@ -151,10 +152,6 @@ export class DashboardView extends ItemView {
             this.filterEntries();
             this.renderTable(container);
         });
-        
-        // Add keyboard shortcut info
-        const shortcutHint = controls.createDiv('keyboard-shortcuts');
-        shortcutHint.innerHTML = '<small>Press <kbd>R</kbd> to refresh, <kbd>/</kbd> to focus filter</small>';
         
         // Add refresh event listener
         container.addEventListener('refresh', () => {
@@ -295,15 +292,15 @@ export class DashboardView extends ItemView {
 
     private toggleContentExpansion(previewDiv: HTMLElement, button: HTMLButtonElement): void {
         const isCollapsed = previewDiv.classList.contains('collapsed');
+        const fullText = previewDiv.getAttribute('data-full-text') || '';
         
         if (isCollapsed) {
-            previewDiv.textContent = previewDiv.getAttribute('data-full-text') || '';
+            previewDiv.textContent = fullText;
             previewDiv.classList.remove('collapsed');
             previewDiv.classList.add('expanded');
             button.textContent = 'less';
         } else {
-            const fullText = previewDiv.getAttribute('data-full-text') || '';
-            const words = fullText.split(/\s+/);
+            const words = fullText.split(/\s+/).filter(word => word.length > 0);
             const previewWords = words.slice(0, this.plugin.settings.dashboardSettings.previewWordLimit);
             const preview = previewWords.join(' ') + (words.length > previewWords.length ? '...' : '');
             previewDiv.textContent = preview;
@@ -366,6 +363,9 @@ export class DashboardView extends ItemView {
                     
                 case DateFilter.THIS_YEAR:
                     return entryDate.getFullYear() === now.getFullYear();
+                    
+                case DateFilter.ALL_TIME:
+                    return true;
                     
                 default:
                     return true;

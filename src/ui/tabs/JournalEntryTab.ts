@@ -2,6 +2,7 @@ import { Notice, TFile, Modal, MarkdownView } from 'obsidian';
 import ScribeFlowPlugin from '../../main';
 import { FormState, MetricDefinition } from '../../types';
 import { TemplateProcessingService } from '../../services/TemplateProcessingService';
+import { updateTableOfContents } from '../../logic/toc-updater';
 
 export class JournalEntryTab {
     containerEl: HTMLElement;
@@ -758,6 +759,19 @@ export class JournalEntryTab {
             
             // Insert into active editor
             await this.insertIntoActiveEditor(processedContent);
+            
+            // Update TOC after successful insertion
+            const dateBlockID = `^${this.formState.date.replace(/-/g, '')}`;
+            if (this.plugin.settings.tocSettings.updateMasterJournals || this.plugin.settings.tocSettings.updateYearNote) {
+                // Wait for editor to commit changes, then update TOCs
+                setTimeout(async () => {
+                    try {
+                        await updateTableOfContents(this.plugin.app, this.plugin.settings, this.formState, dateBlockID);
+                    } catch (error) {
+                        console.error('TOC update failed:', error);
+                    }
+                }, 500);
+            }
             
             // Show success message
             new Notice('Journal entry inserted successfully!');

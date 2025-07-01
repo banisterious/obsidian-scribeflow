@@ -809,7 +809,9 @@ export class TemplateWizardModal extends Modal {
                     { value: '{{date-long}}', label: '{{date-long}} - Long format (June 28, 2025)' },
                     { value: '{{date-month-day}}', label: '{{date-month-day}} - Month and day (June 28)' },
                     { value: '{{date-compact}}', label: '{{date-compact}} - Compact format (20250628)' },
-                    { value: '{{time}}', label: '{{time}} - Current time (14:30)' }
+                    { value: '{{time}}', label: '{{time}} - Current time (14:30)' },
+                    { value: '{{time-12}}', label: '{{time-12}} - 12-hour with AM/PM (4:30 PM)' },
+                    { value: '{{time-12-lower}}', label: '{{time-12-lower}} - 12-hour with am/pm (4:30pm)' }
                 ]
             },
             {
@@ -818,7 +820,10 @@ export class TemplateWizardModal extends Modal {
                     { value: '{{content}}', label: '{{content}} - Combined journal + dream content' },
                     { value: '{{journal-content}}', label: '{{journal-content}} - Journal text only' },
                     { value: '{{dream-content}}', label: '{{dream-content}} - Dream text only' },
-                    { value: '{{title}}', label: '{{title}} - Dream title' }
+                    { value: '{{title}}', label: '{{title}} - Dream title' },
+                    { value: '{{dream-title-kebab}}', label: '{{dream-title-kebab}} - Dream title in kebab-case' },
+                    { value: '{{dream-image}}', label: '{{dream-image}} - Dream image embed' },
+                    { value: '{{journal-image}}', label: '{{journal-image}} - Journal image embed' }
                 ]
             },
             {

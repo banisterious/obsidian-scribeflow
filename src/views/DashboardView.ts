@@ -28,7 +28,7 @@ export class DashboardView extends ItemView {
                 { name: 'content', label: 'Content', enabled: true },
                 { name: 'file', label: 'Filename', enabled: false }
             ],
-            headerCollapsed: false,
+            headerCollapsed: true,
             statistics: DashboardStatisticsCalculator.calculateStatistics([], DateFilter.ALL_TIME),
             statisticsGroupedView: this.plugin.settings.dashboardSettings.statisticsGroupedView ?? false
         };
@@ -96,7 +96,7 @@ export class DashboardView extends ItemView {
         const headerTop = header.createDiv('dashboard-header-top');
         
         const titleSection = headerTop.createDiv('dashboard-title-section');
-        titleSection.createEl('h2', { text: 'Scribe Dashboard' });
+        titleSection.createEl('h1', { text: 'Scribe Dashboard' });
         
         // Add controls (toggle + refresh)
         const controls = headerTop.createDiv('dashboard-header-controls');
@@ -520,6 +520,9 @@ export class DashboardView extends ItemView {
             this.state.searchResults = [];
         }
         
+        // Apply current sort
+        this.applySortToFilteredEntries();
+        
         // Update statistics based on filtered entries
         this.updateStatistics();
     }
@@ -622,6 +625,13 @@ export class DashboardView extends ItemView {
         const direction = this.state.sortColumn === column && this.state.sortDirection === 'asc' ? 'desc' : 'asc';
         this.state.sortColumn = column;
         this.state.sortDirection = direction;
+        
+        this.applySortToFilteredEntries();
+    }
+
+    private applySortToFilteredEntries(): void {
+        const column = this.state.sortColumn;
+        const direction = this.state.sortDirection;
         
         this.state.filteredEntries.sort((a, b) => {
             let aVal: any, bVal: any;
@@ -770,10 +780,11 @@ export class DashboardView extends ItemView {
     private renderStatisticsHeader(container: HTMLElement): void {
         const header = container.createDiv('sfp-dashboard-statistics-header');
         
-        // Layout toggle button
+        // Layout toggle button with dynamic text
+        const buttonText = this.state.statisticsGroupedView ? 'Show Grid View' : 'Group by Category';
         const toggleButton = header.createEl('button', {
             cls: 'sfp-dashboard-statistics-toggle',
-            text: 'Group by Category'
+            text: buttonText
         });
         
         toggleButton.setAttribute('aria-pressed', this.state.statisticsGroupedView.toString());

@@ -1886,8 +1886,8 @@
 
 /* Dashboard Header and Stats */
 .dashboard-header {
-    margin-bottom: 24px;
-    padding-bottom: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
     border-bottom: 1px solid var(--background-modifier-border);
 }
 
@@ -1895,7 +1895,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
+}
+
+.dashboard-title-section h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.dashboard-subtitle {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: var(--text-muted);
 }
 
 .dashboard-title-section h2 {

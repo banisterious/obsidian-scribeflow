@@ -1,7 +1,8 @@
 import { ItemView, WorkspaceLeaf, prepareSimpleSearch, SearchComponent } from 'obsidian';
 import ScribeFlowPlugin from '../main';
-import { DashboardEntry, DateFilter, DashboardState, SearchResult, SearchMatch } from '../types/dashboard';
+import { DashboardEntry, DateFilter, DashboardState, SearchResult, SearchMatch, DashboardStatistics, StatCard } from '../types/dashboard';
 import { DashboardParser } from '../services/DashboardParser';
+import { DashboardStatisticsCalculator } from '../services/DashboardStatisticsCalculator';
 
 export const DASHBOARD_VIEW_TYPE = 'scribeflow-dashboard';
 
@@ -27,7 +28,9 @@ export class DashboardView extends ItemView {
                 { name: 'content', label: 'Content', enabled: true },
                 { name: 'file', label: 'Filename', enabled: false }
             ],
-            headerCollapsed: false
+            headerCollapsed: false,
+            statistics: DashboardStatisticsCalculator.calculateStatistics([], DateFilter.ALL_TIME),
+            statisticsGroupedView: this.plugin.settings.dashboardSettings.statisticsGroupedView
         };
     }
 
@@ -63,6 +66,11 @@ export class DashboardView extends ItemView {
         
         // Render header
         this.renderHeader(container);
+        
+        // Render statistics cards (only if header not collapsed)
+        if (!this.state.headerCollapsed) {
+            this.renderStatisticsCards(container);
+        }
         
         // Render search section (only if header not collapsed)
         if (!this.state.headerCollapsed) {
@@ -509,6 +517,9 @@ export class DashboardView extends ItemView {
             this.state.filteredEntries = dateFiltered;
             this.state.searchResults = [];
         }
+        
+        // Update statistics based on filtered entries
+        this.updateStatistics();
     }
     
     private filterEntriesByDate(): DashboardEntry[] {
@@ -736,5 +747,168 @@ export class DashboardView extends ItemView {
                 </div>`;
             }
         }
+    }
+
+    // Statistics Cards Methods
+    private renderStatisticsCards(container: HTMLElement): void {
+        const statisticsContainer = container.createDiv('sfp-dashboard-statistics-container');
+        
+        // Render layout toggle and statistics cards
+        this.renderStatisticsHeader(statisticsContainer);
+        
+        if (this.state.statisticsGroupedView) {
+            // Layout A: Grouped with Headers
+            this.renderGroupedStatistics(statisticsContainer);
+        } else {
+            // Layout B: Flat Grid (default)
+            this.renderFlatGridStatistics(statisticsContainer);
+        }
+    }
+
+    private renderStatisticsHeader(container: HTMLElement): void {
+        const header = container.createDiv('sfp-dashboard-statistics-header');
+        
+        // Layout toggle button
+        const toggleButton = header.createEl('button', {
+            cls: 'sfp-dashboard-statistics-toggle',
+            text: 'Group by Category'
+        });
+        
+        toggleButton.setAttribute('aria-pressed', this.state.statisticsGroupedView.toString());
+        toggleButton.addEventListener('click', () => this.toggleStatisticsLayout());
+    }
+
+    private toggleStatisticsLayout(): void {
+        this.state.statisticsGroupedView = !this.state.statisticsGroupedView;
+        
+        // Save preference to settings
+        this.plugin.settings.dashboardSettings.statisticsGroupedView = this.state.statisticsGroupedView;
+        this.plugin.saveSettings();
+        
+        // Re-render statistics section
+        this.refreshStatisticsCards();
+    }
+
+    private renderGroupedStatistics(container: HTMLElement): void {
+        // Group 1: Overall Progress / Summary
+        this.renderStatisticsGroup(container, 'Overall Progress', [
+            {label: 'Total Entries', value: this.state.statistics.totalEntries, category: 'progress'},
+            {label: 'Total Words', value: this.state.statistics.totalWords.toLocaleString(), category: 'progress'},
+            {label: 'Avg Words/Entry', value: Math.round(this.state.statistics.averageWordsPerEntry), category: 'progress'}
+        ]);
+        
+        // Group 2: Consistency
+        this.renderStatisticsGroup(container, 'Consistency', [
+            {label: 'Current Streak', value: this.state.statistics.currentJournalingStreak, suffix: 'days', category: 'consistency'},
+            {label: 'Longest Streak', value: this.state.statistics.longestJournalingStreak, suffix: 'days', category: 'consistency'},
+            {label: 'Days Journaled', value: this.state.statistics.daysJournaled, category: 'consistency'},
+            {label: 'Frequency', value: this.state.statistics.journalingFrequencyPercent.toFixed(1), suffix: '%', category: 'consistency'}
+        ]);
+        
+        // Group 3: Content Insights
+        this.renderStatisticsGroup(container, 'Content Insights', [
+            {label: 'Median Words', value: this.state.statistics.medianWordCount, category: 'content'},
+            {label: 'With Images', value: this.state.statistics.entriesWithImagesPercent.toFixed(1), suffix: '%', category: 'content'},
+            {label: 'With Dreams', value: this.state.statistics.entriesWithDreamDiaryPercent.toFixed(1), suffix: '%', category: 'content'}
+        ]);
+        
+        // Group 4: Pattern Recognition
+        this.renderStatisticsGroup(container, 'Patterns', [
+            {label: 'Most Active Day', value: this.state.statistics.mostActiveDayOfWeek, category: 'pattern'}
+        ]);
+    }
+
+    private renderFlatGridStatistics(container: HTMLElement): void {
+        const gridContainer = container.createDiv('sfp-dashboard-statistics-grid');
+        this.getAllStatistics().forEach(stat => {
+            this.renderStatCard(gridContainer, stat.label, stat.value, stat.suffix, stat.category);
+        });
+    }
+
+    private renderStatisticsGroup(container: HTMLElement, title: string, stats: StatCard[]): void {
+        const group = container.createDiv('sfp-dashboard-statistics-group');
+        
+        const groupTitle = group.createDiv('sfp-dashboard-statistics-group-title');
+        groupTitle.textContent = title;
+        
+        const groupGrid = group.createDiv('sfp-dashboard-statistics-grid');
+        stats.forEach(stat => {
+            this.renderStatCard(groupGrid, stat.label, stat.value, stat.suffix, stat.category);
+        });
+    }
+
+    private renderStatCard(container: HTMLElement, label: string, value: string | number, suffix?: string, category?: string): HTMLElement {
+        const card = container.createDiv('sfp-dashboard-stat-card');
+        
+        if (category && !this.state.statisticsGroupedView) {
+            card.addClass(`category-${category}`);
+        }
+        
+        const valueEl = card.createDiv('stat-value');
+        if (typeof value === 'number' && value > 9999) {
+            valueEl.addClass('large-number');
+        }
+        if (typeof value === 'string' && isNaN(Number(value))) {
+            valueEl.addClass('text-value');
+        }
+        
+        valueEl.textContent = value.toString();
+        
+        if (suffix) {
+            const suffixEl = valueEl.createSpan('stat-suffix');
+            suffixEl.textContent = suffix;
+        }
+        
+        const labelEl = card.createDiv('stat-label');
+        labelEl.textContent = label;
+        
+        return card;
+    }
+
+    private getAllStatistics(): StatCard[] {
+        return [
+            // Overall Progress
+            {label: 'Total Entries', value: this.state.statistics.totalEntries, category: 'progress'},
+            {label: 'Total Words', value: this.state.statistics.totalWords.toLocaleString(), category: 'progress'},
+            {label: 'Avg Words/Entry', value: Math.round(this.state.statistics.averageWordsPerEntry), category: 'progress'},
+            
+            // Consistency
+            {label: 'Current Streak', value: this.state.statistics.currentJournalingStreak, suffix: 'days', category: 'consistency'},
+            {label: 'Longest Streak', value: this.state.statistics.longestJournalingStreak, suffix: 'days', category: 'consistency'},
+            {label: 'Days Journaled', value: this.state.statistics.daysJournaled, category: 'consistency'},
+            {label: 'Frequency', value: this.state.statistics.journalingFrequencyPercent.toFixed(1), suffix: '%', category: 'consistency'},
+            
+            // Content Insights
+            {label: 'Median Words', value: this.state.statistics.medianWordCount, category: 'content'},
+            {label: 'With Images', value: this.state.statistics.entriesWithImagesPercent.toFixed(1), suffix: '%', category: 'content'},
+            {label: 'With Dreams', value: this.state.statistics.entriesWithDreamDiaryPercent.toFixed(1), suffix: '%', category: 'content'},
+            
+            // Pattern Recognition
+            {label: 'Most Active Day', value: this.state.statistics.mostActiveDayOfWeek, category: 'pattern'}
+        ];
+    }
+
+    private refreshStatisticsCards(): void {
+        const statisticsContainer = this.dashboardContentEl.querySelector('.sfp-dashboard-statistics-container');
+        if (statisticsContainer) {
+            statisticsContainer.remove();
+        }
+        
+        const container = this.dashboardContentEl.querySelector('.scribeflow-dashboard') as HTMLElement;
+        if (container) {
+            // Find the header and insert statistics after it
+            const header = container.querySelector('.dashboard-header');
+            if (header && !this.state.headerCollapsed) {
+                this.renderStatisticsCards(container);
+            }
+        }
+    }
+
+    private updateStatistics(): void {
+        this.state.statistics = DashboardStatisticsCalculator.calculateStatistics(
+            this.state.filteredEntries,
+            this.state.currentFilter,
+            this.state.searchQuery
+        );
     }
 }

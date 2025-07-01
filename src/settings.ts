@@ -24,7 +24,8 @@ export const DEFAULT_SETTINGS: ScribeFlowPluginSettings = {
     dashboardSettings: {
         scanFolders: [],
         parseTemplates: [],
-        previewWordLimit: 100
+        previewWordLimit: 100,
+        statisticsGroupedView: false
     }
 };
 

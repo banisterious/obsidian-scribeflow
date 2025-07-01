@@ -27,6 +27,39 @@ export interface DashboardState {
     searchResults: SearchResult[];
     searchFields: SearchField[];
     headerCollapsed: boolean;
+    statistics: DashboardStatistics;
+    statisticsGroupedView: boolean;
+}
+
+export interface DashboardStatistics {
+    // Group 1: Overall Progress / Summary
+    totalEntries: number;
+    totalWords: number;
+    averageWordsPerEntry: number;
+    
+    // Group 2: Consistency
+    currentJournalingStreak: number;
+    longestJournalingStreak: number;
+    daysJournaled: number;
+    journalingFrequencyPercent: number;
+    
+    // Group 3: Content Insights
+    medianWordCount: number;
+    entriesWithImagesPercent: number;
+    entriesWithDreamDiaryPercent: number;
+    
+    // Group 4: Pattern Recognition
+    mostActiveDayOfWeek: string;
+    
+    // Supporting data for calculations
+    totalDaysInPeriod: number;
+}
+
+export interface StatCard {
+    label: string;
+    value: string | number;
+    suffix?: string;
+    category?: 'progress' | 'consistency' | 'content' | 'pattern';
 }
 
 export interface SearchResult {

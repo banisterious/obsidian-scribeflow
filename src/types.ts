@@ -26,6 +26,7 @@ export interface ScribeFlowPluginSettings {
         scanFolders: string[];
         parseTemplates: string[];
         previewWordLimit: number;
+        statisticsGroupedView: boolean;
     };
 }
 

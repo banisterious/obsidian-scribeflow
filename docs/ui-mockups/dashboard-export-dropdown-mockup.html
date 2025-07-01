@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScribeFlow Export Dropdown Mockup</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1e1e1e;
+            color: #dcddde;
+            margin: 40px;
+            padding: 20px;
+        }
+
+        .mockup-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .mockup-title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .dashboard-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 12px;
+            background: #2f3136;
+            border-radius: 6px;
+            border: 1px solid #4f545c;
+            margin-bottom: 20px;
+        }
+
+        .filter-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-container label {
+            font-size: 14px;
+            color: #dcddde;
+        }
+
+        .filter-container select {
+            background: #36393f;
+            color: #dcddde;
+            border: 1px solid #4f545c;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 6px 12px;
+            background: #36393f;
+            border: 1px solid #4f545c;
+            border-radius: 4px;
+            color: #dcddde;
+            font-size: 13px;
+        }
+
+        .search-options {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .search-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #b9bbbe;
+        }
+
+        .search-option input[type="checkbox"] {
+            accent-color: #5865f2;
+        }
+
+        /* Export Button and Dropdown */
+        .export-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .export-button {
+            background: #5865f2;
+            border: 1px solid #4f545c;
+            border-radius: 4px;
+            padding: 8px 16px;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .export-button:hover {
+            background: #4752c4;
+        }
+
+        .export-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #36393f;
+            border: 1px solid #4f545c;
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            min-width: 220px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .export-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #dcddde;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #4f545c;
+        }
+
+        .export-option:last-child {
+            border-bottom: none;
+        }
+
+        .export-option:hover {
+            background: #4f545c;
+        }
+
+        .export-option-icon {
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+            flex-shrink: 0;
+        }
+
+        .export-option-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .export-option-title {
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .export-option-description {
+            font-size: 11px;
+            color: #b9bbbe;
+            opacity: 0.9;
+        }
+
+        /* Mockup States */
+        .state-container {
+            margin: 30px 0;
+        }
+
+        .state-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #ffffff;
+            border-bottom: 1px solid #4f545c;
+            padding-bottom: 5px;
+        }
+
+        .demo-note {
+            background: #2f3136;
+            border: 1px solid #4f545c;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 20px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .demo-note strong {
+            color: #5865f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="mockup-container">
+        <h1 class="mockup-title">ScribeFlow Export Dropdown Mockup</h1>
+        
+        <div class="demo-note">
+            <strong>Context:</strong> This mockup shows the export dropdown as it would appear in the dashboard controls section, positioned after the search functionality. The dropdown uses Lucide icons and provides clear visual hierarchy for the three export options.
+        </div>
+
+        <div class="state-container">
+            <h2 class="state-title">Dashboard Controls with Export Button</h2>
+            <div class="dashboard-controls">
+                <!-- Filter Section -->
+                <div class="filter-container">
+                    <label>Filter:</label>
+                    <select>
+                        <option>All Time</option>
+                    </select>
+                </div>
+
+                <!-- Search Section -->
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <input type="text" placeholder="Search entries..." />
+                    </div>
+                    <div class="search-options">
+                        <div class="search-option">
+                            <input type="checkbox" checked />
+                            <label>Content</label>
+                        </div>
+                        <div class="search-option">
+                            <input type="checkbox" />
+                            <label>Filename</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Section -->
+                <div class="export-container">
+                    <button class="export-button">
+                        <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                        Export
+                        <i data-lucide="chevron-down" style="width: 12px; height: 12px; opacity: 0.7;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="state-container">
+            <h2 class="state-title">Export Dropdown (Expanded State)</h2>
+            <div class="dashboard-controls">
+                <!-- Filter Section -->
+                <div class="filter-container">
+                    <label>Filter:</label>
+                    <select>
+                        <option>All Time</option>
+                    </select>
+                </div>
+
+                <!-- Search Section -->
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <input type="text" placeholder="Search entries..." />
+                    </div>
+                    <div class="search-options">
+                        <div class="search-option">
+                            <input type="checkbox" checked />
+                            <label>Content</label>
+                        </div>
+                        <div class="search-option">
+                            <input type="checkbox" />
+                            <label>Filename</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Section with Dropdown -->
+                <div class="export-container">
+                    <button class="export-button">
+                        <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                        Export
+                        <i data-lucide="chevron-up" style="width: 12px; height: 12px; opacity: 0.7;"></i>
+                    </button>
+                    
+                    <!-- Export Dropdown -->
+                    <div class="export-dropdown">
+                        <div class="export-option">
+                            <i data-lucide="clipboard" class="export-option-icon"></i>
+                            <div class="export-option-content">
+                                <div class="export-option-title">Copy as Markdown Table</div>
+                                <div class="export-option-description">Copy formatted table to clipboard</div>
+                            </div>
+                        </div>
+                        <div class="export-option">
+                            <i data-lucide="file-spreadsheet" class="export-option-icon"></i>
+                            <div class="export-option-content">
+                                <div class="export-option-title">Save as CSV File</div>
+                                <div class="export-option-description">Export data for Excel or analysis</div>
+                            </div>
+                        </div>
+                        <div class="export-option">
+                            <i data-lucide="braces" class="export-option-icon"></i>
+                            <div class="export-option-content">
+                                <div class="export-option-title">Save as JSON File</div>
+                                <div class="export-option-description">Export structured data with metadata</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-note">
+            <strong>Design Notes:</strong>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li><strong>Icons:</strong> Using Lucide icons for consistency with Obsidian's design language</li>
+                <li><strong>Layout:</strong> Dropdown aligned to the right edge of the button for better screen edge handling</li>
+                <li><strong>Descriptions:</strong> Each option includes a helpful subtitle explaining the use case</li>
+                <li><strong>Visual Hierarchy:</strong> Clear distinction between title and description text</li>
+                <li><strong>Hover States:</strong> Subtle background changes on hover for better UX</li>
+                <li><strong>Button State:</strong> Chevron changes from down to up when dropdown is open</li>
+            </ul>
+        </div>
+
+        <div class="state-container">
+            <h2 class="state-title">Responsive Behavior</h2>
+            <div style="width: 500px; margin: 0 auto;">
+                <div class="dashboard-controls" style="flex-direction: column; gap: 12px;">
+                    <!-- Filter Section -->
+                    <div class="filter-container">
+                        <label>Filter:</label>
+                        <select>
+                            <option>All Time</option>
+                        </select>
+                    </div>
+
+                    <!-- Search Section -->
+                    <div class="search-container" style="max-width: none;">
+                        <div class="search-input-wrapper">
+                            <input type="text" placeholder="Search entries..." />
+                        </div>
+                        <div class="search-options" style="justify-content: center;">
+                            <div class="search-option">
+                                <input type="checkbox" checked />
+                                <label>Content</label>
+                            </div>
+                            <div class="search-option">
+                                <input type="checkbox" />
+                                <label>Filename</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export Section -->
+                    <div class="export-container" style="align-self: center;">
+                        <button class="export-button">
+                            <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                            Export
+                            <i data-lucide="chevron-down" style="width: 12px; height: 12px; opacity: 0.7;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="demo-note" style="margin-top: 15px;">
+                <strong>Mobile/Narrow View:</strong> Controls stack vertically while maintaining usability and visual hierarchy.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

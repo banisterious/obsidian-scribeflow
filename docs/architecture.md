@@ -200,9 +200,11 @@ The ScribeFlow plugin features a comprehensive dashboard system that provides an
 ### Dashboard Features
 *   **Template-Driven Parsing**: Analyzes journal entries based on selected templates to extract structured data
 *   **Multi-Folder Scanning**: Recursively scans configured folders for journal entries across all nested subdirectories
+*   **Advanced Search System**: Native Obsidian search component with real-time filtering, highlighting, and debounced input
 *   **Date Range Filtering**: Provides preset date filters (Today, This Week, This Month, Last 30 Days, This Year) for content analysis
-*   **Sortable Data Tables**: Interactive tables with clickable column headers for sorting by date, title, word count, or image count
-*   **Content Previews**: Expandable content previews with configurable word limits and "show more/less" functionality
+*   **Sortable Data Tables**: Interactive tables with clickable column headers for sorting by date, content, word count, image count, and file
+*   **Content Previews**: Expandable content previews with configurable word limits (default 100 words) and "show more/less" functionality
+*   **Collapsible Interface**: Toggle button to hide header and search sections for maximum table viewing space
 *   **Summary Statistics**: Real-time statistics showing total entries, filtered results, average word count, and monthly activity
 *   **File Navigation**: Direct links to journal files for seamless editing workflow
 *   **Native Styling**: Consistent with Obsidian's theme system using CSS custom properties
@@ -213,21 +215,40 @@ The ScribeFlow plugin features a comprehensive dashboard system that provides an
 *   **Template Validation**: Ensures selected templates contain required placeholders for content extraction
 *   **Multi-Format Date Support**: Handles ISO dates (YYYY-MM-DD), compact dates (YYYYMMDD), and natural language dates
 *   **Callout-Based Parsing**: Extracts content from structured markdown callouts using configurable callout names
+*   **Advanced Content Processing**: Intelligent parsing that preserves paragraph structure and formatting
 *   **Real-Time Updates**: Dynamic content filtering and statistics calculation without page reloads
+
+### Content Processing Pipeline
+The dashboard employs a sophisticated content processing system that maintains readability while extracting structured data:
+
+**Parsing Phase:**
+*   **Callout Detection**: Identifies journal entry callouts and nested dream diary sections
+*   **Line Processing**: Removes callout prefixes while preserving content structure
+*   **Empty Line Preservation**: Maintains empty lines as paragraph break markers
+*   **Syntax Cleaning**: Strips markdown/HTML syntax while preserving readable text
+
+**Formatting Phase:**
+*   **Paragraph Reconstruction**: Converts empty line markers to proper paragraph breaks (`\n\n`)
+*   **HTML Generation**: Wraps paragraphs in `<div>` elements with proper spacing
+*   **Preview Generation**: Creates word-limited previews while maintaining paragraph structure
+*   **Search Integration**: Applies highlighting while preserving paragraph formatting
 
 ### Dashboard Components
 
 **DashboardView.ts:**
 *   **View Pane Integration**: Dedicated Obsidian view pane (not modal) for persistent dashboard access
-*   **Header Section**: Title, subtitle, refresh functionality, and summary statistics display
+*   **Collapsible Header**: Title, subtitle, summary statistics, and toggle/refresh controls with collapse functionality
+*   **Native Search Component**: Obsidian SearchComponent with content and filename filtering, highlighting, and keyboard shortcuts
 *   **Filter Controls**: Date range selection with preset options and custom range support
-*   **Data Table**: Sortable columns for Date, Title, Journal Entry, Word Count, Images, and File
+*   **Data Table**: Sortable columns for Date, Journal Entry, Word Count, Images, and File with optimized layout
 *   **Responsive Layout**: Adaptive design that works across different screen sizes and themes
 
 **DashboardParser.ts:**
 *   **Content Extraction**: Parses journal callouts to extract dates, content, and metadata
 *   **Template Matching**: Attempts to match file content against selected template structures
 *   **Date Normalization**: Converts various date formats to standardized ISO format for consistency
+*   **Paragraph Preservation**: Maintains original paragraph structure by preserving empty lines as paragraph breaks
+*   **Content Cleaning**: Removes markdown syntax while preserving readable text and formatting structure
 *   **Word Counting**: Calculates accurate word counts from extracted journal content
 *   **Image Detection**: Counts embedded images within journal callout blocks
 
@@ -236,10 +257,28 @@ The ScribeFlow plugin features a comprehensive dashboard system that provides an
 *   **Template Validation**: Ensures templates contain minimum required elements (journal-content, date placeholders)
 *   **Structure Analysis**: Analyzes template structure to determine optimal parsing strategies
 
+### Dashboard Search System
+
+The dashboard features a comprehensive search system that provides real-time filtering and highlighting of journal entries.
+
+**Search Features:**
+*   **Native Obsidian Integration**: Uses Obsidian's SearchComponent for consistent styling and behavior
+*   **Multi-Field Search**: Search across journal content and filenames with individual field toggles
+*   **Real-Time Filtering**: Debounced search with 300ms delay for optimal performance
+*   **Result Highlighting**: Visual highlighting of matched terms in titles, content, and filenames
+*   **Keyboard Shortcuts**: Ctrl+F to focus search field, Esc to clear search and highlighting
+*   **Smart Clear Handling**: Clear button properly removes search query and visual highlighting
+
+**Search Implementation:**
+*   **Event Handling**: Multiple event listeners (input, change, blur) to capture all clear scenarios
+*   **Debounced Updates**: Prevents excessive filtering during typing for better performance
+*   **State Management**: Search query and results integrated into dashboard state for consistency
+*   **Visual Feedback**: Search results counter shows number of matching entries
+
 ### Dashboard Settings Integration
 *   **Scan Folders Configuration**: Multi-folder selection with folder suggestion and validation
 *   **Template Selection**: Choose which templates to use for content parsing from available templates
-*   **Preview Word Limit**: Configurable word count for content previews (default: 50 words)
+*   **Preview Word Limit**: Configurable word count for content previews (default: 100 words)
 *   **Settings Persistence**: All configuration saved to plugin settings with automatic refresh
 
 ### User Experience

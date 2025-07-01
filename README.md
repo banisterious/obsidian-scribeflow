@@ -32,10 +32,12 @@ A modern Obsidian plugin for creating structured journal entries with dream diar
 - **Interactive Placeholders** - Dropdown selector for easy placeholder insertion
 - **Dynamic Processing** - Automatic word counting and metrics formatting
 
-### 📊 **Scribe Dashboard** *(New in 0.4.0)*
+### 📊 **Scribe Dashboard** *(Enhanced in 0.4.1)*
 - **Template-driven Parsing** - Automatically extracts journal entries from configured folders and templates
-- **Sortable Data Table** - View entries by date, title, word count, images, and source file
-- **Smart Content Preview** - Expandable journal content with configurable word limits
+- **Advanced Search System** - Native Obsidian search with real-time filtering, highlighting, and keyboard shortcuts
+- **Sortable Data Table** - View entries by date, journal content, word count, images, and source file
+- **Smart Content Preview** - Expandable journal content with configurable word limits (default 100 words)
+- **Collapsible Interface** - Toggle button to hide header and search for maximum table viewing space
 - **Flexible Filtering** - Filter by date ranges (today, this week, month, year, or all time)
 - **Multi-entry Support** - Discovers multiple journal entries per file
 - **Dream Content Inclusion** - Captures both journal and dream diary content while excluding metrics

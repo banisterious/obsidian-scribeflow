@@ -69,6 +69,12 @@ export default class ScribeFlowPlugin extends Plugin {
 
     async loadSettings() {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        
+        // Migrate old settings: update preview word limit to 100
+        if (this.settings.dashboardSettings.previewWordLimit === 50 || this.settings.dashboardSettings.previewWordLimit === 200) {
+            this.settings.dashboardSettings.previewWordLimit = 100;
+            await this.saveSettings();
+        }
     }
 
     async saveSettings() {

@@ -316,10 +316,10 @@ export class JournalSettingsTab {
             .setName('Preview word limit')
             .setDesc('Number of words to show in the journal entry preview')
             .addText(text => text
-                .setPlaceholder('50')
+                .setPlaceholder('100')
                 .setValue(String(this.plugin.settings.dashboardSettings.previewWordLimit))
                 .onChange(async (value) => {
-                    const numValue = parseInt(value) || 50;
+                    const numValue = parseInt(value) || 100;
                     this.plugin.settings.dashboardSettings.previewWordLimit = numValue;
                     await this.plugin.saveSettings();
                 }));

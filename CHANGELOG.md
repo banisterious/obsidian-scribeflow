@@ -7,7 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.0] - 2025-01-14
+## [0.4.1] - 2025-07-01
+
+### Added
+- **Advanced Dashboard Search**: Native Obsidian search integration with real-time filtering
+  - Search across journal content and filenames with individual field toggles
+  - Live result highlighting with visual feedback for matched terms
+  - Keyboard shortcuts (Ctrl+F to focus, Esc to clear) for efficient navigation
+  - Debounced search with 300ms delay for optimal performance
+  - Smart clear handling that properly removes search query and highlighting
+
+### Enhanced
+- **Collapsible Dashboard Interface**: Toggle button to hide header and search sections
+  - Maximizes table viewing space for better journal entry browsing
+  - Automatically clears active searches when collapsing to prevent confusion
+  - Clean toggle between full-featured and minimal viewing modes
+- **Optimized Table Layout**: Removed title column for cleaner, more focused design
+  - More space allocated to journal content preview
+  - Streamlined 5-column layout (Date, Journal Entry, Words, Images, File)
+- **Improved Content Previews**: Updated default word limit from 50 to 100 words
+  - Better balance between preview length and table space
+  - Fixed CSS issues that were truncating content with ellipsis
+  - Proper multi-line wrapping for longer previews
+  - **Paragraph Break Preservation**: Journal entries now display with proper paragraph formatting
+    - Preserves empty lines as paragraph breaks during content parsing
+    - Enhanced readability with natural paragraph spacing in table view
+
+### Fixed
+- **Table Display Issues**: Resolved overflow problems that limited visible entries
+  - Fixed CSS `overflow: hidden` that was cutting off table rows
+  - All journal entries now properly display with scrollable table container
+- **Search Component Integration**: Proper event handling for native Obsidian SearchComponent
+  - Multiple event listeners ensure all clear scenarios are captured
+  - Consistent behavior with other Obsidian search interfaces
+
+## [0.4.0] - 2025-07-01
 
 ### Added
 - **Scribe Dashboard**: Comprehensive journal overview with template-driven parsing

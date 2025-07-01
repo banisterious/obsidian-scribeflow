@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scribe Dashboard with Search - UI Mockup</title>
+    <style>
+        :root {
+            --background-primary: #1e1e1e;
+            --background-secondary: #2d2d2d;
+            --text-normal: #dcddde;
+            --text-muted: #8e9297;
+            --text-accent: #7c3aed;
+            --interactive-normal: #4f545c;
+            --interactive-hover: #5865f2;
+            --interactive-accent: #5865f2;
+            --background-modifier-border: #40444b;
+            --background-modifier-hover: rgba(79, 84, 92, 0.16);
+            --search-clear-button-color: #8e9297;
+            --search-icon-color: #8e9297;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--background-primary);
+            color: var(--text-normal);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .dashboard-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--background-modifier-border);
+        }
+
+        .dashboard-title-section h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--text-normal);
+        }
+
+        .dashboard-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .dashboard-header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .dashboard-header-controls button {
+            background: var(--interactive-normal);
+            color: var(--text-normal);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .dashboard-header-controls button:hover {
+            background: var(--interactive-hover);
+        }
+
+        /* Search Section */
+        .search-section {
+            background: var(--background-secondary);
+            border: 1px solid var(--background-modifier-border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px 8px 32px;
+            background: var(--background-primary);
+            border: 1px solid var(--background-modifier-border);
+            border-radius: 4px;
+            color: var(--text-normal);
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--interactive-accent);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--search-icon-color);
+            width: 16px;
+            height: 16px;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--search-clear-button-color);
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 2px;
+            width: 16px;
+            height: 16px;
+            display: none;
+        }
+
+        .search-clear:hover {
+            background: var(--background-modifier-hover);
+        }
+
+        .search-options {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .search-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .search-option input[type="checkbox"] {
+            accent-color: var(--interactive-accent);
+        }
+
+        /* Search Results Info */
+        .search-results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .search-results-count {
+            font-weight: 500;
+        }
+
+        .search-results-count.has-results {
+            color: var(--text-accent);
+        }
+
+        .search-shortcuts {
+            display: flex;
+            gap: 12px;
+        }
+
+        .shortcut-hint {
+            background: var(--background-primary);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-family: monospace;
+        }
+
+        /* Stats */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            background: var(--background-secondary);
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-normal);
+        }
+
+        /* Controls */
+        .dashboard-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: var(--background-secondary);
+            border-radius: 6px;
+        }
+
+        .filter-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-container select {
+            background: var(--background-primary);
+            color: var(--text-normal);
+            border: 1px solid var(--background-modifier-border);
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+
+        /* Table */
+        .dashboard-table-container {
+            background: var(--background-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--background-modifier-border);
+        }
+
+        .dashboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .dashboard-table th {
+            background: var(--background-primary);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid var(--background-modifier-border);
+            color: var(--text-normal);
+        }
+
+        .dashboard-table th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .dashboard-table th.sortable:hover {
+            background: var(--background-modifier-hover);
+        }
+
+        .dashboard-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--background-modifier-border);
+        }
+
+        .dashboard-table tr:hover {
+            background: var(--background-modifier-hover);
+        }
+
+        .content-cell {
+            max-width: 300px;
+        }
+
+        .preview-text {
+            margin-bottom: 8px;
+        }
+
+        .preview-text.highlighted {
+            background: rgba(124, 58, 237, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .content-cell button {
+            background: none;
+            border: none;
+            color: var(--text-accent);
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: underline;
+        }
+
+        .highlight {
+            background: rgba(255, 255, 0, 0.3);
+            color: var(--text-normal);
+            padding: 1px 2px;
+            border-radius: 2px;
+        }
+
+        .file-cell a {
+            color: var(--text-accent);
+            text-decoration: none;
+        }
+
+        .file-cell a:hover {
+            text-decoration: underline;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 12px;
+            }
+            
+            .search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input-wrapper {
+                max-width: none;
+            }
+            
+            .dashboard-controls {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+            
+            .dashboard-table {
+                font-size: 12px;
+            }
+            
+            .dashboard-table th,
+            .dashboard-table td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-title-section">
+                <h2>Scribe Dashboard</h2>
+                <p class="dashboard-subtitle">Overview of your journaling activity and trends</p>
+            </div>
+            
+            <div class="dashboard-header-controls">
+                <button>Refresh</button>
+            </div>
+
+            <!-- Stats -->
+            <div class="dashboard-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Total Entries</div>
+                    <div class="stat-value">127</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Showing</div>
+                    <div class="stat-value">8</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Average Words</div>
+                    <div class="stat-value">156</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">This Month</div>
+                    <div class="stat-value">23</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" class="search-input" placeholder="Search entries by title, content, or filename..." value="dream">
+                    <button class="search-clear" style="display: block;">×</button>
+                </div>
+                
+                <div class="search-options">
+                    <div class="search-option">
+                        <input type="checkbox" id="search-title" checked>
+                        <label for="search-title">Title</label>
+                    </div>
+                    <div class="search-option">
+                        <input type="checkbox" id="search-content" checked>
+                        <label for="search-content">Content</label>
+                    </div>
+                    <div class="search-option">
+                        <input type="checkbox" id="search-file">
+                        <label for="search-file">Filename</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="search-results-info">
+                <div class="search-results-count has-results">8 results for "dream"</div>
+                <div class="search-shortcuts">
+                    <span class="shortcut-hint">Ctrl+F</span>
+                    <span>to search</span>
+                    <span class="shortcut-hint">Esc</span>
+                    <span>to clear</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="dashboard-controls">
+            <div class="filter-container">
+                <label>Filter:</label>
+                <select>
+                    <option>All Time</option>
+                    <option>Today</option>
+                    <option>This Week</option>
+                    <option>This Month</option>
+                    <option>Last 30 Days</option>
+                    <option>This Year</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="dashboard-table-container">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th class="sortable">Date</th>
+                        <th class="sortable">Title</th>
+                        <th>Journal Entry</th>
+                        <th class="sortable">Words</th>
+                        <th class="sortable">Images</th>
+                        <th class="sortable">File</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="date-cell">2025-01-15</td>
+                        <td class="title-cell">Flying Over Mountains</td>
+                        <td class="content-cell">
+                            <div class="preview-text">
+                                Last night I had an incredible <span class="highlight">dream</span> about flying over snow-capped mountains. The sensation of weightlessness was so vivid that I could feel the cool air rushing past my face as I soared through the clouds...
+                            </div>
+                            <button>more</button>
+                        </td>
+                        <td class="count-cell">142</td>
+                        <td class="count-cell">0</td>
+                        <td class="file-cell">
+                            <a href="#">2025-01-15.md</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="date-cell">2025-01-14</td>
+                        <td class="title-cell">Ocean <span class="highlight">Dream</span></td>
+                        <td class="content-cell">
+                            <div class="preview-text">
+                                I found myself underwater in a vast ocean, but I could breathe perfectly. The water was crystal clear and filled with bioluminescent creatures that seemed to respond to my thoughts...
+                            </div>
+                            <button>more</button>
+                        </td>
+                        <td class="count-cell">98</td>
+                        <td class="count-cell">1</td>
+                        <td class="file-cell">
+                            <a href="#">2025-01-14.md</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="date-cell">2025-01-13</td>
+                        <td class="title-cell">Childhood Memories</td>
+                        <td class="content-cell">
+                            <div class="preview-text">
+                                Today I reflected on a recurring <span class="highlight">dream</span> I've been having about my childhood home. In the <span class="highlight">dream</span>, the house is much larger than it was in reality, with rooms I've never seen before...
+                            </div>
+                            <button>more</button>
+                        </td>
+                        <td class="count-cell">187</td>
+                        <td class="count-cell">0</td>
+                        <td class="file-cell">
+                            <a href="#">2025-01-13.md</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="date-cell">2025-01-12</td>
+                        <td class="title-cell">Lucid <span class="highlight">Dream</span> Practice</td>
+                        <td class="content-cell">
+                            <div class="preview-text">
+                                My reality checks are finally paying off! Last night I achieved lucidity in my <span class="highlight">dream</span> and was able to maintain awareness for what felt like hours. I experimented with changing the environment...
+                            </div>
+                            <button>more</button>
+                        </td>
+                        <td class="count-cell">203</td>
+                        <td class="count-cell">0</td>
+                        <td class="file-cell">
+                            <a href="#">2025-01-12.md</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="date-cell">2025-01-10</td>
+                        <td class="title-cell">Strange Symbols</td>
+                        <td class="content-cell">
+                            <div class="preview-text">
+                                In my <span class="highlight">dream</span> last night, I encountered symbols that seemed familiar yet foreign. They appeared to be written in a language I don't recognize, but somehow I understood their meaning...
+                            </div>
+                            <button>more</button>
+                        </td>
+                        <td class="count-cell">156</td>
+                        <td class="count-cell">2</td>
+                        <td class="file-cell">
+                            <a href="#">2025-01-10.md</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="date-cell">2025-01-08</td>
+                        <td class="title-cell">Music in <span class="highlight">Dreams</span></td>
+                        <td class="content-cell">
+                            <div class="preview-text">
+                                There was this beautiful melody playing throughout my <span class="highlight">dream</span> last night. It wasn't any song I know, but it felt deeply familiar and emotional. When I woke up, I tried to hum it but couldn't quite capture...
+                            </div>
+                            <button>more</button>
+                        </td>
+                        <td class="count-cell">134</td>
+                        <td class="count-cell">0</td>
+                        <td class="file-cell">
+                            <a href="#">2025-01-08.md</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="date-cell">2025-01-07</td>
+                        <td class="title-cell">Time Travel <span class="highlight">Dream</span></td>
+                        <td class="content-cell">
+                            <div class="preview-text">
+                                Last night's <span class="highlight">dream</span> took me back to medieval times. I was in a bustling marketplace, wearing period clothing that felt completely natural. The smells, sounds, and textures were incredibly vivid...
+                            </div>
+                            <button>more</button>
+                        </td>
+                        <td class="count-cell">178</td>
+                        <td class="count-cell">1</td>
+                        <td class="file-cell">
+                            <a href="#">2025-01-07.md</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="date-cell">2025-01-05</td>
+                        <td class="title-cell">Recurring <span class="highlight">Dream</span> Analysis</td>
+                        <td class="content-cell">
+                            <div class="preview-text">
+                                I've been having the same <span class="highlight">dream</span> about a mysterious door in my grandmother's house for three nights in a row. Each time, I get closer to opening it, but something always wakes me up just before...
+                            </div>
+                            <button>more</button>
+                        </td>
+                        <td class="count-cell">165</td>
+                        <td class="count-cell">0</td>
+                        <td class="file-cell">
+                            <a href="#">2025-01-05.md</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Mock interactive functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('.search-input');
+            const searchClear = document.querySelector('.search-clear');
+            const searchOptions = document.querySelectorAll('.search-option input[type="checkbox"]');
+            
+            // Show/hide clear button
+            searchInput.addEventListener('input', function() {
+                searchClear.style.display = this.value ? 'block' : 'none';
+            });
+            
+            // Clear search
+            searchClear.addEventListener('click', function() {
+                searchInput.value = '';
+                this.style.display = 'none';
+                searchInput.focus();
+            });
+            
+            // Search keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+                if (e.key === 'Escape' && document.activeElement === searchInput) {
+                    searchInput.value = '';
+                    searchClear.style.display = 'none';
+                    searchInput.blur();
+                }
+            });
+            
+            // Update results count when options change
+            searchOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    console.log('Search option changed:', this.id, this.checked);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

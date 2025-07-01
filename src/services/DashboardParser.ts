@@ -329,8 +329,9 @@ export class DashboardParser {
                     continue;
                 }
                 
-                // Skip empty lines
+                // Handle empty lines - preserve them as paragraph breaks
                 if (!cleanLine) {
+                    contentLines.push(''); // Keep empty lines for paragraph breaks
                     continue;
                 }
                 
@@ -343,7 +344,29 @@ export class DashboardParser {
             }
         }
         
-        return contentLines.join(' ').trim();
+        // Join lines preserving paragraph breaks
+        // Convert empty lines to double line breaks for paragraph separation
+        let result = '';
+        for (let i = 0; i < contentLines.length; i++) {
+            const line = contentLines[i];
+            const nextLine = contentLines[i + 1];
+            
+            if (line === '') {
+                // Empty line - check if next line is also empty to avoid triple line breaks
+                if (nextLine !== '') {
+                    result += '\n\n';
+                }
+            } else {
+                // Non-empty line
+                result += line;
+                // Add space if next line exists and is not empty
+                if (nextLine !== undefined && nextLine !== '') {
+                    result += ' ';
+                }
+            }
+        }
+        
+        return result.trim();
     }
 
     /**

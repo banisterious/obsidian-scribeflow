@@ -1,6 +1,6 @@
-import { ItemView, WorkspaceLeaf } from 'obsidian';
+import { ItemView, WorkspaceLeaf, prepareSimpleSearch, SearchComponent } from 'obsidian';
 import ScribeFlowPlugin from '../main';
-import { DashboardEntry, DateFilter, DashboardState } from '../types/dashboard';
+import { DashboardEntry, DateFilter, DashboardState, SearchResult, SearchMatch } from '../types/dashboard';
 import { DashboardParser } from '../services/DashboardParser';
 
 export const DASHBOARD_VIEW_TYPE = 'scribeflow-dashboard';
@@ -20,7 +20,14 @@ export class DashboardView extends ItemView {
             filteredEntries: [],
             currentFilter: DateFilter.ALL_TIME,
             sortColumn: 'date',
-            sortDirection: 'desc'
+            sortDirection: 'desc',
+            searchQuery: '',
+            searchResults: [],
+            searchFields: [
+                { name: 'content', label: 'Content', enabled: true },
+                { name: 'file', label: 'Filename', enabled: false }
+            ],
+            headerCollapsed: false
         };
     }
 
@@ -57,6 +64,11 @@ export class DashboardView extends ItemView {
         // Render header
         this.renderHeader(container);
         
+        // Render search section (only if header not collapsed)
+        if (!this.state.headerCollapsed) {
+            this.renderSearchSection(container);
+        }
+        
         // Render controls
         this.renderControls(container);
         
@@ -67,16 +79,35 @@ export class DashboardView extends ItemView {
     private renderHeader(container: HTMLElement): void {
         const header = container.createDiv('dashboard-header');
         
-        const titleSection = header.createDiv('dashboard-title-section');
+        // Header top bar with title and toggle
+        const headerTop = header.createDiv('dashboard-header-top');
+        
+        const titleSection = headerTop.createDiv('dashboard-title-section');
         titleSection.createEl('h2', { text: 'Scribe Dashboard' });
         
-        const subtitle = titleSection.createEl('p', { 
-            text: 'Overview of your journaling activity and trends',
-            cls: 'dashboard-subtitle'
+        // Add controls (toggle + refresh)
+        const controls = headerTop.createDiv('dashboard-header-controls');
+        
+        // Collapse/expand toggle (left of refresh)
+        const toggleBtnText = this.state.headerCollapsed ? 'Expand' : 'Collapse';
+        const toggleBtn = controls.createEl('button', { 
+            text: toggleBtnText,
+            cls: 'dashboard-toggle-btn'
+        });
+        toggleBtn.addEventListener('click', () => {
+            this.state.headerCollapsed = !this.state.headerCollapsed;
+            
+            // Clear search when collapsing to avoid confusion
+            if (this.state.headerCollapsed && this.state.searchQuery) {
+                this.state.searchQuery = '';
+                this.state.searchResults = [];
+                this.applyFiltersAndSearch();
+            }
+            
+            this.renderDashboard();
         });
         
-        // Add refresh button
-        const controls = header.createDiv('dashboard-header-controls');
+        // Refresh button (right of toggle)
         const refreshBtn = controls.createEl('button', { text: 'Refresh' });
         refreshBtn.addEventListener('click', async () => {
             refreshBtn.textContent = 'Refreshing...';
@@ -86,8 +117,18 @@ export class DashboardView extends ItemView {
             refreshBtn.disabled = false;
         });
         
-        // Add summary stats
-        this.renderSummaryStats(header);
+        // Collapsible content
+        if (!this.state.headerCollapsed) {
+            const headerContent = header.createDiv('dashboard-header-content');
+            
+            headerContent.createEl('p', { 
+                text: 'Overview of your journaling activity and trends',
+                cls: 'dashboard-subtitle'
+            });
+            
+            // Add summary stats
+            this.renderSummaryStats(headerContent);
+        }
     }
     
     private renderSummaryStats(header: HTMLElement): void {
@@ -119,6 +160,97 @@ export class DashboardView extends ItemView {
             statItem.createDiv({ text: stat.value, cls: 'stat-value' });
         });
     }
+    
+    private renderSearchSection(container: HTMLElement): void {
+        const searchSection = container.createDiv('search-section');
+        
+        // Search container
+        const searchContainer = searchSection.createDiv('search-container');
+        
+        // Search input wrapper
+        const searchInputWrapper = searchContainer.createDiv('search-input-wrapper');
+        
+        // Create Obsidian's native SearchComponent
+        const searchComponent = new SearchComponent(searchInputWrapper);
+        searchComponent.setPlaceholder('Search entries by content or filename...');
+        if (this.state.searchQuery) {
+            searchComponent.setValue(this.state.searchQuery);
+        }
+        
+        // Search options
+        const searchOptions = searchContainer.createDiv('search-options');
+        this.state.searchFields.forEach(field => {
+            const option = searchOptions.createDiv('search-option');
+            const checkbox = option.createEl('input', {
+                attr: { type: 'checkbox', id: `search-${field.name}` }
+            });
+            checkbox.checked = field.enabled;
+            
+            option.createEl('label', {
+                text: field.label,
+                attr: { for: `search-${field.name}` }
+            });
+            
+            checkbox.addEventListener('change', () => {
+                field.enabled = checkbox.checked;
+                this.performSearch();
+            });
+        });
+        
+        // Search results info
+        const searchResultsInfo = searchSection.createDiv('search-results-info');
+        const resultsCount = searchResultsInfo.createDiv('search-results-count');
+        this.updateSearchResultsDisplay(resultsCount);
+        
+        // Search shortcuts
+        const shortcuts = searchResultsInfo.createDiv('search-shortcuts');
+        shortcuts.innerHTML = `
+            <span class="shortcut-hint">Ctrl+F</span> to search
+            <span class="shortcut-hint">Esc</span> to clear
+        `;
+        
+        // Event listeners
+        let searchTimeout: NodeJS.Timeout;
+        
+        const handleSearchUpdate = () => {
+            this.state.searchQuery = searchComponent.inputEl.value;
+            
+            // Debounce search
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                this.performSearch();
+                this.updateSearchResultsDisplay(resultsCount);
+                this.renderTable(container);
+            }, 300);
+        };
+        
+        // Handle typing in search field
+        searchComponent.inputEl.addEventListener('input', handleSearchUpdate);
+        
+        // Handle clear button and other value changes
+        searchComponent.inputEl.addEventListener('change', handleSearchUpdate);
+        
+        // Also handle when the field loses focus (covers additional clear scenarios)
+        searchComponent.inputEl.addEventListener('blur', () => {
+            if (searchComponent.inputEl.value !== this.state.searchQuery) {
+                handleSearchUpdate();
+            }
+        });
+        
+        // Global keyboard shortcuts
+        this.setupSearchKeyboardShortcuts(searchComponent.inputEl);
+    }
+    
+    private updateSearchResultsDisplay(resultsElement: HTMLElement): void {
+        if (this.state.searchQuery) {
+            const count = this.state.searchResults.length;
+            resultsElement.textContent = `${count} result${count !== 1 ? 's' : ''} for "${this.state.searchQuery}"`;
+            resultsElement.classList.add('has-results');
+        } else {
+            resultsElement.textContent = '';
+            resultsElement.classList.remove('has-results');
+        }
+    }
 
     private renderControls(container: HTMLElement): void {
         const controls = container.createDiv('dashboard-controls');
@@ -149,7 +281,7 @@ export class DashboardView extends ItemView {
         
         select.addEventListener('change', () => {
             this.state.currentFilter = select.value as DateFilter;
-            this.filterEntries();
+            this.applyFiltersAndSearch();
             this.renderTable(container);
         });
         
@@ -185,7 +317,6 @@ export class DashboardView extends ItemView {
         
         const columns = [
             { key: 'date', label: 'Date', sortable: true },
-            { key: 'title', label: 'Title', sortable: true },
             { key: 'content', label: 'Journal Entry', sortable: false },
             { key: 'wordCount', label: 'Words', sortable: true },
             { key: 'imageCount', label: 'Images', sortable: true },
@@ -216,7 +347,7 @@ export class DashboardView extends ItemView {
         
         if (this.state.filteredEntries.length === 0) {
             const row = tbody.createEl('tr');
-            const cell = row.createEl('td', { attr: { colspan: '6' } });
+            const cell = row.createEl('td', { attr: { colspan: '5' } });
             
             if (this.state.entries.length === 0) {
                 cell.innerHTML = `
@@ -248,12 +379,11 @@ export class DashboardView extends ItemView {
         const dateCell = row.createEl('td', { cls: 'date-cell' });
         dateCell.textContent = entry.date;
         
-        // Title cell
-        const titleCell = row.createEl('td', { cls: 'title-cell' });
-        titleCell.textContent = entry.title;
-        
         // Content cell with expansion
         const contentCell = row.createEl('td', { cls: 'content-cell' });
+        
+        // Check if we have search results for this entry
+        const searchResult = this.state.searchResults.find(result => result.entry === entry);
         this.renderExpandableContent(contentCell, entry);
         
         // Word count cell
@@ -268,9 +398,18 @@ export class DashboardView extends ItemView {
         const fileCell = row.createEl('td', { cls: 'file-cell' });
         const fileLink = fileCell.createEl('a', { 
             href: '#',
-            cls: 'internal-link',
-            text: this.getFileName(entry.filePath)
+            cls: 'internal-link'
         });
+        
+        // Check if we have search results for filename
+        const fileMatch = searchResult?.matches.find(match => match.field === 'file');
+        const fileName = this.getFileName(entry.filePath);
+        
+        if (fileMatch && this.state.searchQuery) {
+            fileLink.innerHTML = this.highlightText(fileName, this.state.searchQuery);
+        } else {
+            fileLink.textContent = fileName;
+        }
         
         fileLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -280,7 +419,17 @@ export class DashboardView extends ItemView {
 
     private renderExpandableContent(cell: HTMLElement, entry: DashboardEntry): void {
         const previewDiv = cell.createDiv('preview-text collapsed');
-        previewDiv.textContent = entry.preview;
+        
+        // Check if we have search results for this entry
+        const searchResult = this.state.searchResults.find(result => result.entry === entry);
+        const contentMatch = searchResult?.matches.find(match => match.field === 'content');
+        
+        if (contentMatch && this.state.searchQuery) {
+            previewDiv.innerHTML = this.highlightText(this.formatTextWithParagraphs(entry.preview), this.state.searchQuery);
+        } else {
+            previewDiv.innerHTML = this.formatTextWithParagraphs(entry.preview);
+        }
+        
         previewDiv.setAttribute('data-full-text', entry.fullContent);
         
         const button = cell.createEl('button');
@@ -295,7 +444,7 @@ export class DashboardView extends ItemView {
         const fullText = previewDiv.getAttribute('data-full-text') || '';
         
         if (isCollapsed) {
-            previewDiv.textContent = fullText;
+            previewDiv.innerHTML = this.formatTextWithParagraphs(fullText);
             previewDiv.classList.remove('collapsed');
             previewDiv.classList.add('expanded');
             button.textContent = 'less';
@@ -303,11 +452,25 @@ export class DashboardView extends ItemView {
             const words = fullText.split(/\s+/).filter(word => word.length > 0);
             const previewWords = words.slice(0, this.plugin.settings.dashboardSettings.previewWordLimit);
             const preview = previewWords.join(' ') + (words.length > previewWords.length ? '...' : '');
-            previewDiv.textContent = preview;
+            previewDiv.innerHTML = this.formatTextWithParagraphs(preview);
             previewDiv.classList.remove('expanded');
             previewDiv.classList.add('collapsed');
             button.textContent = 'more';
         }
+    }
+    
+    private formatTextWithParagraphs(text: string): string {
+        if (!text) return '';
+        
+        // Split text by double line breaks (paragraph breaks)
+        const paragraphs = text.split(/\n\s*\n/);
+        
+        // Wrap each paragraph in a div for proper spacing
+        return paragraphs
+            .map(paragraph => paragraph.trim())
+            .filter(paragraph => paragraph.length > 0)
+            .map(paragraph => `<div class="dashboard-paragraph">${paragraph}</div>`)
+            .join('');
     }
 
     private async loadEntries(): Promise<void> {
@@ -321,8 +484,8 @@ export class DashboardView extends ItemView {
             // Parse all entries
             this.state.entries = await this.parser.parseAllEntries();
             
-            // Apply current filter and sort
-            this.filterEntries();
+            // Apply current filter, search, and sort
+            this.applyFiltersAndSearch();
             this.sortEntries(this.state.sortColumn);
             
             // Re-render entire dashboard to update stats
@@ -334,11 +497,25 @@ export class DashboardView extends ItemView {
         }
     }
 
-    private filterEntries(): void {
+    private applyFiltersAndSearch(): void {
+        // First apply date filters
+        const dateFiltered = this.filterEntriesByDate();
+        
+        // Then apply search if there's a query
+        if (this.state.searchQuery && this.state.searchQuery.trim().length > 0) {
+            this.performSearchOnEntries(dateFiltered);
+            this.state.filteredEntries = this.state.searchResults.map(result => result.entry);
+        } else {
+            this.state.filteredEntries = dateFiltered;
+            this.state.searchResults = [];
+        }
+    }
+    
+    private filterEntriesByDate(): DashboardEntry[] {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         
-        this.state.filteredEntries = this.state.entries.filter(entry => {
+        return this.state.entries.filter(entry => {
             const entryDate = new Date(entry.date);
             
             switch (this.state.currentFilter) {
@@ -371,6 +548,61 @@ export class DashboardView extends ItemView {
                     return true;
             }
         });
+    }
+    
+    private performSearch(): void {
+        this.applyFiltersAndSearch();
+    }
+    
+    private performSearchOnEntries(entries: DashboardEntry[]): void {
+        if (!this.state.searchQuery || this.state.searchQuery.trim().length === 0) {
+            this.state.searchResults = [];
+            return;
+        }
+        
+        const searchFn = prepareSimpleSearch(this.state.searchQuery);
+        const results: SearchResult[] = [];
+        
+        entries.forEach(entry => {
+            const matches: SearchMatch[] = [];
+            let totalScore = 0;
+            
+            this.state.searchFields.forEach(field => {
+                if (!field.enabled) return;
+                
+                let searchText = '';
+                switch (field.name) {
+                    case 'content':
+                        searchText = entry.fullContent;
+                        break;
+                    case 'file':
+                        searchText = this.getFileName(entry.filePath);
+                        break;
+                }
+                
+                const searchResult = searchFn(searchText);
+                if (searchResult) {
+                    matches.push({
+                        field: field.name,
+                        text: searchText,
+                        indices: []  // Simple highlighting without exact indices for now
+                    });
+                    totalScore += searchResult.score;
+                }
+            });
+            
+            if (matches.length > 0) {
+                results.push({
+                    entry,
+                    matches,
+                    score: totalScore
+                });
+            }
+        });
+        
+        // Sort by score (higher is better)
+        results.sort((a, b) => b.score - a.score);
+        this.state.searchResults = results;
     }
 
     private sortEntries(column: string): void {
@@ -425,6 +657,33 @@ export class DashboardView extends ItemView {
 
     async refresh(): Promise<void> {
         await this.loadEntries();
+    }
+    
+    private highlightText(text: string, query: string): string {
+        if (!query) return text;
+        
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+    
+    private setupSearchKeyboardShortcuts(searchInput: HTMLInputElement): void {
+        this.containerEl.addEventListener('keydown', (e) => {
+            // Only handle if not typing in an input (except for Ctrl+F)
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+                if (e.key === 'Escape' && e.target === searchInput) {
+                    // Clear the search and trigger update
+                    searchInput.value = '';
+                    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    searchInput.blur();
+                }
+                return;
+            }
+            
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
     }
 
     private setupKeyboardShortcuts(selectEl: HTMLSelectElement): void {

@@ -23,6 +23,28 @@ export interface DashboardState {
     currentFilter: DateFilter;
     sortColumn: string;
     sortDirection: 'asc' | 'desc';
+    searchQuery: string;
+    searchResults: SearchResult[];
+    searchFields: SearchField[];
+    headerCollapsed: boolean;
+}
+
+export interface SearchResult {
+    entry: DashboardEntry;
+    matches: SearchMatch[];
+    score: number;
+}
+
+export interface SearchMatch {
+    field: 'title' | 'content' | 'file';
+    text: string;
+    indices: [number, number][];
+}
+
+export interface SearchField {
+    name: 'title' | 'content' | 'file';
+    label: string;
+    enabled: boolean;
 }
 
 export interface ParsedTemplate {

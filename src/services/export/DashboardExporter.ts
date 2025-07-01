@@ -2,6 +2,7 @@ import { App, Notice } from 'obsidian';
 import { DashboardEntry, DashboardStatistics, DateFilter } from '../../types/dashboard';
 import { ExportFormatters } from './ExportFormatters';
 import { DashboardExportFormat, DashboardExportData, ExportOptions, ExportResult } from './types';
+import { logger } from '../LoggingService';
 
 export class DashboardExporter {
     private app: App;
@@ -38,7 +39,13 @@ export class DashboardExporter {
                     throw new Error(`Unsupported export format: ${options.format}`);
             }
         } catch (error) {
-            console.error('Dashboard export failed:', error);
+            logger.error('DashboardExporter', 'exportDashboardData', 'Dashboard export failed', {
+                format: options.format,
+                error: error.message,
+                entriesCount: entries.length,
+                filter,
+                searchQuery
+            });
             return {
                 success: false,
                 message: `Export failed: ${error.message}`
@@ -143,7 +150,10 @@ export class DashboardExporter {
             // Clean up
             URL.revokeObjectURL(url);
         } catch (error) {
-            console.error('Failed to save file:', error);
+            logger.error('DashboardExporter', 'saveToFile', 'File save failed', {
+                error: error.message,
+                filename
+            });
             throw new Error(`Failed to save file: ${error.message}`);
         }
     }

@@ -3,6 +3,7 @@ import ScribeFlowPlugin from '../../main';
 import { FormState, MetricDefinition } from '../../types';
 import { TemplateProcessingService } from '../../services/TemplateProcessingService';
 import { updateTableOfContents } from '../../logic/toc-updater';
+import { logger } from '../../services/LoggingService';
 
 export class JournalEntryTab {
     containerEl: HTMLElement;
@@ -728,7 +729,11 @@ export class JournalEntryTab {
                 }).style.color = 'var(--text-error)';
             }
         } catch (error) {
-            console.error('Error loading image preview:', error);
+            logger.error('JournalEntryTab', 'updateImagePreview', 'Image preview loading failed', {
+                type,
+                imagePath,
+                error: error.message
+            });
             previewContainer.createEl('p', { 
                 text: `Error loading image: ${imagePath}`,
                 cls: 'sfp-error-text'
@@ -741,9 +746,10 @@ export class JournalEntryTab {
     }
     
     private async handleInsertEntry(): Promise<void> {
+        // Get the selected template from the modal
+        const selectedTemplate = this.getSelectedTemplate();
+        
         try {
-            // Get the selected template from the modal
-            const selectedTemplate = this.getSelectedTemplate();
             if (!selectedTemplate) {
                 new Notice('No template selected');
                 return;
@@ -768,7 +774,12 @@ export class JournalEntryTab {
                     try {
                         await updateTableOfContents(this.plugin.app, this.plugin.settings, this.formState, dateBlockID);
                     } catch (error) {
-                        console.error('TOC update failed:', error);
+                        logger.error('JournalEntryTab', 'handleInsertEntry', 'TOC update failed', {
+                            error: error.message,
+                            dateBlockID,
+                            updateYearNote: this.plugin.settings.tocSettings.updateYearNote,
+                            updateMasterJournals: this.plugin.settings.tocSettings.updateMasterJournals
+                        });
                     }
                 }, 500);
             }
@@ -780,7 +791,12 @@ export class JournalEntryTab {
             await this.plugin.saveSettings();
             
         } catch (error) {
-            console.error('Error inserting journal entry:', error);
+            logger.error('JournalEntryTab', 'handleInsertEntry', 'Journal entry insertion failed', {
+                error: error.message,
+                templateName: selectedTemplate?.name,
+                hasJournalContent: !!this.formState.journalContent,
+                hasDreamContent: !!this.formState.dreamContent
+            });
             new Notice(`Failed to insert journal entry: ${error.message}`);
         }
     }

@@ -5,6 +5,7 @@ import { EntryExportFormat, EntryExportData, ExportOptions, ExportResult } from 
 import html2pdf from 'html2pdf.js';
 // @ts-ignore - html2canvas doesn't have official TypeScript types  
 import html2canvas from 'html2canvas';
+import { logger } from '../LoggingService';
 
 export class EntryExporter {
     private app: App;
@@ -44,7 +45,12 @@ export class EntryExporter {
                     throw new Error(`Unsupported export format: ${format}`);
             }
         } catch (error) {
-            console.error('Entry export failed:', error);
+            logger.error('EntryExporter', 'exportEntry', 'Entry export failed', {
+                format,
+                error: error.message,
+                entryPath: entry.filePath,
+                entryDate: entry.date
+            });
             return {
                 success: false,
                 message: `Export failed: ${error.message}`
@@ -319,7 +325,10 @@ export class EntryExporter {
             await html2pdf().set(options).from(html).save();
             
         } catch (error) {
-            console.error('Failed to generate PDF:', error);
+            logger.error('EntryExporter', 'convertHTMLToPDF', 'PDF generation failed', {
+                error: error.message,
+                filename
+            });
             throw new Error(`Failed to generate PDF: ${error.message}`);
         }
     }
@@ -370,7 +379,10 @@ export class EntryExporter {
             document.body.removeChild(tempContainer);
             
         } catch (error) {
-            console.error('Failed to generate image:', error);
+            logger.error('EntryExporter', 'convertHTMLToImage', 'Image generation failed', {
+                error: error.message,
+                filename
+            });
             throw new Error(`Failed to generate image: ${error.message}`);
         }
     }
@@ -391,7 +403,10 @@ export class EntryExporter {
             
             URL.revokeObjectURL(url);
         } catch (error) {
-            console.error('Failed to save file:', error);
+            logger.error('EntryExporter', 'saveToFile', 'File save failed', {
+                error: error.message,
+                filename
+            });
             throw new Error(`Failed to save file: ${error.message}`);
         }
     }

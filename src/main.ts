@@ -5,6 +5,7 @@ import { ScribeFlowPluginSettings, FormState } from './types';
 import { DEFAULT_SETTINGS, ScribeFlowSettingTab } from './settings';
 import { loadDraft, saveDraft } from './logic/draft-manager';
 import { DashboardView, DASHBOARD_VIEW_TYPE } from './views/DashboardView';
+import { logger } from './services/LoggingService';
 
 export default class ScribeFlowPlugin extends Plugin {
     settings: ScribeFlowPluginSettings;
@@ -12,6 +13,7 @@ export default class ScribeFlowPlugin extends Plugin {
 
     async onload() {
         await this.loadSettings();
+        this.updateLoggingService();
         this.draft = await loadDraft(this);
 
         // Register dashboard view
@@ -85,6 +87,10 @@ export default class ScribeFlowPlugin extends Plugin {
 
     async saveSettings() {
         await this.saveData(this.settings);
+    }
+
+    updateLoggingService(): void {
+        logger.updateSettings(this.settings.loggingSettings);
     }
 
     async openDashboard(): Promise<void> {

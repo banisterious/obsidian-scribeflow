@@ -1,6 +1,6 @@
 
 import { App, PluginSettingTab, Setting } from 'obsidian';
-import { ScribeFlowPluginSettings, AVAILABLE_METRICS, AVAILABLE_IMAGE_TYPES, JournalTemplate } from './types';
+import { ScribeFlowPluginSettings, AVAILABLE_METRICS, AVAILABLE_IMAGE_TYPES, JournalTemplate, LogLevel } from './types';
 import ScribeFlowPlugin from './main';
 import { FolderSuggest } from './ui/FolderSuggest';
 import { FileSuggest } from './ui/FileSuggest';
@@ -26,6 +26,10 @@ export const DEFAULT_SETTINGS: ScribeFlowPluginSettings = {
         parseTemplates: [],
         previewWordLimit: 100,
         statisticsGroupedView: false
+    },
+    loggingSettings: {
+        enabled: false,
+        level: LogLevel.WARN
     }
 };
 
@@ -49,6 +53,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
         this.createDashboardSettings(containerEl);
         this.createTOCSettings(containerEl);
         this.createMetricsSettings(containerEl);
+        this.createLoggingSettings(containerEl);
     }
 
     private createCalloutNamesSettings(containerEl: HTMLElement): void {
@@ -491,6 +496,50 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
                     this.renderMetricsSelection(container);
                 });
             });
+        }
+    }
+
+    private createLoggingSettings(containerEl: HTMLElement): void {
+        const heading = containerEl.createDiv('setting-item setting-item-heading');
+        const info = heading.createDiv('setting-item-info');
+        info.createDiv({ text: 'Logging', cls: 'setting-item-name' });
+        info.createDiv({ text: 'Configure logging output for debugging and troubleshooting', cls: 'setting-item-description' });
+        heading.createDiv('setting-item-control');
+        
+        // Enable logging toggle
+        new Setting(containerEl)
+            .setName('Enable logging')
+            .setDesc('Turn on logging to see detailed information in the browser console')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.loggingSettings.enabled)
+                .onChange(async (value) => {
+                    this.plugin.settings.loggingSettings.enabled = value;
+                    await this.plugin.saveSettings();
+                    // Update logging service
+                    this.plugin.updateLoggingService();
+                    // Refresh the display to show/hide the log level setting
+                    this.display();
+                }));
+
+        // Log level dropdown (conditional)
+        if (this.plugin.settings.loggingSettings.enabled) {
+            new Setting(containerEl)
+                .setName('Log level')
+                .setDesc('Choose what level of detail to log (Error < Warning < Info < Debug)')
+                .addDropdown(dropdown => {
+                    dropdown
+                        .addOption(LogLevel.ERROR, 'Error')
+                        .addOption(LogLevel.WARN, 'Warning')
+                        .addOption(LogLevel.INFO, 'Info')
+                        .addOption(LogLevel.DEBUG, 'Debug')
+                        .setValue(this.plugin.settings.loggingSettings.level)
+                        .onChange(async (value) => {
+                            this.plugin.settings.loggingSettings.level = value as LogLevel;
+                            await this.plugin.saveSettings();
+                            // Update logging service
+                            this.plugin.updateLoggingService();
+                        });
+                });
         }
     }
 }

@@ -6,6 +6,18 @@ export interface JournalTemplate {
     description?: string;
 }
 
+export enum LogLevel {
+    ERROR = 'error',
+    WARN = 'warn',
+    INFO = 'info',
+    DEBUG = 'debug'
+}
+
+export interface LoggingSettings {
+    enabled: boolean;
+    level: LogLevel;
+}
+
 export interface ScribeFlowPluginSettings {
     calloutNames: {
         journalEntry: string;
@@ -28,6 +40,7 @@ export interface ScribeFlowPluginSettings {
         previewWordLimit: number;
         statisticsGroupedView: boolean;
     };
+    loggingSettings: LoggingSettings;
 }
 
 export interface MetricDefinition {

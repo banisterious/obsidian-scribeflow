@@ -1,6 +1,7 @@
 import { FormState, ScribeFlowPluginSettings } from '../types';
 import { App, Notice, MarkdownView } from 'obsidian';
 import { updateTableOfContents } from './toc-updater';
+import { logger } from '../services/LoggingService';
 
 export async function writeJournalEntry(app: App, settings: ScribeFlowPluginSettings, state: FormState): Promise<void> {
     const content = generateMarkdown(settings, state);
@@ -32,7 +33,7 @@ export async function writeJournalEntry(app: App, settings: ScribeFlowPluginSett
             try {
                 await updateTableOfContents(app, settings, state, dateBlockID);
             } catch (error) {
-                console.error('TOC update failed:', error);
+                logger.error('EntryWriter', 'TOC update failed', { error: error.message });
             }
         }, 500);
     }

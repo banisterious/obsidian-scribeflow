@@ -2,6 +2,7 @@ import { App, Modal, Setting, ButtonComponent, setIcon } from 'obsidian';
 import ScribeFlowPlugin from '../main';
 import { JournalTemplate } from '../types';
 import { TemplateIntegrationService, TemplateFile } from '../services/TemplateIntegrationService';
+import { logger } from '../services/LoggingService';
 
 export class TemplateWizardModal extends Modal {
     private plugin: ScribeFlowPlugin;
@@ -366,7 +367,10 @@ export class TemplateWizardModal extends Modal {
                 });
             }
         } catch (error) {
-            console.error('Error loading template options:', error);
+            logger.error('TemplateWizardModal', 'loadTemplateOptions', 'Template options loading failed', {
+                templatePluginSource: this.templatePluginSource,
+                error: error.message
+            });
             dropdown.addOption('error', 'Error loading templates');
             dropdown.setDisabled(true);
         }
@@ -403,7 +407,11 @@ export class TemplateWizardModal extends Modal {
                 this.renderNavigation();
             }
         } catch (error) {
-            console.error('Error handling template selection:', error);
+            logger.error('TemplateWizardModal', 'handleTemplateFileSelection', 'Template selection handling failed', {
+                templatePluginSource: this.templatePluginSource,
+                templatePath,
+                error: error.message
+            });
         }
     }
 

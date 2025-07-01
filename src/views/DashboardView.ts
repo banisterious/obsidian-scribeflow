@@ -8,6 +8,7 @@ import { EntryExporter } from '../services/export/EntryExporter';
 import { ExportButton } from '../ui/components/ExportButton';
 import { ExportContextMenu } from '../ui/components/ExportContextMenu';
 import { DashboardExportFormat, EntryExportFormat } from '../services/export/types';
+import { logger } from '../services/LoggingService';
 
 export const DASHBOARD_VIEW_TYPE = 'scribeflow-dashboard';
 
@@ -85,7 +86,10 @@ export class DashboardView extends ItemView {
             try {
                 this.renderStatisticsCards(container);
             } catch (error) {
-                console.error('ScribeFlow: Error rendering statistics cards:', error);
+                logger.error('DashboardView', 'renderDashboard', 'Statistics cards rendering failed', {
+                    error: error.message,
+                    headerCollapsed: this.state.headerCollapsed
+                });
                 // Continue rendering the rest of the dashboard
             }
         }
@@ -522,7 +526,11 @@ export class DashboardView extends ItemView {
             this.renderDashboard();
             
         } catch (error) {
-            console.error('Failed to load dashboard entries:', error);
+            logger.error('DashboardView', 'loadEntries', 'Dashboard entries loading failed', {
+                error: error.message,
+                scanFolders: this.plugin.settings.dashboardSettings.scanFolders,
+                parseTemplates: this.plugin.settings.dashboardSettings.parseTemplates
+            });
             this.showErrorState(error);
         }
     }
@@ -982,10 +990,18 @@ export class DashboardView extends ItemView {
             );
 
             if (!result.success) {
-                console.error('Export failed:', result.message);
+                logger.error('DashboardView', 'handleDashboardExport', 'Dashboard export failed', {
+                    format,
+                    message: result.message,
+                    entriesCount: this.state.filteredEntries.length
+                });
             }
         } catch (error) {
-            console.error('Export error:', error);
+            logger.error('DashboardView', 'handleDashboardExport', 'Dashboard export error', {
+                format,
+                error: error.message,
+                entriesCount: this.state.filteredEntries.length
+            });
         }
     }
 
@@ -997,10 +1013,20 @@ export class DashboardView extends ItemView {
             });
 
             if (!result.success) {
-                console.error('Entry export failed:', result.message);
+                logger.error('DashboardView', 'handleEntryExport', 'Entry export failed', {
+                    format,
+                    message: result.message,
+                    entryPath: entry.filePath,
+                    entryDate: entry.date
+                });
             }
         } catch (error) {
-            console.error('Entry export error:', error);
+            logger.error('DashboardView', 'handleEntryExport', 'Entry export error', {
+                format,
+                error: error.message,
+                entryPath: entry.filePath,
+                entryDate: entry.date
+            });
         }
     }
 }

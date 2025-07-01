@@ -2,6 +2,7 @@ import { App, Notice, TFile } from 'obsidian';
 import { FormState, ScribeFlowPluginSettings } from '../types';
 import { formatDisplayDate, formatShortDate } from '../utils/date-formatter';
 import { findSpecificCalloutListEnd } from '../utils/callout-parser';
+import { logger } from '../services/LoggingService';
 
 export async function updateTableOfContents(
     app: App, 
@@ -22,7 +23,7 @@ export async function updateTableOfContents(
     try {
         await Promise.all(promises);
     } catch (error) {
-        console.error('One or more TOC updates failed:', error);
+        logger.error('TocUpdater', 'updateTableOfContents', 'One or more TOC updates failed', { error: error.message });
     }
 }
 
@@ -49,7 +50,7 @@ async function updateYearNoteTOC(
         await insertLinksAtPosition(app, activeFile, content, insertionPoint, links);
         
     } catch (error) {
-        console.error('Error updating year note TOC:', error);
+        logger.error('TocUpdater', 'updateYearNoteTOC', 'Error updating year note TOC', { error: error.message });
         new Notice(`Failed to update year note TOC: ${error.message}`);
     }
 }
@@ -77,7 +78,7 @@ async function updateMasterJournalsTOC(
         await insertLinksAtPosition(app, masterFile, content, insertionPoint, [link]);
         
     } catch (error) {
-        console.error('Error updating master journals TOC:', error);
+        logger.error('TocUpdater', 'updateMasterJournalsTOC', 'Error updating master journals TOC', { error: error.message });
         new Notice(`Failed to update master journals TOC: ${error.message}`);
     }
 }

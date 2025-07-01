@@ -2,6 +2,7 @@ import { App, TFile, TFolder } from 'obsidian';
 import { ScribeFlowPluginSettings } from '../types';
 import { DashboardEntry, ParsedTemplate } from '../types/dashboard';
 import { TemplateAnalyzer } from './TemplateAnalyzer';
+import { logger } from './LoggingService';
 
 export class DashboardParser {
     private app: App;
@@ -36,7 +37,7 @@ export class DashboardParser {
                     entries.push(...fileEntries);
                 }
             } catch (error) {
-                console.warn(`Failed to parse journal file ${file.path}:`, error);
+                logger.warn('DashboardParser', 'parseAllEntries', `Failed to parse journal file ${file.path}`, { error: error.message, filePath: file.path });
             }
         }
         
@@ -149,7 +150,7 @@ export class DashboardParser {
 
             return this.tryParseCalloutBlock(file, journalBlock, template);
         } catch (error) {
-            console.warn(`Failed to parse ${file.path} with template ${template.name}:`, error);
+            logger.warn('DashboardParser', 'tryParseWithTemplate', `Failed to parse ${file.path} with template ${template.name}`, { error: error.message, filePath: file.path, templateName: template.name });
             return null;
         }
     }
@@ -190,7 +191,7 @@ export class DashboardParser {
                 filePath: file.path
             };
         } catch (error) {
-            console.warn(`Failed to parse callout block from ${file.path}:`, error);
+            logger.warn('DashboardParser', 'tryParseCalloutBlock', `Failed to parse callout block from ${file.path}`, { error: error.message, filePath: file.path });
             return null;
         }
     }

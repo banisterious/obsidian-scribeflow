@@ -2135,19 +2135,19 @@
 
 /* Category indicators for flat grid */
 .sfp-dashboard-stat-card.category-progress {
-    border-left: 3px solid #10b981;
+    border-left: 3px solid var(--color-green);
 }
 
 .sfp-dashboard-stat-card.category-consistency {
-    border-left: 3px solid #3b82f6;
+    border-left: 3px solid var(--color-blue);
 }
 
 .sfp-dashboard-stat-card.category-content {
-    border-left: 3px solid #8b5cf6;
+    border-left: 3px solid var(--color-purple);
 }
 
 .sfp-dashboard-stat-card.category-pattern {
-    border-left: 3px solid #f59e0b;
+    border-left: 3px solid var(--color-orange);
 }
 
 .sfp-dashboard-stat-card .stat-value {

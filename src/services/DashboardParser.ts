@@ -324,7 +324,18 @@ export class DashboardParser {
                 // Remove all '> ' prefixes to handle nested callouts
                 let cleanLine = line.replace(/^>+\s*/, '');
                 
-                // Skip callout headers (including nested ones like [!dream-diary], [!journal-page])
+                // Handle dream-diary callouts specially to extract titles
+                if (cleanLine.startsWith('[!dream-diary]')) {
+                    const dreamTitle = this.extractDreamTitle(cleanLine);
+                    if (dreamTitle) {
+                        contentLines.push(''); // Add empty line before dream title
+                        contentLines.push(`Dream: ${dreamTitle}`);
+                        contentLines.push(''); // Add empty line after dream title
+                    }
+                    continue;
+                }
+                
+                // Skip other callout headers (like [!journal-page])
                 if (cleanLine.startsWith('[!')) {
                     continue;
                 }
@@ -456,6 +467,28 @@ export class DashboardParser {
     private generateTitleWithDate(file: TFile, date: string): string {
         // Format: "filename - YYYY-MM-DD" for multiple entries per file
         return `${file.basename} - ${date}`;
+    }
+
+    /**
+     * Extract dream title from dream-diary callout line
+     * Example: "[!dream-diary] Flying Over Mountains [[Dream Diary]]" -> "Flying Over Mountains"
+     */
+    private extractDreamTitle(dreamCalloutLine: string): string | null {
+        // Pattern to match: [!dream-diary] {title} [[link]]
+        // The title is between the callout and the link
+        const match = dreamCalloutLine.match(/\[!dream-diary\]\s*([^[\]]+?)(?:\s*\[\[|$)/i);
+        
+        if (match && match[1]) {
+            return match[1].trim();
+        }
+        
+        // Fallback: if no link, everything after the callout is the title
+        const fallbackMatch = dreamCalloutLine.match(/\[!dream-diary\]\s*(.+)/i);
+        if (fallbackMatch && fallbackMatch[1]) {
+            return fallbackMatch[1].trim();
+        }
+        
+        return null;
     }
 
     /**

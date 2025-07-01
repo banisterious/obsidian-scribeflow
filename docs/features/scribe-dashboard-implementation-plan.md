@@ -1,7 +1,7 @@
 ### **ScribeFlow Plugin: Scribe Dashboard Implementation Plan**
 
 - **Document Version:** 1.0
-- **Date:** July 1, 2025
+- **Date:** June 30, 2025
 - **Author:** John Banister
 - **Project:** ScribeFlow Plugin for Obsidian
 - **Feature:** Scribe Dashboard Implementation

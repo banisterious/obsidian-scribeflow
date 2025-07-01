@@ -1687,87 +1687,6 @@
     font-style: italic;
 }
 
-/* Dashboard Search Styles */
-.sfp-search-section {
-    background: var(--background-secondary);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 20px;
-}
-
-.sfp-search-container {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-}
-
-.sfp-search-input-wrapper {
-    flex: 1;
-    max-width: 400px;
-    min-width: 200px;
-}
-
-.sfp-search-options {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.sfp-search-option {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: var(--text-muted);
-}
-
-.sfp-search-option input[type="checkbox"] {
-    accent-color: var(--interactive-accent);
-}
-
-.sfp-search-option label {
-    cursor: pointer;
-    user-select: none;
-}
-
-.sfp-search-results-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: var(--text-muted);
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.sfp-search-results-count {
-    font-weight: 500;
-}
-
-.sfp-search-results-count.has-results {
-    color: var(--text-accent);
-}
-
-.sfp-search-shortcuts {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.shortcut-hint {
-    background: var(--background-primary);
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 11px;
-    font-family: var(--font-monospace);
-    color: var(--text-muted);
-    border: 1px solid var(--background-modifier-border);
-}
 
 /* Search Result Highlighting */
 .highlight {
@@ -1852,13 +1771,13 @@
 }
 
 .sfp-dashboard-table .content-cell button {
-    background: none;
+    /*background: none;
     border: none;
     color: var(--text-accent);
     cursor: pointer;
     font-size: 12px;
     text-decoration: underline;
-    padding: 0;
+    padding: 0;*/
 }
 
 .sfp-dashboard-table .content-cell button:hover {
@@ -1991,7 +1910,8 @@
 .sfp-dashboard-controls {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 20px;
     margin-bottom: 20px;
     padding: 12px;
     background: var(--background-secondary);
@@ -2013,31 +1933,73 @@
     border-radius: 4px;
 }
 
+/* Search in controls styling */
+.sfp-dashboard-controls .sfp-search-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    max-width: 400px;
+}
+
+.sfp-dashboard-controls .sfp-search-input-wrapper {
+    flex: 1;
+}
+
+.sfp-dashboard-controls .sfp-search-options {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.sfp-dashboard-controls .sfp-search-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.sfp-dashboard-controls .sfp-search-option input[type="checkbox"] {
+    accent-color: var(--interactive-accent);
+}
+
+.sfp-dashboard-controls .sfp-search-option label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sfp-dashboard-controls .search-results-info {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.sfp-dashboard-controls .search-results-count {
+    font-weight: 500;
+}
+
+.sfp-dashboard-controls .search-results-count.has-results {
+    color: var(--text-accent);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
-    .search-container {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .search-input-wrapper {
-        max-width: none;
-    }
-    
-    .search-options {
-        justify-content: center;
-    }
-    
-    .search-results-info {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    
-    .dashboard-controls {
+    .sfp-dashboard-controls {
         flex-direction: column;
         gap: 12px;
         align-items: stretch;
+    }
+    
+    .sfp-dashboard-controls .sfp-search-container {
+        max-width: none;
+    }
+    
+    .sfp-dashboard-controls .sfp-search-options {
+        justify-content: center;
     }
     
     .dashboard-table {

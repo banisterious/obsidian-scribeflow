@@ -77,12 +77,7 @@ export class DashboardView extends ItemView {
             }
         }
         
-        // Render search section (only if header not collapsed)
-        if (!this.state.headerCollapsed) {
-            this.renderSearchSection(container);
-        }
-        
-        // Render controls
+        // Render controls (includes search if header not collapsed)
         this.renderControls(container);
         
         // Render table
@@ -171,18 +166,73 @@ export class DashboardView extends ItemView {
         });
     }
     
-    private renderSearchSection(container: HTMLElement): void {
-        const searchSection = container.createDiv('sfp-search-section');
+    
+    private updateSearchResultsDisplay(resultsElement: HTMLElement): void {
+        if (this.state.searchQuery) {
+            const count = this.state.searchResults.length;
+            resultsElement.textContent = `${count} result${count !== 1 ? 's' : ''} for "${this.state.searchQuery}"`;
+            resultsElement.classList.add('has-results');
+        } else {
+            resultsElement.textContent = '';
+            resultsElement.classList.remove('has-results');
+        }
+    }
+
+    private renderControls(container: HTMLElement): void {
+        const controls = container.createDiv('sfp-dashboard-controls');
         
+        // Left side: Date filter dropdown
+        const filterContainer = controls.createDiv('filter-container');
+        filterContainer.createEl('label', { text: 'Filter: ' });
+        
+        const select = filterContainer.createEl('select');
+        const filterOptions = [
+            { value: DateFilter.ALL_TIME, label: 'All Time' },
+            { value: DateFilter.TODAY, label: 'Today' },
+            { value: DateFilter.THIS_WEEK, label: 'This Week' },
+            { value: DateFilter.THIS_MONTH, label: 'This Month' },
+            { value: DateFilter.LAST_30_DAYS, label: 'Last 30 Days' },
+            { value: DateFilter.THIS_YEAR, label: 'This Year' }
+        ];
+        
+        filterOptions.forEach(option => {
+            const optionEl = select.createEl('option', { 
+                value: option.value, 
+                text: option.label 
+            });
+            if (option.value === this.state.currentFilter) {
+                optionEl.selected = true;
+            }
+        });
+        
+        select.addEventListener('change', () => {
+            this.state.currentFilter = select.value as DateFilter;
+            this.applyFiltersAndSearch();
+            this.renderTable(container);
+        });
+
+        // Right side: Search section (always visible)
+        this.renderSearchInControls(controls, container);
+        
+        // Add refresh event listener
+        container.addEventListener('refresh', () => {
+            this.refresh();
+        });
+        
+        // Add keyboard shortcuts
+        this.setupKeyboardShortcuts(select);
+    }
+
+    private renderSearchInControls(controls: HTMLElement, container: HTMLElement): void {
         // Search container
-        const searchContainer = searchSection.createDiv('sfp-search-container');
+        const searchContainer = controls.createDiv('sfp-search-container');
         
         // Search input wrapper
         const searchInputWrapper = searchContainer.createDiv('sfp-search-input-wrapper');
         
         // Create Obsidian's native SearchComponent
         const searchComponent = new SearchComponent(searchInputWrapper);
-        searchComponent.setPlaceholder('Search entries by content or filename...');
+        searchComponent.setPlaceholder('Search entries...');
         if (this.state.searchQuery) {
             searchComponent.setValue(this.state.searchQuery);
         }
@@ -208,16 +258,9 @@ export class DashboardView extends ItemView {
         });
         
         // Search results info
-        const searchResultsInfo = searchSection.createDiv('search-results-info');
+        const searchResultsInfo = searchContainer.createDiv('search-results-info');
         const resultsCount = searchResultsInfo.createDiv('search-results-count');
         this.updateSearchResultsDisplay(resultsCount);
-        
-        // Search shortcuts
-        const shortcuts = searchResultsInfo.createDiv('search-shortcuts');
-        shortcuts.innerHTML = `
-            <span class="shortcut-hint">Ctrl+F</span> to search
-            <span class="shortcut-hint">Esc</span> to clear
-        `;
         
         // Event listeners
         let searchTimeout: NodeJS.Timeout;
@@ -249,59 +292,6 @@ export class DashboardView extends ItemView {
         
         // Global keyboard shortcuts
         this.setupSearchKeyboardShortcuts(searchComponent.inputEl);
-    }
-    
-    private updateSearchResultsDisplay(resultsElement: HTMLElement): void {
-        if (this.state.searchQuery) {
-            const count = this.state.searchResults.length;
-            resultsElement.textContent = `${count} result${count !== 1 ? 's' : ''} for "${this.state.searchQuery}"`;
-            resultsElement.classList.add('has-results');
-        } else {
-            resultsElement.textContent = '';
-            resultsElement.classList.remove('has-results');
-        }
-    }
-
-    private renderControls(container: HTMLElement): void {
-        const controls = container.createDiv('sfp-dashboard-controls');
-        
-        // Date filter dropdown
-        const filterContainer = controls.createDiv('filter-container');
-        filterContainer.createEl('label', { text: 'Filter: ' });
-        
-        const select = filterContainer.createEl('select');
-        const filterOptions = [
-            { value: DateFilter.ALL_TIME, label: 'All Time' },
-            { value: DateFilter.TODAY, label: 'Today' },
-            { value: DateFilter.THIS_WEEK, label: 'This Week' },
-            { value: DateFilter.THIS_MONTH, label: 'This Month' },
-            { value: DateFilter.LAST_30_DAYS, label: 'Last 30 Days' },
-            { value: DateFilter.THIS_YEAR, label: 'This Year' }
-        ];
-        
-        filterOptions.forEach(option => {
-            const optionEl = select.createEl('option', { 
-                value: option.value, 
-                text: option.label 
-            });
-            if (option.value === this.state.currentFilter) {
-                optionEl.selected = true;
-            }
-        });
-        
-        select.addEventListener('change', () => {
-            this.state.currentFilter = select.value as DateFilter;
-            this.applyFiltersAndSearch();
-            this.renderTable(container);
-        });
-        
-        // Add refresh event listener
-        container.addEventListener('refresh', () => {
-            this.refresh();
-        });
-        
-        // Add keyboard shortcuts
-        this.setupKeyboardShortcuts(select);
     }
 
     private renderTable(container: HTMLElement): void {

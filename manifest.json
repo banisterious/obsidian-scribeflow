@@ -1,7 +1,7 @@
 {
     "id": "scribeflow",
     "name": "ScribeFlow",
-    "version": "0.6.1",
+    "version": "0.7.0",
     "minAppVersion": "0.15.0",
     "description": "Streamlined journaling with structured entries, dream diary tracking, and insightful metrics",
     "author": "banisterious",

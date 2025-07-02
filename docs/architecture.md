@@ -223,7 +223,8 @@ The ScribeFlow plugin features a comprehensive dashboard system that provides an
 *   **Content Previews**: Expandable content previews with configurable word limits (default 100 words) and "show more/less" functionality
 *   **Inline Tag Extraction**: Automatic detection and display of hashtag-based tags (#tagname) from journal content
 *   **Collapsible Interface**: Toggle button to hide header and search sections for maximum table viewing space
-*   **Enhanced Statistics**: Real-time statistics with vocabulary metrics, word diversity analysis, and writing pattern insights
+*   **Enhanced Statistics**: Real-time statistics with vocabulary metrics, productivity insights, and comprehensive pattern analysis
+*   **Productivity Pattern Recognition**: Distinguishes between journaling frequency (most frequent day) and writing productivity (highest/lowest word output per day)
 *   **File Navigation**: Direct links to journal files for seamless editing workflow
 *   **Export Compatibility**: UI optimizations maintain full data separation in exports (CSV, JSON, Markdown)
 *   **Mobile Responsive**: Adaptive design without hidden columns, ensuring all data remains accessible on any screen size
@@ -260,6 +261,25 @@ The dashboard employs a sophisticated content processing system that maintains r
 *   **Preview Generation**: Creates word-limited previews while maintaining paragraph structure
 *   **Search Integration**: Applies highlighting while preserving paragraph formatting
 *   **Table Optimization**: Combines related metadata fields for space-efficient display
+
+### Pattern Recognition & Analytics
+
+The dashboard employs sophisticated analytics to identify journaling patterns and productivity insights:
+
+**Day-Based Analytics:**
+*   **Frequency Analysis**: Identifies days of the week when journaling occurs most/least often (entry count-based)
+*   **Productivity Analysis**: Calculates average word count per entry for each day of the week to identify writing productivity patterns
+*   **Statistical Calculations**: Uses robust algorithms to handle edge cases (days with no entries, single-entry days)
+
+**Pattern Categories:**
+*   **Most Frequent Day**: Day with highest number of journal entries (behavioral consistency)
+*   **Most Productive Day**: Day with highest average words per entry (content output optimization)  
+*   **Least Productive Day**: Day with lowest average words per entry (identifies potential improvement opportunities)
+
+**Analytics Value:**
+*   **Schedule Optimization**: Users can identify their most productive writing days for important journaling
+*   **Habit Formation**: Understanding frequency patterns helps establish consistent journaling routines
+*   **Productivity Insights**: Distinguishing between "when I write" vs "when I write well" provides actionable insights
 
 ### Dashboard Components
 
@@ -327,10 +347,12 @@ The dashboard features a comprehensive search system that provides real-time fil
 4.  **Content Parsing**: Each file is analyzed for journal entry callouts and template matching
 5.  **Data Extraction**: Dates, content, word counts, inline tags, and vocabulary metrics are extracted from matching entries
 6.  **Vocabulary Analysis**: Advanced text processing calculates unique word counts, vocabulary richness, and linguistic diversity
-7.  **Performance Caching**: Expensive vocabulary calculations are cached using content hashing and LRU eviction
-8.  **View Rendering**: DashboardView displays data in optimized 5-column table with combined metadata fields
-9.  **Export Processing**: Data transformations maintain UI optimization while preserving separate fields for exports
-10. **Real-Time Updates**: Users can refresh data, apply filters, sort by vocabulary metrics, and navigate to source files
+7.  **Pattern Recognition**: Day-based analytics identify frequency patterns and productivity trends across weekdays
+8.  **Performance Caching**: Expensive vocabulary calculations are cached using content hashing and LRU eviction
+9.  **Statistics Calculation**: Comprehensive metrics including frequency, productivity, and vocabulary insights
+10. **View Rendering**: DashboardView displays data in optimized 5-column table with enhanced pattern recognition statistics
+11. **Export Processing**: Data transformations maintain UI optimization while preserving separate fields for exports
+12. **Real-Time Updates**: Users can refresh data, apply filters, sort by vocabulary metrics, and navigate to source files
 
 ### Date Format Support
 The dashboard handles multiple date formats commonly used in journal templates:

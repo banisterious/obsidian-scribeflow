@@ -125,13 +125,18 @@ This implementation plan covers adding new metrics and table columns to the Scri
 ### Phase 2: Productivity & Consistency Insights
 **Priority:** Enhanced metrics for deeper journaling insights
 
-#### 2.1 Most/Least Productive Days
-- **Display:** "Most productive: Tuesday (avg 650 words)" / "Least: Sunday (avg 180 words)"
-- **Value:** More actionable than full week breakdown
+#### 2.1 Most/Least Productive Days ✅ COMPLETED
+- **Display:** Three distinct metrics in Patterns section
+  - "Most Frequent Day: Tuesday" (renamed from "Most Active Day")
+  - "Most Productive Day: Monday" (highest avg words per entry)
+  - "Least Productive Day: Sunday" (lowest avg words per entry)
+- **Value:** Clear distinction between frequency vs productivity patterns
 - **Implementation Tasks:**
-  - [ ] Calculate day-of-week word averages
-  - [ ] Identify highest/lowest performing days
-  - [ ] Create compact display format for stat cards
+  - [x] Calculate day-of-week word averages for productivity analysis
+  - [x] Identify highest/lowest performing days based on word count averages
+  - [x] Rename existing "Most Active Day" to "Most Frequent Day" for clarity
+  - [x] Create separate stat cards for frequency vs productivity metrics
+  - [x] Update export formats to include all three day-based statistics
 
 #### 2.2 Content Balance (Journal vs Dream Ratio)
 - **Display:** "Dream content: 25% of total words this month"

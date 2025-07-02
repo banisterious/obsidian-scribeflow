@@ -7,7 +7,7 @@
  * 1. Edit the individual CSS files in styles/
  * 2. Run 'npm run build:css' to regenerate this file
  * 
- * Build time: 2025-07-02T15:58:17.029Z
+ * Build time: 2025-07-02T17:12:54.805Z
  * Build order: 22 files concatenated
  */
 
@@ -2077,6 +2077,15 @@
     text-decoration: underline;
 }
 
+.tags-cell {
+    min-width: 120px;
+    max-width: 200px;
+    color: var(--text-muted);
+    font-size: 13px;
+    word-wrap: break-word;
+    line-height: 1.3;
+}
+
 /* Content Preview */
 .preview-text {
     color: var(--text-normal);
@@ -3508,6 +3517,11 @@
         max-width: 250px;
     }
 
+    .tags-cell {
+        max-width: 150px;
+        font-size: 12px;
+    }
+
     /* Template Wizard */
     .sfp-wizard-modal {
         width: 95vw;
@@ -3576,11 +3590,11 @@
     }
 
     /* Dashboard Table - Hide some columns on very small screens */
-    .sfp-dashboard-table .count-cell:nth-child(4) {
+    .sfp-dashboard-table .count-cell:nth-child(5) {
         display: none;
     }
 
-    .sfp-dashboard-table th:nth-child(4) {
+    .sfp-dashboard-table th:nth-child(5) {
         display: none;
     }
 

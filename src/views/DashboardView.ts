@@ -348,6 +348,7 @@ export class DashboardView extends ItemView {
 		const columns = [
 			{ key: 'date', label: 'Date', sortable: true },
 			{ key: 'content', label: 'Journal Entry', sortable: false },
+			{ key: 'tags', label: 'Tags', sortable: false },
 			{ key: 'wordCount', label: 'Words', sortable: true },
 			{ key: 'imageCount', label: 'Images', sortable: true },
 			{ key: 'file', label: 'File', sortable: true },
@@ -377,7 +378,7 @@ export class DashboardView extends ItemView {
 
 		if (this.state.filteredEntries.length === 0) {
 			const row = tbody.createEl('tr');
-			const cell = row.createEl('td', { attr: { colspan: '5' } });
+			const cell = row.createEl('td', { attr: { colspan: '6' } });
 
 			if (this.state.entries.length === 0) {
 				cell.innerHTML = `
@@ -415,6 +416,14 @@ export class DashboardView extends ItemView {
 		// Check if we have search results for this entry
 		const searchResult = this.state.searchResults.find(result => result.entry === entry);
 		this.renderExpandableContent(contentCell, entry);
+
+		// Tags cell
+		const tagsCell = row.createEl('td', { cls: 'tags-cell' });
+		if (entry.tags && entry.tags.length > 0) {
+			tagsCell.textContent = entry.tags.join(', ');
+		} else {
+			tagsCell.textContent = '';
+		}
 
 		// Word count cell
 		const wordCountCell = row.createEl('td', { cls: 'count-cell' });

@@ -6,6 +6,7 @@ export interface DashboardEntry {
 	wordCount: number; // Journal content word count only
 	imageCount: number; // Images in entire entry
 	filePath: string; // For navigation link
+	tags: string[]; // Inline tags extracted from content
 }
 
 export enum DateFilter {

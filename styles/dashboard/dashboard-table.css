@@ -132,6 +132,15 @@
     text-decoration: underline;
 }
 
+.tags-cell {
+    min-width: 120px;
+    max-width: 200px;
+    color: var(--text-muted);
+    font-size: 13px;
+    word-wrap: break-word;
+    line-height: 1.3;
+}
+
 /* Content Preview */
 .preview-text {
     color: var(--text-normal);

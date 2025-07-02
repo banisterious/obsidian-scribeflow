@@ -72,11 +72,11 @@ This implementation plan covers adding new metrics and table columns to the Scri
   - YAML frontmatter: `tags: [tag1, tag2]` (if time permits)
 - **Display:** Comma-separated list (e.g., "reflection, daily, mood, work, gratitude")
 - **Implementation Tasks:**
-  - [ ] Extend `DashboardEntry` interface with `tags` property
-  - [ ] Build robust inline tag extraction (`#tagname` patterns)
-  - [ ] Handle edge cases: nested tags, special characters, URLs with #
-  - [ ] Update table structure to include Tags column
-  - [ ] Add responsive design considerations for mobile
+  - [x] Extend `DashboardEntry` interface with `tags` property
+  - [x] Build robust inline tag extraction (`#tagname` patterns)
+  - [x] Handle edge cases: nested tags, special characters, URLs with #
+  - [x] Update table structure to include Tags column
+  - [x] Add responsive design considerations for mobile
   - [ ] **Future:** YAML frontmatter tag parsing (Phase 1.5)
 
 ### Phase 1.5: Enhanced Data Analysis

@@ -77,6 +77,11 @@
         max-width: 250px;
     }
 
+    .tags-cell {
+        max-width: 150px;
+        font-size: 12px;
+    }
+
     /* Template Wizard */
     .sfp-wizard-modal {
         width: 95vw;
@@ -145,11 +150,11 @@
     }
 
     /* Dashboard Table - Hide some columns on very small screens */
-    .sfp-dashboard-table .count-cell:nth-child(4) {
+    .sfp-dashboard-table .count-cell:nth-child(5) {
         display: none;
     }
 
-    .sfp-dashboard-table th:nth-child(4) {
+    .sfp-dashboard-table th:nth-child(5) {
         display: none;
     }
 

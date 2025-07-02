@@ -184,6 +184,7 @@ export class DashboardParser {
 			const wordCount = this.calculateWordCount(journalContent);
 			const imageCount = this.countImages(calloutBlock);
 			const preview = this.generatePreview(journalContent);
+			const tags = this.extractTags(journalContent);
 
 			// Generate title with date for multiple entries per file
 			const title = this.generateTitleWithDate(file, date);
@@ -196,6 +197,7 @@ export class DashboardParser {
 				wordCount,
 				imageCount,
 				filePath: file.path,
+				tags,
 			};
 		} catch (error) {
 			logger.warn('DashboardParser', 'tryParseCalloutBlock', `Failed to parse callout block from ${file.path}`, {
@@ -504,6 +506,44 @@ export class DashboardParser {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Extract inline tags from content (#tagname patterns)
+	 */
+	private extractTags(content: string): string[] {
+		if (!content || typeof content !== 'string') {
+			return [];
+		}
+
+		const tags = new Set<string>();
+		
+		// Pattern to match #tagname (including nested tags like #work/project)
+		// Must start with # followed by alphanumeric, underscore, dash, or forward slash
+		// Stops at whitespace, punctuation (except /, -, _), or end of string
+		const tagPattern = /#([a-zA-Z0-9_/-]+)/g;
+		
+		let match;
+		while ((match = tagPattern.exec(content)) !== null) {
+			const tag = match[1];
+			
+			// Skip if this looks like a URL fragment (contains :// before the #)
+			const beforeHash = content.substring(0, match.index);
+			if (beforeHash.match(/https?:\/\/[^\s]*$/)) {
+				continue;
+			}
+			
+			// Skip if tag is just numbers (like #123 which might be issue references)
+			if (/^\d+$/.test(tag)) {
+				continue;
+			}
+			
+			// Add tag to set (removes duplicates automatically)
+			tags.add(tag);
+		}
+		
+		// Convert to sorted array for consistent ordering
+		return Array.from(tags).sort();
 	}
 
 	/**

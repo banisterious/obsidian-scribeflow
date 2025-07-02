@@ -218,11 +218,15 @@ The ScribeFlow plugin features a comprehensive dashboard system that provides an
 *   **Multi-Folder Scanning**: Recursively scans configured folders for journal entries across all nested subdirectories
 *   **Advanced Search System**: Native Obsidian search component with real-time filtering, highlighting, and debounced input
 *   **Date Range Filtering**: Provides preset date filters (Today, This Week, This Month, Last 30 Days, This Year) for content analysis
-*   **Sortable Data Tables**: Interactive tables with clickable column headers for sorting by date, content, word count, image count, and file
+*   **Optimized Data Tables**: Space-efficient 5-column layout with combined metadata fields to eliminate horizontal scrolling
+*   **Vocabulary Analysis**: Advanced text processing with unique word counting, vocabulary richness calculation, and linguistic insights
 *   **Content Previews**: Expandable content previews with configurable word limits (default 100 words) and "show more/less" functionality
+*   **Inline Tag Extraction**: Automatic detection and display of hashtag-based tags (#tagname) from journal content
 *   **Collapsible Interface**: Toggle button to hide header and search sections for maximum table viewing space
-*   **Summary Statistics**: Real-time statistics showing total entries, filtered results, average word count, and monthly activity
+*   **Enhanced Statistics**: Real-time statistics with vocabulary metrics, word diversity analysis, and writing pattern insights
 *   **File Navigation**: Direct links to journal files for seamless editing workflow
+*   **Export Compatibility**: UI optimizations maintain full data separation in exports (CSV, JSON, Markdown)
+*   **Mobile Responsive**: Adaptive design without hidden columns, ensuring all data remains accessible on any screen size
 *   **Native Styling**: Consistent with Obsidian's theme system using CSS custom properties
 
 ### Technical Architecture
@@ -242,31 +246,42 @@ The dashboard employs a sophisticated content processing system that maintains r
 *   **Line Processing**: Removes callout prefixes while preserving content structure
 *   **Empty Line Preservation**: Maintains empty lines as paragraph break markers
 *   **Syntax Cleaning**: Strips markdown/HTML syntax while preserving readable text
+*   **Tag Extraction**: Uses regex patterns to identify inline hashtags with nested support (#work/project)
+
+**Analysis Phase:**
+*   **Vocabulary Tokenization**: Advanced word extraction handling contractions, URLs, possessives, and markdown
+*   **Content Normalization**: Case-insensitive deduplication with intelligent filtering of numeric references
+*   **Richness Calculation**: Unique word counting with percentage-based vocabulary diversity scoring
+*   **Performance Caching**: LRU cache (1000 items) with content hashing for expensive text processing operations
 
 **Formatting Phase:**
 *   **Paragraph Reconstruction**: Converts empty line markers to proper paragraph breaks (`\n\n`)
 *   **HTML Generation**: Wraps paragraphs in `<div>` elements with proper spacing
 *   **Preview Generation**: Creates word-limited previews while maintaining paragraph structure
 *   **Search Integration**: Applies highlighting while preserving paragraph formatting
+*   **Table Optimization**: Combines related metadata fields for space-efficient display
 
 ### Dashboard Components
 
 **DashboardView.ts:**
 *   **View Pane Integration**: Dedicated Obsidian view pane (not modal) for persistent dashboard access
-*   **Collapsible Header**: Title, subtitle, summary statistics, and toggle/refresh controls with collapse functionality
+*   **Collapsible Header**: Title, subtitle, enhanced statistics with vocabulary metrics, and toggle/refresh controls
 *   **Native Search Component**: Obsidian SearchComponent with content and filename filtering, highlighting, and keyboard shortcuts
 *   **Filter Controls**: Date range selection with preset options and custom range support
-*   **Data Table**: Sortable columns for Date, Journal Entry, Word Count, Images, and File with optimized layout
-*   **Responsive Layout**: Adaptive design that works across different screen sizes and themes
+*   **Optimized Data Table**: 5-column layout with combined Entry (date+file) and Words (total+unique) columns for space efficiency
+*   **Mobile Responsive**: Adaptive design ensuring all columns remain visible across different screen sizes without hiding data
+*   **Export Integration**: UI optimizations for table display while maintaining full data separation in export formats
 
 **DashboardParser.ts:**
-*   **Content Extraction**: Parses journal callouts to extract dates, content, and metadata
+*   **Content Extraction**: Parses journal callouts to extract dates, content, and metadata with vocabulary analysis
 *   **Template Matching**: Attempts to match file content against selected template structures
 *   **Date Normalization**: Converts various date formats to standardized ISO format for consistency
 *   **Paragraph Preservation**: Maintains original paragraph structure by preserving empty lines as paragraph breaks
 *   **Content Cleaning**: Removes markdown syntax while preserving readable text and formatting structure
-*   **Word Counting**: Calculates accurate word counts from extracted journal content
+*   **Advanced Word Analysis**: Calculates word counts, unique word identification, and vocabulary richness scoring
+*   **Tag Processing**: Extracts inline hashtags with support for nested tags and edge case handling
 *   **Image Detection**: Counts embedded images within journal callout blocks
+*   **Performance Optimization**: Implements LRU caching for expensive vocabulary calculations with content hashing
 
 **TemplateAnalyzer.ts:**
 *   **Placeholder Detection**: Identifies required placeholders in templates for dashboard compatibility
@@ -310,9 +325,12 @@ The dashboard features a comprehensive search system that provides real-time fil
 2.  **Template Analysis**: TemplateAnalyzer validates selected templates for required placeholders
 3.  **File Discovery**: DashboardParser recursively scans configured folders for markdown files
 4.  **Content Parsing**: Each file is analyzed for journal entry callouts and template matching
-5.  **Data Extraction**: Dates, content, word counts, and metadata are extracted from matching entries
-6.  **View Rendering**: DashboardView displays data in sortable table with filtering and statistics
-7.  **Real-Time Updates**: Users can refresh data, apply filters, and navigate to source files
+5.  **Data Extraction**: Dates, content, word counts, inline tags, and vocabulary metrics are extracted from matching entries
+6.  **Vocabulary Analysis**: Advanced text processing calculates unique word counts, vocabulary richness, and linguistic diversity
+7.  **Performance Caching**: Expensive vocabulary calculations are cached using content hashing and LRU eviction
+8.  **View Rendering**: DashboardView displays data in optimized 5-column table with combined metadata fields
+9.  **Export Processing**: Data transformations maintain UI optimization while preserving separate fields for exports
+10. **Real-Time Updates**: Users can refresh data, apply filters, sort by vocabulary metrics, and navigate to source files
 
 ### Date Format Support
 The dashboard handles multiple date formats commonly used in journal templates:

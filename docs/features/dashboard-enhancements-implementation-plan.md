@@ -82,21 +82,45 @@ This implementation plan covers adding new metrics and table columns to the Scri
 ### Phase 1.5: Enhanced Data Analysis
 **Priority:** Build on Phase 1 success with data-focused enhancement
 
-#### 1.5.1 Unique Words (Vocabulary Richness)
-- **Type:** Integer + Percentage, sortable
+#### 1.5.1 Unique Words (Vocabulary Richness) ✅ COMPLETED
+- **Type:** Integer + Percentage, sortable by total word count
 - **Description:** Count and percentage of unique words (vocabulary richness indicator)
-- **Display:** "245 words (67% unique)" - shows both count and percentage of total
+- **Display:** Two-line format in Words column: "245" / "67 unique"
 - **Process:**
-  1. Tokenization: Extract word-like sequences
-  2. Normalization: Handle contractions, hyphenated words, case
-  3. Filtering: Exclude common stop words (optional setting)
-  4. Counting: Unique vs total ratio
-- **Caching:** Implement result caching for performance
+  1. Tokenization: Extract word-like sequences with advanced regex
+  2. Normalization: Handle contractions, hyphenated words, case, markdown
+  3. Filtering: Exclude URLs, emails, numbers, possessives
+  4. Counting: Unique vs total ratio with percentage calculation
+- **Caching:** LRU cache with 1000-item limit and content hashing
 - **Implementation Tasks:**
-  - [ ] Research word tokenization edge cases
-  - [ ] Implement vocabulary richness calculation
-  - [ ] Add caching system for expensive calculations
-  - [ ] Update table with dual display (count + percentage)
+  - [x] Research word tokenization edge cases
+  - [x] Implement vocabulary richness calculation
+  - [x] Add caching system for expensive calculations
+  - [x] Update table with dual display (count + percentage)
+  - [x] Optimize table layout with combined Words column
+  - [x] Ensure export compatibility (Words and Unique Words as separate fields)
+
+## ✅ COMPLETED: Dashboard Table Layout Optimization
+
+**Final Table Structure (5 columns, down from original 7):**
+1. **Entry** - Date + clickable filename: `2025-07-01` / `(2025.md)`
+2. **Content** - Journal preview (renamed from "Journal Entry")
+3. **Tags** - Inline tags (#tagname)
+4. **Words** - Total + unique: `245` / `67 unique`
+5. **Images** - Image count
+
+**Key Achievements:**
+- **Space optimization:** Eliminated horizontal scrolling on desktop
+- **Logical grouping:** Combined related metadata (date+file, total+unique words)
+- **Export compatibility:** UI displays combined fields, exports maintain separate columns
+- **Mobile responsive:** All columns visible without hiding any data
+- **Visual consistency:** Two-line layout for Entry and Words columns
+
+**Technical Implementation:**
+- Advanced tokenization with edge case handling (contractions, URLs, markdown)
+- LRU caching system for vocabulary analysis performance
+- Responsive CSS without column hiding
+- Preserved all functionality (sorting, searching, clicking, exporting)
 
 ### Phase 2: Productivity & Consistency Insights
 **Priority:** Enhanced metrics for deeper journaling insights

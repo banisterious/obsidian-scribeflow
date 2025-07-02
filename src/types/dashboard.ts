@@ -7,6 +7,8 @@ export interface DashboardEntry {
 	imageCount: number; // Images in entire entry
 	filePath: string; // For navigation link
 	tags: string[]; // Inline tags extracted from content
+	uniqueWordCount: number; // Number of unique words in content
+	uniqueWordPercentage: number; // Percentage of unique words vs total
 }
 
 export enum DateFilter {
@@ -30,9 +32,27 @@ export interface DashboardState {
 	headerCollapsed: boolean;
 	statistics: DashboardStatistics;
 	statisticsGroupedView: boolean;
+	metricsDropdownOpen: boolean;
+	enabledMetrics: MetricCategories;
+}
+
+export interface MetricCategories {
+	goals: boolean;         // Daily/weekly goal progress
+	progress: boolean;      // Total entries, words, averages
+	consistency: boolean;   // Streaks, frequency, days journaled
+	content: boolean;       // Median, images, dreams
+	patterns: boolean;      // Day-based frequency/productivity
+	vocabulary: boolean;    // Unique words, richness (future)
 }
 
 export interface DashboardStatistics {
+	// Group 0: Goal Progress
+	dailyGoalProgress: number;        // Percentage of today's goal achieved
+	dailyGoalStatus: string;          // Text like "287/350 (82%)"
+	weeklyGoalProgress: number;       // Percentage of weekly goal achieved  
+	weeklyGoalStatus: string;         // Text like "4/7 days (57%)"
+	monthlyGoalStatus: string;        // Text like "18/30 days (60%)"
+
 	// Group 1: Overall Progress / Summary
 	totalEntries: number;
 	totalWords: number;
@@ -51,7 +71,9 @@ export interface DashboardStatistics {
 	entriesWithDreamDiaryPercent: number;
 
 	// Group 4: Pattern Recognition
-	mostActiveDayOfWeek: string;
+	mostFrequentDayOfWeek: string;
+	mostProductiveDayOfWeek: string;
+	leastProductiveDayOfWeek: string;
 
 	// Supporting data for calculations
 	totalDaysInPeriod: number;
@@ -61,7 +83,7 @@ export interface StatCard {
 	label: string;
 	value: string | number;
 	suffix?: string;
-	category?: 'progress' | 'consistency' | 'content' | 'pattern';
+	category?: 'goals' | 'progress' | 'consistency' | 'content' | 'pattern';
 }
 
 export interface SearchResult {

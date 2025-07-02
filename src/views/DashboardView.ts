@@ -8,6 +8,7 @@ import {
 	SearchMatch,
 	DashboardStatistics,
 	StatCard,
+	MetricCategories,
 } from '../types/dashboard';
 import { DashboardParser } from '../services/DashboardParser';
 import { DashboardStatisticsCalculator } from '../services/DashboardStatisticsCalculator';
@@ -48,8 +49,20 @@ export class DashboardView extends ItemView {
 				{ name: 'file', label: 'Filename', enabled: false },
 			],
 			headerCollapsed: true,
-			statistics: DashboardStatisticsCalculator.calculateStatistics([], DateFilter.ALL_TIME, undefined, []),
+			statistics: DashboardStatisticsCalculator.calculateStatistics([], DateFilter.ALL_TIME, undefined, [], {
+				dailyWordGoal: this.plugin.settings.dashboardSettings.dailyWordGoal,
+				weeklyConsistencyGoal: this.plugin.settings.dashboardSettings.weeklyConsistencyGoal
+			}),
 			statisticsGroupedView: this.plugin.settings.dashboardSettings.statisticsGroupedView ?? false,
+			metricsDropdownOpen: false,
+			enabledMetrics: {
+				goals: true,
+				progress: true,
+				consistency: true,
+				content: true,
+				patterns: true,
+				vocabulary: false, // Future feature, disabled by default
+			},
 		};
 	}
 
@@ -79,6 +92,8 @@ export class DashboardView extends ItemView {
 			this.exportButton.unload();
 		}
 		
+		// Cleanup metrics dropdown listener
+		this.removeClickOutsideListener();
 	}
 
 	private renderDashboard(): void {
@@ -346,12 +361,11 @@ export class DashboardView extends ItemView {
 		const headerRow = thead.createEl('tr');
 
 		const columns = [
-			{ key: 'date', label: 'Date', sortable: true },
-			{ key: 'content', label: 'Journal Entry', sortable: false },
+			{ key: 'date', label: 'Entry', sortable: true },
+			{ key: 'content', label: 'Content', sortable: false },
 			{ key: 'tags', label: 'Tags', sortable: false },
 			{ key: 'wordCount', label: 'Words', sortable: true },
 			{ key: 'imageCount', label: 'Images', sortable: true },
-			{ key: 'file', label: 'File', sortable: true },
 		];
 
 		columns.forEach(column => {
@@ -378,7 +392,7 @@ export class DashboardView extends ItemView {
 
 		if (this.state.filteredEntries.length === 0) {
 			const row = tbody.createEl('tr');
-			const cell = row.createEl('td', { attr: { colspan: '6' } });
+			const cell = row.createEl('td', { attr: { colspan: '5' } });
 
 			if (this.state.entries.length === 0) {
 				cell.innerHTML = `
@@ -406,15 +420,41 @@ export class DashboardView extends ItemView {
 	private renderTableRow(tbody: HTMLTableSectionElement, entry: DashboardEntry): void {
 		const row = tbody.createEl('tr');
 
-		// Date cell
-		const dateCell = row.createEl('td', { cls: 'date-cell' });
-		dateCell.textContent = entry.date;
+		// Check if we have search results for this entry
+		const searchResult = this.state.searchResults.find(result => result.entry === entry);
+
+		// Entry cell (date + file)
+		const entryCell = row.createEl('td', { cls: 'entry-cell' });
+		
+		// Date on first line
+		const dateDiv = entryCell.createDiv('entry-date');
+		dateDiv.textContent = entry.date;
+		
+		// File link on second line
+		const fileDiv = entryCell.createDiv('entry-file');
+		const fileLink = fileDiv.createEl('a', {
+			href: '#',
+			cls: 'internal-link file-link',
+			title: 'Open in new tab',
+		});
+
+		// Check if we have search results for filename
+		const fileMatch = searchResult?.matches.find(match => match.field === 'file');
+		const fileName = this.getFileName(entry.filePath);
+
+		if (fileMatch && this.state.searchQuery) {
+			fileLink.innerHTML = `(${this.highlightText(fileName, this.state.searchQuery)})`;
+		} else {
+			fileLink.textContent = `(${fileName})`;
+		}
+
+		fileLink.addEventListener('click', e => {
+			e.preventDefault();
+			this.openFile(entry.filePath);
+		});
 
 		// Content cell with expansion
 		const contentCell = row.createEl('td', { cls: 'content-cell' });
-
-		// Check if we have search results for this entry
-		const searchResult = this.state.searchResults.find(result => result.entry === entry);
 		this.renderExpandableContent(contentCell, entry);
 
 		// Tags cell
@@ -425,36 +465,20 @@ export class DashboardView extends ItemView {
 			tagsCell.textContent = '';
 		}
 
-		// Word count cell
-		const wordCountCell = row.createEl('td', { cls: 'count-cell' });
-		wordCountCell.textContent = String(entry.wordCount);
+		// Word count cell (combined with unique words)
+		const wordCountCell = row.createEl('td', { cls: 'count-cell words-combined' });
+		
+		// Total words on first line
+		const totalWordsDiv = wordCountCell.createDiv('words-total');
+		totalWordsDiv.textContent = String(entry.wordCount);
+		
+		// Unique words on second line
+		const uniqueWordsDiv = wordCountCell.createDiv('words-unique');
+		uniqueWordsDiv.textContent = `${entry.uniqueWordCount} unique`;
 
 		// Image count cell
 		const imageCountCell = row.createEl('td', { cls: 'count-cell' });
 		imageCountCell.textContent = String(entry.imageCount);
-
-		// File link cell
-		const fileCell = row.createEl('td', { cls: 'file-cell' });
-		const fileLink = fileCell.createEl('a', {
-			href: '#',
-			cls: 'internal-link',
-			title: 'Open in new tab',
-		});
-
-		// Check if we have search results for filename
-		const fileMatch = searchResult?.matches.find(match => match.field === 'file');
-		const fileName = this.getFileName(entry.filePath);
-
-		if (fileMatch && this.state.searchQuery) {
-			fileLink.innerHTML = this.highlightText(fileName, this.state.searchQuery);
-		} else {
-			fileLink.textContent = fileName;
-		}
-
-		fileLink.addEventListener('click', e => {
-			e.preventDefault();
-			this.openFile(entry.filePath);
-		});
 
 		// Add right-click context menu for entry export
 		row.addEventListener('contextmenu', e => {
@@ -827,15 +851,38 @@ export class DashboardView extends ItemView {
 	private renderStatisticsHeader(container: HTMLElement): void {
 		const header = container.createDiv('sfp-dashboard-statistics-header');
 
+		// Create button container for proper spacing
+		const buttonContainer = header.createDiv('sfp-dashboard-header-buttons');
+
 		// Layout toggle button with dynamic text
 		const buttonText = this.state.statisticsGroupedView ? 'Show Grid View' : 'Group by Category';
-		const toggleButton = header.createEl('button', {
+		const toggleButton = buttonContainer.createEl('button', {
 			cls: 'sfp-dashboard-statistics-toggle',
 			text: buttonText,
 		});
 
 		toggleButton.setAttribute('aria-pressed', this.state.statisticsGroupedView.toString());
 		toggleButton.addEventListener('click', () => this.toggleStatisticsLayout());
+
+		// Choose Metrics button
+		const metricsButton = buttonContainer.createEl('button', {
+			cls: 'sfp-dashboard-statistics-toggle sfp-choose-metrics-btn',
+			text: 'Choose Metrics',
+		});
+
+		metricsButton.setAttribute('aria-expanded', this.state.metricsDropdownOpen.toString());
+		metricsButton.addEventListener('click', (e) => {
+			e.stopPropagation();
+			this.toggleMetricsDropdown();
+		});
+
+		// Render metrics dropdown if open
+		if (this.state.metricsDropdownOpen) {
+			this.renderMetricsDropdown(header);
+		}
+
+		// Close dropdown when clicking outside
+		this.addClickOutsideListener();
 	}
 
 	private toggleStatisticsLayout(): void {
@@ -850,6 +897,13 @@ export class DashboardView extends ItemView {
 	}
 
 	private renderGroupedStatistics(container: HTMLElement): void {
+		// Group 0: Goal Progress
+		this.renderStatisticsGroup(container, 'Goals', [
+			{ label: 'Daily Goal', value: this.state.statistics.dailyGoalStatus, category: 'goals' },
+			{ label: 'Weekly Goal', value: this.state.statistics.weeklyGoalStatus, category: 'goals' },
+			{ label: 'Monthly Progress', value: this.state.statistics.monthlyGoalStatus, category: 'goals' },
+		]);
+
 		// Group 1: Overall Progress / Summary
 		this.renderStatisticsGroup(container, 'Overall Progress', [
 			{ label: 'Total Entries', value: this.state.statistics.totalEntries, category: 'progress' },
@@ -903,7 +957,9 @@ export class DashboardView extends ItemView {
 
 		// Group 4: Pattern Recognition
 		this.renderStatisticsGroup(container, 'Patterns', [
-			{ label: 'Most Active Day', value: this.state.statistics.mostActiveDayOfWeek, category: 'pattern' },
+			{ label: 'Most Frequent Day', value: this.state.statistics.mostFrequentDayOfWeek, category: 'pattern' },
+			{ label: 'Most Productive Day', value: this.state.statistics.mostProductiveDayOfWeek, category: 'pattern' },
+			{ label: 'Least Productive Day', value: this.state.statistics.leastProductiveDayOfWeek, category: 'pattern' },
 		]);
 	}
 
@@ -917,15 +973,38 @@ export class DashboardView extends ItemView {
 	}
 
 	private renderStatisticsGroup(container: HTMLElement, title: string, stats: StatCard[]): void {
+		// Filter stats based on enabled categories
+		const filteredStats = stats.filter(stat => {
+			const category = this.mapStatCategoryToMetricCategory(stat.category);
+			return category ? this.state.enabledMetrics[category] : true;
+		});
+
+		// Don't render empty groups
+		if (filteredStats.length === 0) {
+			return;
+		}
+
 		const group = container.createDiv('sfp-dashboard-statistics-group');
 
 		const groupTitle = group.createDiv('sfp-dashboard-statistics-group-title');
 		groupTitle.textContent = title;
 
 		const groupGrid = group.createDiv('sfp-dashboard-statistics-grid');
-		stats.forEach(stat => {
+		filteredStats.forEach(stat => {
 			this.renderStatCard(groupGrid, stat.label, stat.value, stat.suffix, stat.category);
 		});
+	}
+
+	private mapStatCategoryToMetricCategory(statCategory: string | undefined): keyof MetricCategories | null {
+		switch (statCategory) {
+			case 'goals': return 'goals';
+			case 'progress': return 'progress';
+			case 'consistency': return 'consistency';
+			case 'content': return 'content';
+			case 'pattern': return 'patterns';
+			case 'vocabulary': return 'vocabulary';
+			default: return null;
+		}
 	}
 
 	private renderStatCard(
@@ -1023,7 +1102,12 @@ export class DashboardView extends ItemView {
 	}
 
 	private getAllStatistics(): StatCard[] {
-		return [
+		const allStats: StatCard[] = [
+			// Goal Progress
+			{ label: 'Daily Goal', value: this.state.statistics.dailyGoalStatus, category: 'goals' },
+			{ label: 'Weekly Goal', value: this.state.statistics.weeklyGoalStatus, category: 'goals' },
+			{ label: 'Monthly Progress', value: this.state.statistics.monthlyGoalStatus, category: 'goals' },
+
 			// Overall Progress
 			{ label: 'Total Entries', value: this.state.statistics.totalEntries, category: 'progress' },
 			{ label: 'Total Words', value: this.state.statistics.totalWords.toLocaleString(), category: 'progress' },
@@ -1070,8 +1154,16 @@ export class DashboardView extends ItemView {
 			},
 
 			// Pattern Recognition
-			{ label: 'Most Active Day', value: this.state.statistics.mostActiveDayOfWeek, category: 'pattern' },
+			{ label: 'Most Frequent Day', value: this.state.statistics.mostFrequentDayOfWeek, category: 'pattern' },
+			{ label: 'Most Productive Day', value: this.state.statistics.mostProductiveDayOfWeek, category: 'pattern' },
+			{ label: 'Least Productive Day', value: this.state.statistics.leastProductiveDayOfWeek, category: 'pattern' },
 		];
+
+		// Filter stats based on enabled metric categories
+		return allStats.filter(stat => {
+			const category = this.mapStatCategoryToMetricCategory(stat.category);
+			return category ? this.state.enabledMetrics[category] : true;
+		});
 	}
 
 	private refreshStatisticsCards(): void {
@@ -1114,7 +1206,11 @@ export class DashboardView extends ItemView {
 			this.state.filteredEntries,
 			this.state.currentFilter,
 			this.state.searchQuery,
-			this.parser.getParsedTemplates()
+			this.parser.getParsedTemplates(),
+			{
+				dailyWordGoal: this.plugin.settings.dashboardSettings.dailyWordGoal,
+				weeklyConsistencyGoal: this.plugin.settings.dashboardSettings.weeklyConsistencyGoal
+			}
 		);
 	}
 
@@ -1173,5 +1269,74 @@ export class DashboardView extends ItemView {
 			});
 		}
 	}
+
+	private toggleMetricsDropdown(): void {
+		this.state.metricsDropdownOpen = !this.state.metricsDropdownOpen;
+		this.refreshStatisticsCards();
+	}
+
+	private renderMetricsDropdown(container: HTMLElement): void {
+		const dropdown = container.createDiv('sfp-metrics-dropdown');
+		
+		// Dropdown content
+		const content = dropdown.createDiv('sfp-metrics-dropdown-content');
+		content.createEl('h4', { text: 'Choose Metrics to Display' });
+		
+		const categories = [
+			{ key: 'goals', label: 'Goals', desc: 'Daily and weekly goal progress tracking' },
+			{ key: 'progress', label: 'Progress', desc: 'Total entries, words, averages' },
+			{ key: 'consistency', label: 'Consistency', desc: 'Streaks, frequency, days journaled' },
+			{ key: 'content', label: 'Content', desc: 'Median words, images, dreams' },
+			{ key: 'patterns', label: 'Patterns', desc: 'Day-based frequency and productivity' },
+			{ key: 'vocabulary', label: 'Vocabulary', desc: 'Unique words, richness (future)' },
+		];
+
+		categories.forEach(category => {
+			const option = content.createDiv('sfp-metrics-option');
+			
+			const checkbox = option.createEl('input', {
+				type: 'checkbox',
+				attr: { id: `metric-${category.key}` }
+			}) as HTMLInputElement;
+			
+			checkbox.checked = this.state.enabledMetrics[category.key as keyof MetricCategories];
+			checkbox.addEventListener('change', () => {
+				this.state.enabledMetrics[category.key as keyof MetricCategories] = checkbox.checked;
+				this.refreshStatisticsCards();
+			});
+
+			const label = option.createEl('label', { 
+				attr: { for: `metric-${category.key}` },
+				cls: 'sfp-metrics-label'
+			});
+			
+			label.createSpan({ text: category.label, cls: 'sfp-metrics-label-title' });
+			label.createSpan({ text: category.desc, cls: 'sfp-metrics-label-desc' });
+		});
+	}
+
+	private addClickOutsideListener(): void {
+		// Remove any existing listener first
+		this.removeClickOutsideListener();
+		
+		this.clickOutsideHandler = (event: MouseEvent) => {
+			const target = event.target as Element;
+			if (!target.closest('.sfp-metrics-dropdown') && !target.closest('.sfp-choose-metrics-btn')) {
+				this.state.metricsDropdownOpen = false;
+				this.refreshStatisticsCards();
+			}
+		};
+		
+		document.addEventListener('click', this.clickOutsideHandler);
+	}
+
+	private removeClickOutsideListener(): void {
+		if (this.clickOutsideHandler) {
+			document.removeEventListener('click', this.clickOutsideHandler);
+			this.clickOutsideHandler = null;
+		}
+	}
+
+	private clickOutsideHandler: ((event: MouseEvent) => void) | null = null;
 
 }

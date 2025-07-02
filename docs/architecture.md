@@ -218,6 +218,7 @@ The ScribeFlow plugin features a comprehensive dashboard system that provides an
 *   **Multi-Folder Scanning**: Recursively scans configured folders for journal entries across all nested subdirectories
 *   **Advanced Search System**: Native Obsidian search component with real-time filtering, highlighting, and debounced input
 *   **Date Range Filtering**: Provides preset date filters (Today, This Week, This Month, Last 30 Days, This Year) for content analysis
+*   **Goal Tracking System**: Comprehensive goal setting and progress tracking for daily word counts and weekly consistency targets
 *   **Optimized Data Tables**: Space-efficient 5-column layout with combined metadata fields to eliminate horizontal scrolling
 *   **Vocabulary Analysis**: Advanced text processing with unique word counting, vocabulary richness calculation, and linguistic insights
 *   **Content Previews**: Expandable content previews with configurable word limits (default 100 words) and "show more/less" functionality
@@ -225,6 +226,7 @@ The ScribeFlow plugin features a comprehensive dashboard system that provides an
 *   **Collapsible Interface**: Toggle button to hide header and search sections for maximum table viewing space
 *   **Enhanced Statistics**: Real-time statistics with vocabulary metrics, productivity insights, and comprehensive pattern analysis
 *   **Productivity Pattern Recognition**: Distinguishes between journaling frequency (most frequent day) and writing productivity (highest/lowest word output per day)
+*   **Metrics Selection Interface**: User-controlled metric categories with dropdown selection for personalized dashboard views
 *   **File Navigation**: Direct links to journal files for seamless editing workflow
 *   **Export Compatibility**: UI optimizations maintain full data separation in exports (CSV, JSON, Markdown)
 *   **Mobile Responsive**: Adaptive design without hidden columns, ensuring all data remains accessible on any screen size
@@ -280,6 +282,39 @@ The dashboard employs sophisticated analytics to identify journaling patterns an
 *   **Schedule Optimization**: Users can identify their most productive writing days for important journaling
 *   **Habit Formation**: Understanding frequency patterns helps establish consistent journaling routines
 *   **Productivity Insights**: Distinguishing between "when I write" vs "when I write well" provides actionable insights
+
+### Goal Tracking System
+
+The ScribeFlow dashboard includes a comprehensive goal tracking system that helps users set, monitor, and achieve their journaling objectives.
+
+**Goal Types:**
+*   **Daily Word Goal**: Target word count for daily writing (configurable, default: 250 words)
+*   **Weekly Consistency Goal**: Target number of days to journal per week (1-7 days, default: 5 days)
+*   **Monthly Progress Tracking**: Automatic calculation of monthly journaling consistency
+
+**Progress Calculation:**
+*   **Real-Time Tracking**: Goals are calculated based on actual journal entries and current date
+*   **Smart Date Handling**: Proper week/month boundary calculations using Sunday as week start
+*   **Percentage-Based Progress**: All goals show completion percentages for easy understanding
+*   **Automatic Capping**: Progress percentages cap at 100% to prevent over-achievement confusion
+
+**Display Format:**
+*   **Daily Goal**: "287/350 (82%)" - Today's word count vs target with percentage
+*   **Weekly Goal**: "4/7 days (57%)" - Days journaled this week vs target with percentage  
+*   **Monthly Progress**: "18/30 days (60%)" - Days journaled this month vs total days
+
+**Technical Implementation:**
+*   **Settings Integration**: Goal values stored in dashboard settings with validation (1+ words, 1-7 days)
+*   **Statistics Calculator**: Goal progress integrated into main statistics calculation pipeline
+*   **Metrics System**: Goals appear as dedicated category in metrics selection interface
+*   **Export Compatibility**: Goal statistics included in all dashboard export formats (Markdown, CSV, JSON)
+*   **Visual Design**: Distinct accent color styling for goal cards to emphasize importance
+
+**User Experience:**
+*   **Dual Interface Access**: Goal settings available in both main plugin settings and in-modal settings
+*   **Live Updates**: Goal progress updates immediately when new entries are added or settings changed
+*   **Motivational Design**: Progress indicators provide clear feedback on journaling consistency and productivity
+*   **Personalization**: Users can customize goals based on their individual writing habits and schedules
 
 ### Dashboard Components
 

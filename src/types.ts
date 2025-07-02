@@ -38,6 +38,8 @@ export interface ScribeFlowPluginSettings {
 		parseTemplates: string[];
 		previewWordLimit: number;
 		statisticsGroupedView: boolean;
+		dailyWordGoal: number;
+		weeklyConsistencyGoal: number;
 	};
 	loggingSettings: LoggingSettings;
 }

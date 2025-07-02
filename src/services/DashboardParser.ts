@@ -9,12 +9,14 @@ export class DashboardParser {
 	private settings: ScribeFlowPluginSettings;
 	private templateAnalyzer: TemplateAnalyzer;
 	private parsedTemplates: Map<string, ParsedTemplate>;
+	private vocabularyCache: Map<string, { uniqueWordCount: number; uniqueWordPercentage: number }>;
 
 	constructor(app: App, settings: ScribeFlowPluginSettings) {
 		this.app = app;
 		this.settings = settings;
 		this.templateAnalyzer = new TemplateAnalyzer();
 		this.parsedTemplates = new Map();
+		this.vocabularyCache = new Map();
 	}
 
 	/**
@@ -185,6 +187,7 @@ export class DashboardParser {
 			const imageCount = this.countImages(calloutBlock);
 			const preview = this.generatePreview(journalContent);
 			const tags = this.extractTags(journalContent);
+			const vocabularyRichness = this.calculateVocabularyRichness(journalContent);
 
 			// Generate title with date for multiple entries per file
 			const title = this.generateTitleWithDate(file, date);
@@ -198,6 +201,8 @@ export class DashboardParser {
 				imageCount,
 				filePath: file.path,
 				tags,
+				uniqueWordCount: vocabularyRichness.uniqueWordCount,
+				uniqueWordPercentage: vocabularyRichness.uniqueWordPercentage,
 			};
 		} catch (error) {
 			logger.warn('DashboardParser', 'tryParseCalloutBlock', `Failed to parse callout block from ${file.path}`, {
@@ -506,6 +511,116 @@ export class DashboardParser {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Calculate vocabulary richness (unique words analysis) with caching
+	 */
+	private calculateVocabularyRichness(content: string): { uniqueWordCount: number; uniqueWordPercentage: number } {
+		if (!content || typeof content !== 'string') {
+			return { uniqueWordCount: 0, uniqueWordPercentage: 0 };
+		}
+
+		// Create a simple hash of the content for caching
+		const contentHash = this.hashContent(content);
+		
+		// Check cache first
+		const cachedResult = this.vocabularyCache.get(contentHash);
+		if (cachedResult) {
+			return cachedResult;
+		}
+
+		// Tokenize and normalize words
+		const words = this.tokenizeWords(content);
+		const totalWords = words.length;
+		
+		if (totalWords === 0) {
+			const result = { uniqueWordCount: 0, uniqueWordPercentage: 0 };
+			this.vocabularyCache.set(contentHash, result);
+			return result;
+		}
+
+		// Count unique words (case-insensitive)
+		const uniqueWords = new Set(words.map(word => word.toLowerCase()));
+		const uniqueWordCount = uniqueWords.size;
+		
+		// Calculate percentage
+		const uniqueWordPercentage = Math.round((uniqueWordCount / totalWords) * 100);
+
+		const result = { uniqueWordCount, uniqueWordPercentage };
+		
+		// Cache the result
+		this.vocabularyCache.set(contentHash, result);
+		
+		// Implement simple LRU eviction if cache gets too large
+		if (this.vocabularyCache.size > 1000) {
+			const firstKey = this.vocabularyCache.keys().next().value;
+			this.vocabularyCache.delete(firstKey);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Create a simple hash of content for caching
+	 */
+	private hashContent(content: string): string {
+		let hash = 0;
+		for (let i = 0; i < content.length; i++) {
+			const char = content.charCodeAt(i);
+			hash = ((hash << 5) - hash) + char;
+			hash = hash & hash; // Convert to 32-bit integer
+		}
+		return hash.toString();
+	}
+
+	/**
+	 * Tokenize text into normalized words for vocabulary analysis
+	 */
+	private tokenizeWords(text: string): string[] {
+		// Remove markdown formatting
+		let cleaned = text
+			.replace(/\*\*([^*]+)\*\*/g, '$1') // **bold** → bold
+			.replace(/\*([^*]+)\*/g, '$1')     // *italic* → italic
+			.replace(/`([^`]+)`/g, '$1')      // `code` → code
+			.replace(/~~([^~]+)~~/g, '$1')    // ~~strikethrough~~ → strikethrough
+			.replace(/==([^=]+)==/g, '$1');   // ==highlight== → highlight
+
+		// Remove URLs
+		cleaned = cleaned.replace(/https?:\/\/[^\s]+/g, '');
+		
+		// Remove email addresses
+		cleaned = cleaned.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '');
+
+		// Split on word boundaries and clean each word
+		const words: string[] = [];
+		const wordPattern = /\b[\w''-]+\b/g;
+		let match;
+
+		while ((match = wordPattern.exec(cleaned)) !== null) {
+			let word = match[0];
+			
+			// Skip if word is just numbers or single characters
+			if (/^\d+$/.test(word) || word.length < 2) {
+				continue;
+			}
+
+			// Handle contractions - keep as single unit but normalize
+			// don't → dont, I'll → ill, etc.
+			word = word.replace(/'/g, '').replace(/-/g, '');
+			
+			// Remove possessive endings
+			word = word.replace(/s$/, '');
+			
+			// Skip if word became too short after cleaning
+			if (word.length < 2) {
+				continue;
+			}
+
+			words.push(word);
+		}
+
+		return words;
 	}
 
 	/**

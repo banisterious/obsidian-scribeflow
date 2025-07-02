@@ -5,7 +5,8 @@ export class DashboardStatisticsCalculator {
 		entries: DashboardEntry[],
 		dateFilter: DateFilter,
 		searchQuery?: string,
-		templates?: ParsedTemplate[]
+		templates?: ParsedTemplate[],
+		goalSettings?: { dailyWordGoal: number; weeklyConsistencyGoal: number }
 	): DashboardStatistics {
 		if (entries.length === 0) {
 			return this.getEmptyStatistics();
@@ -13,7 +14,19 @@ export class DashboardStatisticsCalculator {
 
 		const totalDaysInPeriod = this.getTotalDaysInPeriod(dateFilter, entries);
 
+		// Calculate goal progress if settings are provided
+		const goalProgress = goalSettings ? this.calculateGoalProgress(entries, goalSettings) : {
+			dailyGoalProgress: 0,
+			dailyGoalStatus: 'No goal set',
+			weeklyGoalProgress: 0,
+			weeklyGoalStatus: 'No goal set',
+			monthlyGoalStatus: 'No goal set'
+		};
+
 		return {
+			// Group 0: Goal Progress
+			...goalProgress,
+
 			// Group 1: Overall Progress / Summary
 			totalEntries: this.calculateTotalEntries(entries),
 			totalWords: this.calculateTotalWords(entries),
@@ -32,7 +45,9 @@ export class DashboardStatisticsCalculator {
 			entriesWithDreamDiaryPercent: this.calculateEntriesWithDreamDiaryPercent(entries, templates),
 
 			// Group 4: Pattern Recognition
-			mostActiveDayOfWeek: this.calculateMostActiveDayOfWeek(entries),
+			mostFrequentDayOfWeek: this.calculateMostFrequentDayOfWeek(entries),
+			mostProductiveDayOfWeek: this.calculateMostProductiveDayOfWeek(entries),
+			leastProductiveDayOfWeek: this.calculateLeastProductiveDayOfWeek(entries),
 
 			// Supporting data
 			totalDaysInPeriod: totalDaysInPeriod,
@@ -41,6 +56,14 @@ export class DashboardStatisticsCalculator {
 
 	private static getEmptyStatistics(): DashboardStatistics {
 		return {
+			// Goal Progress
+			dailyGoalProgress: 0,
+			dailyGoalStatus: 'No entries',
+			weeklyGoalProgress: 0,
+			weeklyGoalStatus: 'No entries',
+			monthlyGoalStatus: 'No entries',
+			
+			// Other stats
 			totalEntries: 0,
 			totalWords: 0,
 			averageWordsPerEntry: 0,
@@ -52,7 +75,9 @@ export class DashboardStatisticsCalculator {
 			medianWordCount: 0,
 			entriesWithImagesPercent: 0,
 			entriesWithDreamDiaryPercent: 0,
-			mostActiveDayOfWeek: 'None',
+			mostFrequentDayOfWeek: 'None',
+			mostProductiveDayOfWeek: 'None',
+			leastProductiveDayOfWeek: 'None',
 			totalDaysInPeriod: 0,
 		};
 	}
@@ -260,7 +285,7 @@ export class DashboardStatisticsCalculator {
 	}
 
 	// Group 4: Pattern Recognition
-	private static calculateMostActiveDayOfWeek(entries: DashboardEntry[]): string {
+	private static calculateMostFrequentDayOfWeek(entries: DashboardEntry[]): string {
 		if (entries.length === 0) return 'None';
 
 		const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -273,9 +298,59 @@ export class DashboardStatisticsCalculator {
 		});
 
 		const maxCount = Math.max(...dayCounts);
-		const mostActiveDay = dayCounts.indexOf(maxCount);
+		const mostFrequentDay = dayCounts.indexOf(maxCount);
 
-		return dayNames[mostActiveDay];
+		return dayNames[mostFrequentDay];
+	}
+
+	private static calculateMostProductiveDayOfWeek(entries: DashboardEntry[]): string {
+		if (entries.length === 0) return 'None';
+
+		const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		const dayWordTotals = new Array(7).fill(0);
+		const dayEntryCounts = new Array(7).fill(0);
+
+		entries.forEach(entry => {
+			const date = new Date(entry.date);
+			const dayOfWeek = date.getDay();
+			dayWordTotals[dayOfWeek] += entry.wordCount;
+			dayEntryCounts[dayOfWeek]++;
+		});
+
+		// Calculate average words per entry for each day
+		const dayAverages = dayWordTotals.map((total, index) => 
+			dayEntryCounts[index] > 0 ? total / dayEntryCounts[index] : 0
+		);
+
+		const maxAverage = Math.max(...dayAverages);
+		const mostProductiveDay = dayAverages.indexOf(maxAverage);
+
+		return dayNames[mostProductiveDay];
+	}
+
+	private static calculateLeastProductiveDayOfWeek(entries: DashboardEntry[]): string {
+		if (entries.length === 0) return 'None';
+
+		const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		const dayWordTotals = new Array(7).fill(0);
+		const dayEntryCounts = new Array(7).fill(0);
+
+		entries.forEach(entry => {
+			const date = new Date(entry.date);
+			const dayOfWeek = date.getDay();
+			dayWordTotals[dayOfWeek] += entry.wordCount;
+			dayEntryCounts[dayOfWeek]++;
+		});
+
+		// Calculate average words per entry for each day, only for days with entries
+		const dayAverages = dayWordTotals.map((total, index) => 
+			dayEntryCounts[index] > 0 ? total / dayEntryCounts[index] : Number.MAX_VALUE
+		);
+
+		const minAverage = Math.min(...dayAverages.filter(avg => avg < Number.MAX_VALUE));
+		const leastProductiveDay = dayAverages.indexOf(minAverage);
+
+		return dayNames[leastProductiveDay];
 	}
 
 	// Helper methods
@@ -319,5 +394,54 @@ export class DashboardStatisticsCalculator {
 			year: 'numeric'
 		};
 		return date.toLocaleDateString('en-US', options);
+	}
+
+	// Goal Progress Calculations
+	private static calculateGoalProgress(
+		entries: DashboardEntry[], 
+		goalSettings: { dailyWordGoal: number; weeklyConsistencyGoal: number }
+	) {
+		const today = new Date();
+		const startOfWeek = new Date(today);
+		startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday
+		
+		const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+		// Today's entries and word count
+		const todayStr = today.toISOString().split('T')[0];
+		const todayEntries = entries.filter(entry => entry.date === todayStr);
+		const todayWords = todayEntries.reduce((sum, entry) => sum + entry.wordCount, 0);
+
+		// Daily goal progress
+		const dailyProgress = Math.min(100, (todayWords / goalSettings.dailyWordGoal) * 100);
+		const dailyStatus = `${todayWords}/${goalSettings.dailyWordGoal} (${Math.round(dailyProgress)}%)`;
+
+		// Weekly entries (this week)
+		const weekEntries = entries.filter(entry => {
+			const entryDate = new Date(entry.date);
+			return entryDate >= startOfWeek && entryDate <= today;
+		});
+		const uniqueWeekDays = new Set(weekEntries.map(entry => entry.date)).size;
+		
+		const weeklyProgress = Math.min(100, (uniqueWeekDays / goalSettings.weeklyConsistencyGoal) * 100);
+		const weeklyStatus = `${uniqueWeekDays}/${goalSettings.weeklyConsistencyGoal} days (${Math.round(weeklyProgress)}%)`;
+
+		// Monthly entries (this month)
+		const monthEntries = entries.filter(entry => {
+			const entryDate = new Date(entry.date);
+			return entryDate >= startOfMonth && entryDate <= today;
+		});
+		const uniqueMonthDays = new Set(monthEntries.map(entry => entry.date)).size;
+		const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+		const monthlyProgress = Math.min(100, (uniqueMonthDays / daysInMonth) * 100);
+		const monthlyStatus = `${uniqueMonthDays}/${daysInMonth} days (${Math.round(monthlyProgress)}%)`;
+
+		return {
+			dailyGoalProgress: dailyProgress,
+			dailyGoalStatus: dailyStatus,
+			weeklyGoalProgress: weeklyProgress,
+			weeklyGoalStatus: weeklyStatus,
+			monthlyGoalStatus: monthlyStatus
+		};
 	}
 }

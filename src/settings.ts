@@ -25,6 +25,8 @@ export const DEFAULT_SETTINGS: ScribeFlowPluginSettings = {
 		parseTemplates: [],
 		previewWordLimit: 100,
 		statisticsGroupedView: false,
+		dailyWordGoal: 250,
+		weeklyConsistencyGoal: 5,
 	},
 	loggingSettings: {
 		enabled: false,
@@ -181,6 +183,17 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 		info.createDiv({ text: 'Configure settings for the journal dashboard view', cls: 'setting-item-description' });
 		heading.createDiv('setting-item-control');
 
+		// Statistics grouped view
+		new Setting(containerEl)
+			.setName('Group statistics by category')
+			.setDesc('Display dashboard statistics grouped by category instead of in a flat grid')
+			.addToggle(toggle =>
+				toggle.setValue(this.plugin.settings.dashboardSettings.statisticsGroupedView).onChange(async value => {
+					this.plugin.settings.dashboardSettings.statisticsGroupedView = value;
+					await this.plugin.saveSettings();
+				})
+			);
+
 		// Preview word limit
 		new Setting(containerEl)
 			.setName('Preview word limit')
@@ -276,15 +289,41 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 		const templatesContainer = containerEl.createDiv('sfp-parse-templates-container');
 		this.renderTemplateSelection(templatesContainer);
 
-		// Statistics grouped view
+		// Goal tracking section header
+		const goalHeader = containerEl.createDiv('setting-item setting-item-heading');
+		const goalInfo = goalHeader.createDiv('setting-item-info');
+		goalInfo.createDiv({ text: 'Goal Tracking', cls: 'setting-item-name' });
+		goalInfo.createDiv({ text: 'Set daily and weekly journaling goals', cls: 'setting-item-description' });
+		goalHeader.createDiv('setting-item-control');
+
+		// Daily word goal
 		new Setting(containerEl)
-			.setName('Group statistics by category')
-			.setDesc('Display dashboard statistics grouped by category instead of in a flat grid')
-			.addToggle(toggle =>
-				toggle.setValue(this.plugin.settings.dashboardSettings.statisticsGroupedView).onChange(async value => {
-					this.plugin.settings.dashboardSettings.statisticsGroupedView = value;
-					await this.plugin.saveSettings();
-				})
+			.setName('Daily word goal')
+			.setDesc('Target number of words to write per day')
+			.addText(text =>
+				text
+					.setPlaceholder('250')
+					.setValue(String(this.plugin.settings.dashboardSettings.dailyWordGoal))
+					.onChange(async value => {
+						const numValue = parseInt(value) || 250;
+						this.plugin.settings.dashboardSettings.dailyWordGoal = Math.max(1, numValue);
+						await this.plugin.saveSettings();
+					})
+			);
+
+		// Weekly consistency goal
+		new Setting(containerEl)
+			.setName('Weekly consistency goal')
+			.setDesc('Target number of days to journal per week (1-7)')
+			.addText(text =>
+				text
+					.setPlaceholder('5')
+					.setValue(String(this.plugin.settings.dashboardSettings.weeklyConsistencyGoal))
+					.onChange(async value => {
+						const numValue = parseInt(value) || 5;
+						this.plugin.settings.dashboardSettings.weeklyConsistencyGoal = Math.max(1, Math.min(7, numValue));
+						await this.plugin.saveSettings();
+					})
 			);
 	}
 

@@ -74,6 +74,11 @@ export class ExportFormatters {
 
 	private formatStatisticsAsMarkdown(stats: DashboardStatistics): string {
 		return `
+### Goals
+- **Daily Goal:** ${stats.dailyGoalStatus}
+- **Weekly Goal:** ${stats.weeklyGoalStatus}
+- **Monthly Progress:** ${stats.monthlyGoalStatus}
+
 ### Overall Progress
 - **Total Entries:** ${stats.totalEntries}
 - **Total Words:** ${stats.totalWords.toLocaleString()}
@@ -91,7 +96,9 @@ export class ExportFormatters {
 - **Entries with Dreams:** ${stats.entriesWithDreamDiaryPercent.toFixed(1)}%
 
 ### Patterns
-- **Most Active Day:** ${stats.mostActiveDayOfWeek}
+- **Most Frequent Day:** ${stats.mostFrequentDayOfWeek}
+- **Most Productive Day:** ${stats.mostProductiveDayOfWeek}
+- **Least Productive Day:** ${stats.leastProductiveDayOfWeek}
         `.trim();
 	}
 

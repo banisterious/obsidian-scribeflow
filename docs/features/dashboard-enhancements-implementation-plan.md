@@ -146,19 +146,23 @@ This implementation plan covers adding new metrics and table columns to the Scri
   - [ ] Update statistics calculator for content balance
   - [ ] Add new stat card for content balance display
 
-#### 2.3 Goal Tracking & Progress (Simple Settings Integration)
-- **Settings Location:** Add to existing Dashboard settings section
+#### 2.3 Goal Tracking & Progress (Simple Settings Integration) ✅ COMPLETED
+- **Settings Location:** Added to existing Dashboard settings section in both main and modal interfaces
 - **Goal Types (Initial):**
-  - Daily word count goal (single number input)
-  - Weekly consistency goal (days per week target)
+  - Daily word count goal (default: 250 words)
+  - Weekly consistency goal (1-7 days per week, default: 5)
+  - Monthly progress tracking (bonus metric)
 - **Display:**
-  - "Daily Goal: 350 words (Today: 287 - 82%)"
-  - "Weekly Goal: 5/7 days (This week: 4/7 - 57%)"
+  - "Daily Goal: 287/350 (82%)"
+  - "Weekly Goal: 4/7 days (57%)"
+  - "Monthly Progress: 18/30 days (60%)"
 - **Implementation Tasks:**
-  - [ ] Add 2-3 simple goal fields to existing settings
-  - [ ] Create goal progress calculation logic
-  - [ ] Build goal tracking stat cards with progress indicators
-  - [ ] Add visual progress bars or indicators
+  - [x] Add goal fields to dashboard settings (both main and modal interfaces)
+  - [x] Create goal progress calculation logic with smart date handling
+  - [x] Build goal tracking stat cards with text-based progress indicators
+  - [x] Add Goals category to metrics selection system
+  - [x] Include goal statistics in export formats
+  - [x] Add distinct visual styling with accent color border
 
 ### Phase 3: Writing Quality Insights (Simplified)
 **Priority:** Basic writing pattern analysis

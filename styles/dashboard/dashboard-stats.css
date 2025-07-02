@@ -10,7 +10,7 @@
 
 .sfp-dashboard-statistics-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     margin-bottom: 16px;
 }
@@ -125,6 +125,10 @@
 }
 
 /* Category Colors (Flat Grid Only) */
+.sfp-dashboard-stat-card.category-goals {
+    border-left: 4px solid var(--color-accent);
+}
+
 .sfp-dashboard-stat-card.category-progress {
     border-left: 4px solid var(--color-green);
 }
@@ -194,4 +198,82 @@
     .stat-value.large-number {
         font-size: 18px;
     }
+}
+
+/* Header Buttons */
+.sfp-dashboard-header-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.sfp-choose-metrics-btn:hover {
+    background: var(--background-modifier-hover);
+}
+
+.sfp-choose-metrics-btn[aria-expanded="true"] {
+    background: var(--background-modifier-active);
+}
+
+/* Metrics Dropdown */
+.sfp-metrics-dropdown {
+    position: relative;
+    margin-top: 8px;
+}
+
+.sfp-metrics-dropdown-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    min-width: 280px;
+    padding: 16px;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.sfp-metrics-dropdown-content h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-normal);
+}
+
+.sfp-metrics-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 4px 0;
+}
+
+.sfp-metrics-option:last-child {
+    margin-bottom: 0;
+}
+
+.sfp-metrics-option input[type="checkbox"] {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.sfp-metrics-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.sfp-metrics-label-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-normal);
+}
+
+.sfp-metrics-label-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.3;
 }

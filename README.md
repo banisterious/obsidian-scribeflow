@@ -34,9 +34,12 @@ ScribeFlow optimizes structured journaling by offering templates for users to de
 - **Interactive Placeholders** - Dropdown selector for easy placeholder insertion
 - **Dynamic Processing** - Automatic word counting and metrics formatting
 
-### **Scribe Dashboard** *(Export Features Added in 0.6.0)*
+### **Scribe Dashboard** *(Goal Tracking Added in 0.6.3)*
 - **Template-driven Parsing** - Automatically extracts journal entries from configured folders and templates
+- **Goal Tracking System** - Set daily word count and weekly consistency goals with real-time progress tracking
 - **Advanced Search System** - Native Obsidian search with real-time filtering, highlighting, and keyboard shortcuts
+- **Enhanced Statistics** - Comprehensive analytics with goal progress, productivity patterns, and vocabulary insights
+- **Metrics Selection Interface** - Choose which metric categories to display with granular control
 - **Sortable Data Table** - View entries by date, journal content, word count, images, and source file
 - **Smart Content Preview** - Expandable journal content with configurable word limits (default 100 words)
 - **Collapsible Interface** - Toggle button to hide header and search for maximum table viewing space
@@ -96,7 +99,7 @@ ScribeFlow optimizes structured journaling by offering templates for users to de
 - **Image Folder**: Set default folder for image selection with autosuggester
 - **File Types**: Choose which image formats to show in the picker (PNG, JPG, SVG, etc.)
 - **Dream Metrics**: Select and reorder up to any number of dream tracking metrics
-- **Scribe Dashboard**: Configure scan folders and templates for dashboard parsing, set preview word limits
+- **Scribe Dashboard**: Configure scan folders and templates for dashboard parsing, set preview word limits, and set daily/weekly journaling goals
 
 ## Output Format
 

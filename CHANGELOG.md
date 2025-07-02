@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.3] - 2025-07-02
+
+### Added
+- **Goal Tracking System**: Comprehensive goal setting and progress tracking for journaling habits
+  - **Daily Word Goals**: Set target word counts with real-time progress tracking (default: 250 words)
+  - **Weekly Consistency Goals**: Set target days per week with progress monitoring (1-7 days, default: 5)
+  - **Monthly Progress Tracking**: Automatic calculation of monthly journaling consistency
+  - **Smart Progress Calculation**: Real-time tracking with proper week/month boundary handling
+  - **Dual Settings Interface**: Goal settings available in both main plugin settings and in-modal settings
+  - **Export Integration**: Goal statistics included in all dashboard export formats
+- **Enhanced Metrics Selection**: User-controlled metric categories with dropdown interface
+  - **Goals Category**: Dedicated section for goal progress tracking with accent color styling
+  - **Granular Control**: Choose which metric categories to display (Goals, Progress, Consistency, Content, Patterns, Vocabulary)
+  - **Real-Time Filtering**: Statistics update immediately when categories are toggled
+  - **Persistent Settings**: Metric preferences saved and restored across sessions
+
+### Enhanced
+- **Dashboard Statistics**: Expanded analytics with goal progress and enhanced insights
+  - **Goal Progress Cards**: "Daily Goal: 287/350 (82%)" and "Weekly Goal: 4/7 days (57%)" display format
+  - **Motivational Design**: Clear progress indicators provide feedback on journaling consistency
+  - **Live Updates**: Goal progress updates immediately when new entries are added or settings changed
+- **Settings Organization**: Improved settings layout for better user experience
+  - **Logical Grouping**: Statistics layout preference moved to top of dashboard settings
+  - **Consistent Interface**: Goal tracking mirrored between main and modal settings interfaces
+  - **Input Validation**: Goal values validated with appropriate min/max constraints (1+ words, 1-7 days)
+
+### Technical
+- **Statistics Calculator Enhancement**: Extended calculation pipeline to include goal progress metrics
+- **Type System Updates**: Added goal-related interfaces and expanded MetricCategories system
+- **Export Formatter Updates**: Goal statistics section added to Markdown export format
+- **Visual Design**: New accent color category styling for goal-related stat cards
+
 ## [0.6.0] - 2025-07-01
 
 ### Added

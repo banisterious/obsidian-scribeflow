@@ -82,6 +82,22 @@
         font-size: 12px;
     }
 
+    .words-combined {
+        min-width: 70px;
+    }
+
+    .words-unique {
+        font-size: 11px;
+    }
+
+    .entry-cell {
+        min-width: 80px;
+    }
+
+    .entry-file {
+        font-size: 11px;
+    }
+
     /* Template Wizard */
     .sfp-wizard-modal {
         width: 95vw;
@@ -149,13 +165,14 @@
         gap: 8px;
     }
 
-    /* Dashboard Table - Hide some columns on very small screens */
-    .sfp-dashboard-table .count-cell:nth-child(5) {
-        display: none;
+    /* Dashboard Table - Responsive adjustments for very small screens */
+    .sfp-dashboard-table {
+        font-size: 12px;
     }
 
-    .sfp-dashboard-table th:nth-child(5) {
-        display: none;
+    .sfp-dashboard-table th,
+    .sfp-dashboard-table td {
+        padding: 6px 8px;
     }
 
     /* Template Wizard */

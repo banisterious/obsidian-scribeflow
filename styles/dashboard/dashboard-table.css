@@ -5,10 +5,11 @@
 
 /* Table Container */
 .sfp-dashboard-table-container {
+    flex: 1;
+    overflow: auto;
     border: 1px solid var(--background-modifier-border);
     background: var(--background-primary);
     border-radius: 8px;
-    overflow: hidden;
 }
 
 .sfp-dashboard-table {
@@ -19,6 +20,9 @@
 
 /* Table Header */
 .sfp-dashboard-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     border-bottom: 1px solid var(--background-modifier-border);
     background: var(--background-secondary);
 }

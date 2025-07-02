@@ -40,6 +40,7 @@ export interface DashboardStatistics {
 	// Group 2: Consistency
 	currentJournalingStreak: number;
 	longestJournalingStreak: number;
+	longestJournalingStreakDateRange: string;
 	daysJournaled: number;
 	journalingFrequencyPercent: number;
 

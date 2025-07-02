@@ -7,7 +7,7 @@
  * 1. Edit the individual CSS files in styles/
  * 2. Run 'npm run build:css' to regenerate this file
  * 
- * Build time: 2025-07-02T01:10:11.635Z
+ * Build time: 2025-07-02T15:58:17.029Z
  * Build order: 22 files concatenated
  */
 
@@ -1498,8 +1498,9 @@
 /* Dashboard Container */
 .sfp-scribeflow-dashboard {
     height: 100%;
+    display: flex;
+    flex-direction: column;
     padding: 20px;
-    overflow-y: auto;
 }
 
 /* Dashboard Header */
@@ -1819,6 +1820,52 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Interactive Stat Card (Longest Streak) */
+.sfp-interactive-stat-card {
+    position: relative;
+    user-select: none;
+}
+
+.sfp-interactive-stat-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sfp-interactive-stat-card:active {
+    transform: translateY(0);
+    transition: transform 0.1s ease;
+}
+
+.sfp-interactive-stat-card .stat-value {
+    transition: all 0.2s ease;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Visual indicator for interactivity */
+.sfp-interactive-stat-card::after {
+    content: '👆';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 10px;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+.sfp-interactive-stat-card:hover::after {
+    opacity: 0.8;
+}
+
+/* Hide tap indicator on desktop hover tooltips */
+@media (hover: hover) {
+    .sfp-interactive-stat-card::after {
+        content: '';
+    }
+}
+
 /* Category Colors (Flat Grid Only) */
 .sfp-dashboard-stat-card.category-progress {
     border-left: 4px solid var(--color-green);
@@ -1903,10 +1950,11 @@
 
 /* Table Container */
 .sfp-dashboard-table-container {
+    flex: 1;
+    overflow: auto;
     border: 1px solid var(--background-modifier-border);
     background: var(--background-primary);
     border-radius: 8px;
-    overflow: hidden;
 }
 
 .sfp-dashboard-table {
@@ -1917,6 +1965,9 @@
 
 /* Table Header */
 .sfp-dashboard-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     border-bottom: 1px solid var(--background-modifier-border);
     background: var(--background-secondary);
 }
@@ -2905,6 +2956,7 @@
 .sfp-template-content-area {
     min-height: 300px;
     height: 300px;
+    width:400px;
     padding: var(--spacing-md);
     border: 1px solid var(--background-modifier-border);
     background: var(--background-primary);

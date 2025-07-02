@@ -48,7 +48,7 @@ export class DashboardView extends ItemView {
 				{ name: 'file', label: 'Filename', enabled: false },
 			],
 			headerCollapsed: true,
-			statistics: DashboardStatisticsCalculator.calculateStatistics([], DateFilter.ALL_TIME),
+			statistics: DashboardStatisticsCalculator.calculateStatistics([], DateFilter.ALL_TIME, undefined, []),
 			statisticsGroupedView: this.plugin.settings.dashboardSettings.statisticsGroupedView ?? false,
 		};
 	}
@@ -78,6 +78,7 @@ export class DashboardView extends ItemView {
 		if (this.exportButton) {
 			this.exportButton.unload();
 		}
+		
 	}
 
 	private renderDashboard(): void {
@@ -428,6 +429,7 @@ export class DashboardView extends ItemView {
 		const fileLink = fileCell.createEl('a', {
 			href: '#',
 			cls: 'internal-link',
+			title: 'Open in new tab',
 		});
 
 		// Check if we have search results for filename
@@ -475,6 +477,7 @@ export class DashboardView extends ItemView {
 
 		const button = cell.createEl('button');
 		button.textContent = 'more';
+		button.title = 'Expand to show full entry';
 		button.addEventListener('click', () => {
 			this.toggleContentExpansion(previewDiv, button);
 		});
@@ -489,6 +492,7 @@ export class DashboardView extends ItemView {
 			previewDiv.classList.remove('collapsed');
 			previewDiv.classList.add('expanded');
 			button.textContent = 'less';
+			button.title = 'Collapse entry';
 		} else {
 			const words = fullText.split(/\s+/).filter(word => word.length > 0);
 			const previewWords = words.slice(0, this.plugin.settings.dashboardSettings.previewWordLimit);
@@ -497,6 +501,7 @@ export class DashboardView extends ItemView {
 			previewDiv.classList.remove('expanded');
 			previewDiv.classList.add('collapsed');
 			button.textContent = 'more';
+			button.title = 'Expand to show full entry';
 		}
 	}
 
@@ -527,7 +532,6 @@ export class DashboardView extends ItemView {
 
 			// Apply current filter, search, and sort
 			this.applyFiltersAndSearch();
-			this.sortEntries(this.state.sortColumn);
 
 			// Re-render entire dashboard to update stats
 			this.renderDashboard();
@@ -928,25 +932,85 @@ export class DashboardView extends ItemView {
 			card.addClass(`category-${category}`);
 		}
 
-		const valueEl = card.createDiv('stat-value');
-		if (typeof value === 'number' && value > 9999) {
-			valueEl.addClass('large-number');
-		}
-		if (typeof value === 'string' && isNaN(Number(value))) {
-			valueEl.addClass('text-value');
-		}
+		// Special handling for Longest Streak card
+		if (label === 'Longest Streak') {
+			this.setupLongestStreakCard(card, value, suffix);
+		} else {
+			// Standard card rendering
+			const valueEl = card.createDiv('stat-value');
+			if (typeof value === 'number' && value > 9999) {
+				valueEl.addClass('large-number');
+			}
+			if (typeof value === 'string' && isNaN(Number(value))) {
+				valueEl.addClass('text-value');
+			}
 
-		valueEl.textContent = value.toString();
+			valueEl.textContent = value.toString();
 
-		if (suffix) {
-			const suffixEl = valueEl.createSpan('stat-suffix');
-			suffixEl.textContent = suffix;
+			if (suffix) {
+				const suffixEl = valueEl.createSpan('stat-suffix');
+				suffixEl.textContent = suffix;
+			}
 		}
 
 		const labelEl = card.createDiv('stat-label');
 		labelEl.textContent = label;
 
 		return card;
+	}
+
+	private setupLongestStreakCard(card: HTMLElement, value: string | number, suffix?: string): void {
+		const dateRange = this.state.statistics.longestJournalingStreakDateRange;
+		let isShowingDates = false;
+
+		const valueEl = card.createDiv('stat-value');
+		if (typeof value === 'number' && value > 9999) {
+			valueEl.addClass('large-number');
+		}
+
+		// Initial display: show value + suffix
+		const updateDisplay = () => {
+			if (isShowingDates && dateRange) {
+				valueEl.textContent = dateRange;
+				valueEl.title = `${value}${suffix || ''} - Click to show streak length`;
+			} else {
+				valueEl.textContent = value.toString();
+				if (suffix) {
+					const suffixEl = valueEl.createSpan('stat-suffix');
+					suffixEl.textContent = suffix;
+				}
+				if (dateRange) {
+					valueEl.title = 'Click to show date range';
+				}
+			}
+		};
+
+		updateDisplay();
+
+		// Add interactive behavior if we have a date range
+		if (dateRange) {
+			card.addClass('sfp-interactive-stat-card');
+			card.style.cursor = 'pointer';
+
+			// Click/tap to toggle
+			card.addEventListener('click', () => {
+				isShowingDates = !isShowingDates;
+				// Clear existing content
+				valueEl.innerHTML = '';
+				updateDisplay();
+			});
+
+			// Desktop: hover tooltip
+			card.addEventListener('mouseenter', () => {
+				if (!isShowingDates && dateRange) {
+					card.title = dateRange;
+				}
+			});
+
+			card.addEventListener('mouseleave', () => {
+				card.title = '';
+			});
+		}
 	}
 
 	private getAllStatistics(): StatCard[] {
@@ -1040,7 +1104,8 @@ export class DashboardView extends ItemView {
 		this.state.statistics = DashboardStatisticsCalculator.calculateStatistics(
 			this.state.filteredEntries,
 			this.state.currentFilter,
-			this.state.searchQuery
+			this.state.searchQuery,
+			this.parser.getParsedTemplates()
 		);
 	}
 
@@ -1099,4 +1164,5 @@ export class DashboardView extends ItemView {
 			});
 		}
 	}
+
 }

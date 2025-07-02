@@ -1,10 +1,11 @@
-import { DashboardEntry, DashboardStatistics, DateFilter } from '../types/dashboard';
+import { DashboardEntry, DashboardStatistics, DateFilter, ParsedTemplate } from '../types/dashboard';
 
 export class DashboardStatisticsCalculator {
 	static calculateStatistics(
 		entries: DashboardEntry[],
 		dateFilter: DateFilter,
-		searchQuery?: string
+		searchQuery?: string,
+		templates?: ParsedTemplate[]
 	): DashboardStatistics {
 		if (entries.length === 0) {
 			return this.getEmptyStatistics();
@@ -21,13 +22,14 @@ export class DashboardStatisticsCalculator {
 			// Group 2: Consistency
 			currentJournalingStreak: this.calculateCurrentJournalingStreak(entries, dateFilter),
 			longestJournalingStreak: this.calculateLongestJournalingStreak(entries),
+			longestJournalingStreakDateRange: this.calculateLongestJournalingStreakDateRange(entries),
 			daysJournaled: this.calculateDaysJournaled(entries),
 			journalingFrequencyPercent: this.calculateJournalingFrequency(entries, totalDaysInPeriod),
 
 			// Group 3: Content Insights
 			medianWordCount: this.calculateMedianWordCount(entries),
 			entriesWithImagesPercent: this.calculateEntriesWithImagesPercent(entries),
-			entriesWithDreamDiaryPercent: this.calculateEntriesWithDreamDiaryPercent(entries),
+			entriesWithDreamDiaryPercent: this.calculateEntriesWithDreamDiaryPercent(entries, templates),
 
 			// Group 4: Pattern Recognition
 			mostActiveDayOfWeek: this.calculateMostActiveDayOfWeek(entries),
@@ -44,6 +46,7 @@ export class DashboardStatisticsCalculator {
 			averageWordsPerEntry: 0,
 			currentJournalingStreak: 0,
 			longestJournalingStreak: 0,
+			longestJournalingStreakDateRange: '',
 			daysJournaled: 0,
 			journalingFrequencyPercent: 0,
 			medianWordCount: 0,
@@ -77,6 +80,7 @@ export class DashboardStatisticsCalculator {
 		let currentStreak = 0;
 		const today = new Date();
 		let checkDate = new Date(today);
+		let skippedToday = false;
 
 		// Work backwards from today to find consecutive days
 		while (checkDate >= new Date(uniqueDates[0])) {
@@ -84,7 +88,12 @@ export class DashboardStatisticsCalculator {
 			if (uniqueDates.includes(dateKey)) {
 				currentStreak++;
 			} else {
-				break;
+				// Allow skipping today only, but break on any other gap
+				if (!skippedToday && dateKey === today.toISOString().split('T')[0]) {
+					skippedToday = true;
+				} else {
+					break;
+				}
 			}
 			checkDate.setDate(checkDate.getDate() - 1);
 		}
@@ -113,6 +122,44 @@ export class DashboardStatisticsCalculator {
 		}
 
 		return maxStreak;
+	}
+
+	private static calculateLongestJournalingStreakDateRange(entries: DashboardEntry[]): string {
+		const uniqueDates = this.getUniqueDates(entries).sort();
+		if (uniqueDates.length === 0) return '';
+
+		let maxStreak = 1;
+		let currentStreak = 1;
+		let maxStreakStartIndex = 0;
+		let currentStreakStartIndex = 0;
+
+		for (let i = 1; i < uniqueDates.length; i++) {
+			const prevDate = new Date(uniqueDates[i - 1]);
+			const currDate = new Date(uniqueDates[i]);
+			const dayDiff = (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24);
+
+			if (dayDiff === 1) {
+				currentStreak++;
+				if (currentStreak > maxStreak) {
+					maxStreak = currentStreak;
+					maxStreakStartIndex = currentStreakStartIndex;
+				}
+			} else {
+				currentStreak = 1;
+				currentStreakStartIndex = i;
+			}
+		}
+
+		if (maxStreak === 1) {
+			// Single day streak
+			const date = new Date(uniqueDates[maxStreakStartIndex]);
+			return this.formatDate(date);
+		} else {
+			// Multi-day streak
+			const startDate = new Date(uniqueDates[maxStreakStartIndex]);
+			const endDate = new Date(uniqueDates[maxStreakStartIndex + maxStreak - 1]);
+			return `${this.formatDate(startDate)} - ${this.formatDate(endDate)}`;
+		}
 	}
 
 	private static calculateDaysJournaled(entries: DashboardEntry[]): number {
@@ -146,14 +193,70 @@ export class DashboardStatisticsCalculator {
 		return Math.round((entriesWithImages / entries.length) * 100 * 10) / 10; // Round to 1 decimal
 	}
 
-	private static calculateEntriesWithDreamDiaryPercent(entries: DashboardEntry[]): number {
+	private static calculateEntriesWithDreamDiaryPercent(entries: DashboardEntry[], templates?: ParsedTemplate[]): number {
 		if (entries.length === 0) return 0;
 
-		const entriesWithDreams = entries.filter(
-			entry => entry.fullContent.includes('[!dream-diary]') || entry.preview.includes('[!dream-diary]')
-		).length;
+		const entriesWithDreams = entries.filter(entry => {
+			return this.entryHasDreamContent(entry, templates);
+		}).length;
 
 		return Math.round((entriesWithDreams / entries.length) * 100 * 10) / 10; // Round to 1 decimal
+	}
+
+	private static entryHasDreamContent(entry: DashboardEntry, templates?: ParsedTemplate[]): boolean {
+		if (!templates || templates.length === 0) {
+			// Fallback to simple pattern matching if no templates available
+			const content = entry.fullContent.toLowerCase();
+			return content.includes('dream') && (content.includes('[!') || content.includes('diary'));
+		}
+
+		// Template-based detection
+		for (const template of templates) {
+			if (this.entryMatchesTemplateWithDreams(entry, template)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static entryMatchesTemplateWithDreams(entry: DashboardEntry, template: ParsedTemplate): boolean {
+		const structure = template.contentStructure;
+		
+		// Check if template has dream content placeholders
+		const hasDreamPlaceholders = structure.placeholders.some(
+			placeholder => placeholder.type === 'dream-content'
+		);
+
+		if (!hasDreamPlaceholders) {
+			return false;
+		}
+
+		// Check if the entry has content in dream sections
+		// Look for dream-related content by checking for dream-specific markers
+		const content = entry.fullContent;
+		
+		// Check for dream diary callouts (flexible pattern)
+		const dreamCalloutPattern = /\[!\s*dream[-\s]?diary?\s*\]/i;
+		if (dreamCalloutPattern.test(content)) {
+			return true;
+		}
+
+		// Check for dream content placeholders that have been filled
+		// This looks for areas where dream content would be placed based on template structure
+		if (structure.dreamContentStart !== undefined && structure.dreamContentEnd !== undefined) {
+			// If we have dream content boundaries, check if there's substantive content there
+			const dreamSection = content.substring(structure.dreamContentStart, structure.dreamContentEnd);
+			// Dream content exists if section has more than just whitespace and placeholder text
+			return dreamSection.trim().length > 0 && !dreamSection.includes('{{dream-content}}');
+		}
+
+		// Final check: look for dream-related keywords in context of the template
+		const dreamKeywords = ['dream', 'nightmare', 'lucid', 'rem', 'sleep'];
+		const lowerContent = content.toLowerCase();
+		
+		return dreamKeywords.some(keyword => lowerContent.includes(keyword)) && 
+		       (lowerContent.includes('diary') || lowerContent.includes('[!'));
 	}
 
 	// Group 4: Pattern Recognition
@@ -207,5 +310,14 @@ export class DashboardStatisticsCalculator {
 			dates.add(dateKey);
 		});
 		return Array.from(dates);
+	}
+
+	private static formatDate(date: Date): string {
+		const options: Intl.DateTimeFormatOptions = { 
+			month: 'short', 
+			day: 'numeric',
+			year: 'numeric'
+		};
+		return date.toLocaleDateString('en-US', options);
 	}
 }

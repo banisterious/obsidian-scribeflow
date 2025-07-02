@@ -48,6 +48,13 @@ export class DashboardParser {
 	}
 
 	/**
+	 * Get parsed templates for use in statistics calculations
+	 */
+	getParsedTemplates(): ParsedTemplate[] {
+		return Array.from(this.parsedTemplates.values());
+	}
+
+	/**
 	 * Analyze all selected templates to understand their structure
 	 */
 	private async analyzeSelectedTemplates(): Promise<void> {

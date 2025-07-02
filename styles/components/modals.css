@@ -1,0 +1,220 @@
+/* ScribeFlow - Modal Components
+ * 
+ * Modal header, content, and layout styles
+ */
+
+/* Modal Container with :has() selector */
+.modal:has(.sfp-journal-modal) {
+    width: var(--modal-width);
+    max-width: var(--modal-max-width);
+    height: var(--modal-height);
+    max-height: var(--modal-max-height);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Main Content Layout */
+.sfp-journal-modal .sfp-modal-main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Navigation Sidebar */
+.sfp-journal-modal .sfp-modal-nav {
+    min-width: 180px;
+    width: 200px;
+    height: 100%;
+    padding: 0;
+    box-sizing: border-box;
+    border-right: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    overflow-y: auto;
+}
+
+/* Content Container */
+.sfp-journal-modal .sfp-modal-content-container {
+    flex: 1;
+    height: 100%;
+    padding: 12px 0 12px 12px;
+    background: var(--background-primary);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Modal Header */
+.sfp-journal-modal .sfp-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+    padding: 0 24px 24px 0;
+    border-bottom: 1px solid var(--background-modifier-border);
+    color: var(--text-normal);
+}
+
+.sfp-journal-modal .sfp-header-content h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+/* Templates Dropdown in Modal Header */
+.sfp-journal-modal .sfp-templates-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.sfp-journal-modal .sfp-templates-container label {
+    margin: 0;
+    color: var(--text-normal);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.sfp-journal-modal .sfp-templates-select {
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 2px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: 8px;
+    color: var(--text-normal);
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.sfp-journal-modal .sfp-templates-select:focus {
+    border-color: var(--interactive-accent);
+    box-shadow: 0 0 0 3px var(--interactive-accent-hover);
+}
+
+.sfp-journal-modal .sfp-templates-select:disabled {
+    background: var(--background-secondary);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+.sfp-journal-modal .sfp-templates-dropdown select {
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: 6px;
+    color: var(--text-normal);
+}
+
+/* Header Button Styles */
+.sfp-journal-modal .sfp-header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sfp-journal-modal .sfp-header-buttons .sfp-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.sfp-journal-modal .sfp-header-buttons .sfp-btn-primary {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.sfp-journal-modal .sfp-header-buttons .sfp-btn-primary:hover {
+    background: var(--interactive-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--background-modifier-box-shadow);
+}
+
+.sfp-journal-modal .sfp-header-buttons .sfp-btn-secondary {
+    background: var(--background-primary);
+    color: var(--text-muted);
+    border: 1px solid var(--background-modifier-border);
+}
+
+.sfp-journal-modal .sfp-header-buttons .sfp-btn-secondary:hover {
+    background: var(--background-secondary);
+    border-color: var(--background-modifier-border-hover);
+}
+
+.sfp-journal-modal .sfp-btn-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--background-secondary) !important;
+    color: var(--text-muted) !important;
+}
+
+.sfp-journal-modal .sfp-btn-disabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Modal Content */
+.sfp-journal-modal .sfp-modal-content {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+}
+
+/* Modal Footer */
+.sfp-journal-modal .sfp-modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 0 0 0;
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+.sfp-journal-modal .sfp-modal-footer .sfp-footer-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.sfp-journal-modal .sfp-modal-footer button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sfp-journal-modal .sfp-modal-footer .sfp-clear-button {
+    background: var(--background-secondary);
+    color: var(--text-muted);
+}
+
+.sfp-journal-modal .sfp-modal-footer .sfp-clear-button:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+
+.sfp-journal-modal .sfp-modal-footer .sfp-insert-button {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.sfp-journal-modal .sfp-modal-footer .sfp-insert-button:hover {
+    background: var(--interactive-accent-hover);
+}
+
+.sfp-journal-modal .sfp-modal-footer .sfp-insert-button:disabled {
+    background: var(--background-modifier-border);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}

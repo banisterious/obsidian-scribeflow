@@ -1,0 +1,126 @@
+/* ScribeFlow - Dashboard Search
+ * 
+ * Search input, filters, and results
+ */
+
+/* Search Container */
+.sfp-search-container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 400px;
+}
+
+.sfp-search-input-wrapper {
+    position: relative;
+}
+
+.sfp-search-input-wrapper .search-input-container {
+    width: 100%;
+}
+
+.sfp-search-input-wrapper input {
+    width: 100%;
+    padding: 8px 12px 8px 32px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: 6px;
+    color: var(--text-normal);
+    font-size: 14px;
+}
+
+.sfp-search-input-wrapper input:focus {
+    border-color: var(--interactive-accent);
+    outline: none;
+}
+
+.sfp-search-input-wrapper .search-input-clear-button {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    padding: 2px;
+    border: none;
+    background: none;
+    border-radius: 2px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.sfp-search-input-wrapper .search-input-clear-button:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+
+/* Search Options */
+.sfp-search-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.sfp-search-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sfp-search-option input[type="checkbox"] {
+    /*width: auto;
+    margin: 0;*/
+}
+
+.sfp-search-option label {
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.sfp-search-option input[type="checkbox"]:checked + label {
+    color: var(--text-normal);
+    font-weight: 500;
+}
+
+/* Search Results Info */
+.search-results-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-results-count {
+    padding: 2px 6px;
+    background: var(--background-secondary);
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.search-results-count.has-results {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+/* Search Highlighting */
+.highlight {
+    padding: 1px 2px;
+    background: var(--text-highlight-bg);
+    border-radius: 2px;
+    color: var(--text-normal);
+    font-weight: 500;
+}
+
+/* Responsive Search */
+@media (width <= 768px) {
+    .sfp-search-container {
+        max-width: none;
+        margin-top: 12px;
+        order: 1;
+    }
+
+    .sfp-search-options {
+        justify-content: center;
+    }
+}

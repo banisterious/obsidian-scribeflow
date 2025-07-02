@@ -1,0 +1,97 @@
+/* ScribeFlow - Form Components
+ * 
+ * Form inputs, textareas, selects, and form layouts
+ */
+
+/* Form Groups and Layout */
+.sfp-journal-modal .sfp-form-group {
+    margin-bottom: 20px;
+}
+
+.sfp-journal-modal .sfp-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-normal);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.sfp-journal-modal .sfp-form-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.sfp-journal-modal .sfp-form-row .sfp-form-group {
+    flex: 1;
+}
+
+/* Text Inputs and Selects */
+.sfp-journal-modal input[type="text"],
+.sfp-journal-modal input[type="date"],
+.sfp-journal-modal input[type="time"],
+.sfp-journal-modal input[type="number"],
+.sfp-journal-modal select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: 6px;
+    color: var(--text-normal);
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.sfp-journal-modal input[type="text"]:focus,
+.sfp-journal-modal input[type="date"]:focus,
+.sfp-journal-modal input[type="time"]:focus,
+.sfp-journal-modal input[type="number"]:focus,
+.sfp-journal-modal select:focus {
+    border-color: var(--interactive-accent);
+    outline: none;
+}
+
+/* Textareas */
+.sfp-journal-modal textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: 6px;
+    color: var(--text-normal);
+    font-family: var(--font-interface);
+    font-size: 14px;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+}
+
+.sfp-journal-modal textarea:focus {
+    border-color: var(--interactive-accent);
+    outline: none;
+}
+
+/* Dream Content Textarea */
+.sfp-journal-modal .sfp-dream-content {
+    min-height: 80px;
+}
+
+/* Form Validation States */
+.sfp-journal-modal .sfp-form-group.sfp-error input,
+.sfp-journal-modal .sfp-form-group.sfp-error textarea,
+.sfp-journal-modal .sfp-form-group.sfp-error select {
+    border-color: var(--text-error);
+}
+
+.sfp-journal-modal .sfp-error-message {
+    margin-top: 4px;
+    color: var(--text-error);
+    font-size: 12px;
+}
+
+/* Form Helper Text */
+.sfp-journal-modal .sfp-helper-text {
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-size: 12px;
+}

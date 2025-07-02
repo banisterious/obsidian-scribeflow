@@ -4,9 +4,18 @@
     "description": "Streamlined journaling with structured entries, dream diary tracking, and insightful metrics",
     "main": "main.js",
     "scripts": {
-        "dev": "node esbuild.config.mjs",
-        "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-        "version": "node version-bump.mjs && git add manifest.json versions.json"
+        "dev": "npm run build:css && node esbuild.config.mjs",
+        "build": "npm run build:css && tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+        "build:css": "node build-css.mjs build",
+        "build:css:watch": "node build-css.mjs watch",
+        "version": "node version-bump.mjs && git add manifest.json versions.json",
+        "lint": "npm run lint:ts && npm run lint:css",
+        "lint:ts": "prettier --check \"src/**/*.ts\" \"*.ts\" \"*.js\" \"*.mjs\"",
+        "lint:css": "stylelint \"styles/**/*.css\"",
+        "format": "npm run format:ts && npm run format:css",
+        "format:ts": "prettier --write \"src/**/*.ts\" \"*.ts\" \"*.js\" \"*.mjs\"",
+        "format:css": "prettier --write \"styles/**/*.css\"",
+        "fix": "npm run format && npm run lint:css -- --fix"
     },
     "keywords": [
         "obsidian",
@@ -26,6 +35,10 @@
         "builtin-modules": "^3.2.0",
         "esbuild": "^0.13.12",
         "obsidian": "latest",
+        "prettier": "^3.6.2",
+        "stylelint": "^16.21.0",
+        "stylelint-config-standard": "^36.0.1",
+        "stylelint-order": "^7.0.0",
         "tslib": "2.3.1",
         "typescript": "4.7.4"
     },

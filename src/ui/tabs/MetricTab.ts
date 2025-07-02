@@ -2,35 +2,35 @@ import ScribeFlowPlugin from '../../main';
 import { MarkdownRenderer } from 'obsidian';
 
 export class MetricTab {
-    containerEl: HTMLElement;
-    plugin: ScribeFlowPlugin;
-    metricId: string;
-    metricName: string;
-    private contentEl: HTMLElement;
+	containerEl: HTMLElement;
+	plugin: ScribeFlowPlugin;
+	metricId: string;
+	metricName: string;
+	private contentEl: HTMLElement;
 
-    constructor(containerEl: HTMLElement, plugin: ScribeFlowPlugin, metricId: string, metricName: string) {
-        this.containerEl = containerEl;
-        this.plugin = plugin;
-        this.metricId = metricId;
-        this.metricName = metricName;
-        
-        // Create dedicated content element for this tab
-        this.contentEl = containerEl.createDiv('sfp-tab-content sfp-metric-tab');
-        this.contentEl.style.display = 'none';
-    }
+	constructor(containerEl: HTMLElement, plugin: ScribeFlowPlugin, metricId: string, metricName: string) {
+		this.containerEl = containerEl;
+		this.plugin = plugin;
+		this.metricId = metricId;
+		this.metricName = metricName;
 
-    async display(): Promise<void> {
-        this.contentEl.style.display = 'block';
-        // Only render if not already rendered
-        if (this.contentEl.children.length === 0) {
-            const content = this.getMetricContent(this.metricId);
-            await MarkdownRenderer.renderMarkdown(content, this.contentEl, '', this.plugin);
-        }
-    }
+		// Create dedicated content element for this tab
+		this.contentEl = containerEl.createDiv('sfp-tab-content sfp-metric-tab');
+		this.contentEl.style.display = 'none';
+	}
 
-    private getMetricContent(metricId: string): string {
-        const metricContents: Record<string, string> = {
-            'sensory': `## Sensory Detail (Score 1-5)
+	async display(): Promise<void> {
+		this.contentEl.style.display = 'block';
+		// Only render if not already rendered
+		if (this.contentEl.children.length === 0) {
+			const content = this.getMetricContent(this.metricId);
+			await MarkdownRenderer.renderMarkdown(content, this.contentEl, '', this.plugin);
+		}
+	}
+
+	private getMetricContent(metricId: string): string {
+		const metricContents: Record<string, string> = {
+			sensory: `## Sensory Detail (Score 1-5)
 
 
 This metric captures the **richness and vividness of the sensory information** you recall from your dream experience. It's about how much detail you remember across your five senses—what you saw, heard, felt, smelled, and tasted. Tracking this helps you gauge the overall immersive quality of your dreams and can indicate improvements in your recall abilities.
@@ -43,7 +43,7 @@ This metric captures the **richness and vividness of the sensory information** y
 | 4 (Rich)     | You recall a significant amount of sensory information across multiple senses. You can describe specific visual details, distinct sounds and their qualities, and perhaps a clear smell, taste, or detailed texture. The dream feels quite immersive and multi-dimensional. |
 | 5 (Vivid)    | Your recall is exceptionally detailed and encompasses a wide range of intense sensory experiences. You can clearly describe intricate visual scenes with specific colors and light, distinct and numerous sounds, and often specific tastes and smells. The dream feels incredibly real and alive in your memory, almost as if you were truly there. |`,
 
-            'emotional': `## Emotional Recall (Score 1-5)
+			emotional: `## Emotional Recall (Score 1-5)
 
 
 This metric focuses on your **ability to remember and articulate the emotions you experienced while dreaming**. Dreams are often rich with feelings, and tracking them can provide profound insights into your subconscious state, anxieties, joys, and unresolved issues. This metric helps you assess not just _what_ emotions were present, but also their clarity, intensity, and how they evolved throughout the dream narrative.
@@ -56,7 +56,7 @@ This metric focuses on your **ability to remember and articulate the emotions yo
 | 4 (Nuanced)          | You recall several distinct emotions experienced during the dream. You can describe some of the nuances or shifts in your feelings throughout the dream's narrative (e.g., starting with anxiety, transitioning to relief, then curiosity). |
 | 5 (Deep and Complex) | You have a strong and detailed recollection of the emotional landscape of the dream. You can articulate multiple distinct emotions, their precise intensity, and how they interplayed or evolved within the dream's context. The emotional experience feels rich, complex, and clearly remembered. |`,
 
-            'lost': `## Lost Segments (Number)
+			lost: `## Lost Segments (Number)
 
 
 
@@ -66,7 +66,7 @@ If you recall the dream as a complete, seamless narrative with no sense of missi
 
 If you have a distinct feeling of one or more breaks or missing chunks in the dream's sequence, you would count each of those instances.`,
 
-            'descriptive': `## Descriptiveness (Score 1-5)
+			descriptive: `## Descriptiveness (Score 1-5)
 
 
 
@@ -80,7 +80,7 @@ This metric assesses the **level of detail and elaboration in your written dream
 | 4 (Detailed)         | Your capture includes a significant level of descriptive detail, bringing the dream narrative and its elements to life. You elaborate on actions, character behaviors, dialogue (if any), and the unfolding of the plot, creating a richer mental image. |
 | 5 (Highly Elaborate) | Your dream capture is exceptionally rich in detail, using vivid and comprehensive language to describe every aspect of the dream. You meticulously capture events, intricate character details, nuanced interactions, and the overall progression of the narrative, making the dream feel fully rendered and immersive. |`,
 
-            'confidence': `## Confidence Score (Score 1-5)
+			confidence: `## Confidence Score (Score 1-5)
 
 
 
@@ -94,7 +94,7 @@ This is a **subjective metric reflecting your overall sense of how complete and 
 | 4 (High)      | You feel confident that you've recalled the majority of the dream with a good level of detail and coherence. You have a strong sense of its narrative flow and content, with only minor gaps or uncertainties. |
 | 5 (Very High) | You feel extremely confident that you've recalled the entire dream in vivid detail and with strong accuracy. The memory feels robust, complete, and fully accessible, leaving you with no significant sense of missing parts or uncertainty. |`,
 
-            'characterRoles': `## Character Roles (Score 1-5)
+			characterRoles: `## Character Roles (Score 1-5)
 
 
 
@@ -108,7 +108,7 @@ This metric tracks the **presence and significance of all individuals** (both fa
 | 4 (Major)            | Familiar characters are central to the dream's events or narrative. |
 | 5 (Dominant)         | The dream is primarily about or dominated by interactions with familiar characters. |`,
 
-            'charactersCount': `## Characters Count (Number)
+			charactersCount: `## Characters Count (Number)
 
 
 Represents the total number of characters in your dream. (Automatically calculated as the sum of Familiar Count and Unfamiliar Count.)
@@ -124,7 +124,7 @@ This metric tracks the **total number of distinct individual characters** that a
     - Focus on individuals who are perceived as living, conscious beings within the dream's context.
 - **Score:** A direct numerical count (e.g., 0, 1, 2, 5, 10+).`,
 
-            'familiarCount': `## Familiar Count (1-100 score)
+			familiarCount: `## Familiar Count (1-100 score)
 
 
 The number of characters you know from your waking life that appear in the dream. Includes people, pets, or any other familiar beings.
@@ -139,7 +139,7 @@ This metric tracks the **total number of distinct individuals appearing in your 
     - Focus on individuals whom you distinctly recognized as someone from your waking life within the dream.
 - **Score:** A direct numerical count (e.g., 0, 1, 2, 5).`,
 
-            'unfamiliarCount': `## Unfamiliar Count (1-100 score)
+			unfamiliarCount: `## Unfamiliar Count (1-100 score)
 
 
 Tracks the number of characters you don't know from your waking life that appear in the dream. Includes strangers, fictional characters, or any other unfamiliar beings.
@@ -154,7 +154,7 @@ This metric tracks the **total number of distinct individuals appearing in your 
     - Focus on individuals who are perceived as living, conscious beings within the dream's context, but for whom you have no waking-life recognition.
 - **Score:** A direct numerical count (e.g., 0, 1, 3, 7).`,
 
-            'charactersList': `## Characters List
+			charactersList: `## Characters List
 
 
 Allows you to list all characters that appeared in your dream.
@@ -171,7 +171,7 @@ This metric serves as a **qualitative record of all distinct individual characte
 - **Example Format within Callout:** \`Characters List: Mom (fam), Friend Alex (fam), Mysterious Man (unfam), Talking Raven (unfam)\`
 - **Score:** This metric does not have a numerical score (1-5); it is a list of descriptive entries.`,
 
-            'characterClarity': `## Character Clarity/Familiarity (1-5 score)
+			characterClarity: `## Character Clarity/Familiarity (1-5 score)
 
 
 The distinctness and recognizability of the individual characters (both familiar and unfamiliar) appearing in your dream.
@@ -187,7 +187,7 @@ This metric assesses the distinctness and recognizability of the individual char
 | 4 (Clearly Recognized)    | Characters were clearly perceived, and their features/identity were distinct enough to recognize, even if they were unfamiliar. For familiar characters, you recognized them without doubt. |
 | 5 (Vivid & Defined)       | Characters appeared with exceptional clarity and detail, almost as if seen in waking life. Their features, expressions, and presence were sharply defined and fully formed in your recall. |`,
 
-            'dreamTheme': `## Dream Theme (Categorical/Keywords)
+			dreamTheme: `## Dream Theme (Categorical/Keywords)
 
 
 The dominant subjects, ideas, or emotional undercurrents present in your dream.
@@ -218,7 +218,7 @@ This metric aims to identify the dominant subjects, ideas, or emotional undercur
 
 **Use:** To track recurring patterns in the subject matter and emotional tone of your dreams over time. Identifying themes can provide insights into your subconscious concerns, interests, and emotional processing. You can select multiple themes if a dream has several prominent aspects.`,
 
-            'symbolicContent': `## Symbolic Content (Categorical/Keywords)
+			symbolicContent: `## Symbolic Content (Categorical/Keywords)
 
 
 Note specific objects, figures, actions, or animals in the dream that felt meaningful or symbolic.
@@ -226,7 +226,7 @@ Note specific objects, figures, actions, or animals in the dream that felt meani
 
 This metric helps you identify and track the specific symbols that appear in your dreams. While your Dream Theme might capture the overall subject, Symbolic Content focuses on individual elements like a lion, a red door, or a recurring specific action that seems to carry deeper meaning. This can be recorded as a list of keywords or tags, allowing you to recognize your unique symbolic language and discover recurring motifs over time.`,
 
-            'lucidityLevel': `## Lucidity Level (Score 1-5)
+			lucidityLevel: `## Lucidity Level (Score 1-5)
 
 
 Tracks your degree of awareness that you are dreaming while the dream is in progress.
@@ -242,7 +242,7 @@ This metric tracks your **degree of awareness that you are dreaming while the dr
 | 4 (Moderate Control) | You are aware that you are dreaming and can actively influence some aspects of the dream. This might include changing your own actions or dialogue, altering minor elements of the environment, or gently nudging the dream's narrative in a desired direction. |
 | 5 (High Lucidity)    | You have a strong and stable awareness that you are dreaming, combined with a significant degree of control over the dream environment, its characters, and events. You can often perform specific actions, intentionally explore the dream world, or even manifest objects and scenarios at will. |`,
 
-            'dreamCoherence': `## Dream Coherence (Score 1-5)
+			dreamCoherence: `## Dream Coherence (Score 1-5)
 
 
 Assesses the logical consistency and narrative flow of your dream.
@@ -258,7 +258,7 @@ This metric assesses the **logical consistency and narrative flow of your dream*
 | 4 (Mostly Coherent)     | The dream generally follows a logical progression with a relatively consistent narrative, characters, and settings. Any illogical elements are minor or don't significantly disrupt the overall sense of a somewhat realistic (albeit dreamlike) experience. |
 | 5 (Highly Coherent)     | The dream feels like a consistent and logical experience, even if the content is surreal or fantastical. There's a clear flow of events, consistent character behavior (within the dream's own rules), and a strong sense of internal consistency in the dream's reality, making it feel like a complete story. |`,
 
-            'environmentalFamiliarity': `## Environmental Familiarity (Score 1-5)
+			environmentalFamiliarity: `## Environmental Familiarity (Score 1-5)
 
 
 Tracks the degree to which the locations and environments in your dream are recognizable from your waking life.
@@ -274,7 +274,7 @@ This metric assesses the degree to which the locations and environments within y
 | 4 (Mostly Familiar)       | The dream primarily takes place in locations you know from your waking life, such as your home, workplace, or familiar landmarks, although there might be minor alterations or unusual juxtapositions. |
 | 5 (Completely Familiar)   | All the settings in the dream are direct and accurate representations of places you know well from your waking experience, without any significant alterations or unfamiliar elements. |`,
 
-            'timeDistortion': `## Time Distortion (Score 1-5)
+			timeDistortion: `## Time Distortion (Score 1-5)
 
 
 Rate how unusually time behaved in the dream's narrative.
@@ -290,7 +290,7 @@ Time Distortion assesses the surreal nature of time's flow within your dream. Un
 | 4 (Significant Distortion) | Time shifts abruptly, jumps backward/forward, or multiple events feel simultaneous. |
 | 5 (Chaotic/Non-Existent) | Time has no discernible order; events happen out of sequence or simultaneously without any linear progression. |`,
 
-            'easeOfRecall': `## Ease of Recall (Score 1-5)
+			easeOfRecall: `## Ease of Recall (Score 1-5)
 
 
 Assesses how readily and effortlessly you can remember the dream upon waking.
@@ -306,7 +306,7 @@ This metric assesses **how readily and effortlessly you could remember the dream
 | 4 (Easy)           | You remembered the dream relatively clearly and could recount a significant portion of the narrative and details without much difficulty. The recall felt relatively immediate and accessible upon waking. |
 | 5 (Very Easy)      | The dream was vividly and immediately present in your memory upon waking. You could recall intricate details and the flow of events with little to no effort, almost as if the experience had just happened in waking life. |`,
 
-            'recallStability': `## Recall Stability (Score 1-5)
+			recallStability: `## Recall Stability (Score 1-5)
 
 
 Assesses how well your memory of the dream holds up in the minutes immediately following waking.
@@ -320,15 +320,18 @@ This metric assesses **how well your memory of the dream holds up and remains co
 | 2 (Significant Fading) | You can recall a fair amount initially, but key details and the overall narrative structure fade noticeably within the first 10-15 minutes after waking, making it difficult to reconstruct the full dream later. |
 | 3 (Moderate Fading)    | Some details and less significant parts of the dream might fade within the first 15-30 minutes, but the core narrative and key events remain relatively intact. |
 | 4 (Mostly Stable)      | Your recall of the dream remains largely consistent for at least 30 minutes after waking. Only minor details or less impactful elements might fade over time. |
-| 5 (Very Stable)        | The memory of the dream feels solid and enduring in the immediate post-waking period. You can recall details consistently even after a longer period without actively trying to remember it. |`
-        };
+| 5 (Very Stable)        | The memory of the dream feels solid and enduring in the immediate post-waking period. You can recall details consistently even after a longer period without actively trying to remember it. |`,
+		};
 
-        return metricContents[metricId] || `## ${this.metricName}
+		return (
+			metricContents[metricId] ||
+			`## ${this.metricName}
 
-Content not available for this metric.`;
-    }
+Content not available for this metric.`
+		);
+	}
 
-    hide(): void {
-        this.contentEl.style.display = 'none';
-    }
+	hide(): void {
+		this.contentEl.style.display = 'none';
+	}
 }

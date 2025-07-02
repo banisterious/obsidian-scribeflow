@@ -1,0 +1,590 @@
+/* ScribeFlow - Journal Entry Tab Components
+ * 
+ * Extracted from JournalEntryTab.ts inline styles
+ * Specific styling for journal entry form elements
+ */
+
+/* Field Layout */
+.sfp-field-row {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.sfp-field-column {
+    flex: 1;
+}
+
+.sfp-journal-entry-tab .sfp-field-row .sfp-form-group {
+    margin-bottom: 0;
+}
+
+/* Date and Time Fields */
+.sfp-date-time-row {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.sfp-date-field,
+.sfp-time-field {
+    flex: 1;
+}
+
+/* Content Areas */
+.sfp-content-section {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+.sfp-content-section h3 {
+    margin: 0 0 var(--spacing-lg) 0;
+    color: var(--text-normal);
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+}
+
+.sfp-journal-content,
+.sfp-dream-content {
+    width: 100%;
+    min-height: 120px;
+    padding: var(--spacing-md);
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-normal);
+    font-family: var(--font-interface);
+    font-size: var(--font-size-sm);
+    resize: vertical;
+    transition: var(--transition-fast);
+}
+
+.sfp-dream-content {
+    min-height: 80px;
+}
+
+.sfp-journal-content:focus,
+.sfp-dream-content:focus {
+    border-color: var(--interactive-accent);
+    outline: none;
+}
+
+/* Image Upload Sections */
+.sfp-image-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.sfp-image-controls {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.sfp-image-path-field {
+    flex: 1;
+}
+
+.sfp-image-width-field {
+    min-width: 100px;
+}
+
+.sfp-browse-button {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: var(--radius-md);
+    color: var(--text-normal);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.sfp-browse-button:hover {
+    border-color: var(--interactive-accent);
+    background: var(--background-modifier-hover);
+}
+
+/* Image Preview */
+.sfp-image-preview {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: var(--radius-md);
+}
+
+.sfp-image-preview img {
+    max-width: 100%;
+    max-height: 600px;
+    margin-top: var(--spacing-md);
+    border-radius: var(--radius-sm);
+    object-fit: contain;
+}
+
+.sfp-image-preview .sfp-error-text {
+    color: var(--text-error);
+    font-size: var(--font-size-xs);
+    font-style: italic;
+}
+
+/* Metrics Section - Consolidated */
+.sfp-metrics-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.sfp-metric-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.sfp-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+.sfp-metric-field {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+}
+
+.sfp-metric-field:hover {
+    border-color: var(--interactive-accent);
+}
+
+.sfp-metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.sfp-metric-info {
+    flex: 1;
+}
+
+.sfp-metric-label {
+    margin-bottom: 2px;
+    color: var(--text-normal);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+.sfp-metric-description {
+    margin-bottom: var(--spacing-md);
+    color: var(--text-muted);
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+}
+
+.sfp-metric-desc {
+    color: var(--text-muted);
+    font-size: var(--font-size-xs);
+}
+
+/* Metric Sliders - Consolidated */
+.sfp-metric-slider {
+    position: relative;
+    flex: 0 0 120px;
+    height: 6px;
+    background: var(--background-modifier-border);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.sfp-metric-slider::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: var(--interactive-accent);
+    border-radius: 3px;
+    transition: width var(--transition-fast);
+    content: "";
+}
+
+.sfp-metric-value {
+    flex: 0 0 30px;
+    color: var(--interactive-accent);
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Score Sliders */
+.sfp-score-container {
+    position: relative;
+}
+
+.sfp-slider-track {
+    position: relative;
+    width: 100%;
+    height: 6px;
+    margin: var(--spacing-sm) 0;
+    background: var(--background-modifier-border);
+    border-radius: 3px;
+}
+
+.sfp-slider-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--slider-width, 20%);
+    height: 100%;
+    background: var(--interactive-accent);
+    border-radius: 3px;
+    transition: width var(--transition-fast);
+}
+
+.sfp-slider-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.sfp-score-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-xs);
+    color: var(--text-muted);
+    font-size: var(--font-size-xs);
+}
+
+.sfp-score-value {
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-normal);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Modern Field Layout - Consolidated */
+.sfp-field {
+    position: relative;
+    flex: 1;
+    margin-bottom: var(--spacing-xl);
+}
+
+.sfp-field-half {
+    flex: 0.5;
+}
+
+.sfp-field-label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    transition: color var(--transition-fast);
+}
+
+.sfp-field-input {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 2px solid var(--background-modifier-border);
+    box-sizing: border-box;
+    background: var(--background-primary);
+    border-radius: var(--radius-md);
+    outline: none;
+    color: var(--text-normal);
+    font-size: var(--font-size-md);
+    transition: all var(--transition-medium);
+}
+
+.sfp-field-input:focus {
+    border-color: var(--interactive-accent);
+    box-shadow: 0 0 0 3px var(--interactive-accent-hover);
+}
+
+.sfp-field-input::placeholder {
+    color: var(--text-faint);
+}
+
+.sfp-textarea {
+    min-height: 120px;
+    font-family: inherit;
+    resize: both;
+}
+
+/* Content Section Layout - Consolidated */
+.sfp-content-form {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Number and Text Metrics */
+.sfp-number-input,
+.sfp-text-input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-normal);
+    font-size: var(--font-size-sm);
+    transition: var(--transition-fast);
+}
+
+.sfp-text-input {
+    min-height: 60px;
+    font-family: var(--font-interface);
+    resize: vertical;
+}
+
+.sfp-number-input:focus,
+.sfp-text-input:focus {
+    border-color: var(--interactive-accent);
+    outline: none;
+}
+
+/* Preview Sections */
+.sfp-preview-section {
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: var(--radius-md);
+}
+
+.sfp-preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.sfp-preview-title {
+    color: var(--text-normal);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+.sfp-preview-content {
+    min-height: 100px;
+    max-height: 300px;
+    padding: var(--spacing-md);
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: var(--radius-sm);
+    color: var(--text-normal);
+    font-family: var(--font-text);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-y: auto;
+}
+
+/* Empty Preview State */
+.sfp-preview-empty {
+    padding: var(--spacing-xl);
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+}
+
+
+/* Content Sections - Enhanced Layout */
+.sfp-journal-content-section,
+.sfp-dream-content-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.sfp-journal-content-form,
+.sfp-dream-content-form {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Preview Containers */
+.sfp-journal-preview,
+.sfp-dream-preview {
+    position: relative;
+    min-width: 150px;
+    max-width: 800px;
+    min-height: 100px;
+    max-height: 600px;
+    padding: 20px;
+    border: 2px dashed var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    resize: both;
+    overflow: auto;
+    transition: all 0.3s ease;
+}
+
+.sfp-journal-preview:hover,
+.sfp-dream-preview:hover {
+    border-color: var(--interactive-accent);
+    background: var(--background-modifier-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.sfp-preview-label {
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: lowercase;
+}
+
+.sfp-preview-instruction {
+    margin-bottom: 12px;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-style: italic;
+}
+
+.sfp-width-control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.sfp-width-control input {
+    width: 60px;
+    padding: 4px 8px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: 4px;
+    color: var(--text-normal);
+    font-size: 13px;
+    text-align: center;
+}
+
+/* Preview Container - Improved from inline styles */
+.sfp-preview-container {
+    position: relative;
+    flex-shrink: 1;
+    width: 200px;
+    min-width: 150px;
+    max-width: 800px;
+    min-height: 100px;
+    max-height: 600px;
+    padding: var(--spacing-xl);
+    border: 2px dashed var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    overflow: auto;
+    resize: both;
+    cursor: pointer;
+    transition: all var(--transition-medium);
+}
+
+.sfp-preview-container:hover {
+    border-color: var(--interactive-accent);
+    background: var(--background-modifier-hover);
+    box-shadow: 0 4px 12px var(--background-modifier-box-shadow);
+    transform: translateY(-2px);
+}
+
+/* Section Titles - Consolidated */
+.sfp-section-title {
+    margin: var(--spacing-xxl) 0 var(--spacing-lg) 0;
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--background-modifier-border);
+    color: var(--text-normal);
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+}
+
+
+
+/* Button Container */
+.sfp-button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xxl);
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+/* Preview Labels and Instructions */
+.sfp-preview-label {
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.sfp-preview-instruction {
+    margin-bottom: var(--spacing-md);
+    color: var(--text-faint);
+    font-size: var(--font-size-sm);
+    font-style: italic;
+}
+
+/* Width Control */
+.sfp-width-control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+}
+
+.sfp-width-input {
+    width: 60px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: var(--radius-sm);
+    color: var(--text-normal);
+    font-size: var(--font-size-xs);
+    text-align: center;
+}
+
+/* Metric Input Fields */
+.sfp-metric-input {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: var(--radius-sm);
+    color: var(--text-normal);
+}
+
+.sfp-metric-input[type="number"] {
+    flex: 0 0 80px;
+    text-align: center;
+}
+
+.sfp-metric-input[type="text"] {
+    flex: 1;
+}
+
+/* File Item for Image Selection Modal */
+.file-item {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid var(--background-modifier-border);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.file-item:hover {
+    background-color: var(--background-modifier-hover);
+}

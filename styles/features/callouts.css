@@ -1,0 +1,41 @@
+/* ScribeFlow - Callout Features
+ * 
+ * Floating callout support and styling
+ */
+
+/* Floating Callout Container */
+.sfp-floating-callout {
+    display: inline-block;
+    position: relative;
+}
+
+/* Callout Support */
+.callout[data-callout="journal-entry"],
+.callout[data-callout="dream-diary"] {
+    border-left: 4px solid var(--interactive-accent);
+    background: var(--background-secondary);
+    border-radius: 0 6px 6px 0;
+}
+
+.callout[data-callout="journal-entry"] .callout-title,
+.callout[data-callout="dream-diary"] .callout-title {
+    color: var(--interactive-accent);
+    font-weight: 600;
+}
+
+/* Custom callout icons */
+.callout[data-callout="journal-entry"] .callout-icon {
+    color: var(--interactive-accent);
+}
+
+.callout[data-callout="dream-diary"] .callout-icon {
+    color: var(--color-purple);
+}
+
+.callout[data-callout="dream-diary"] {
+    border-left-color: var(--color-purple);
+}
+
+.callout[data-callout="dream-diary"] .callout-title {
+    color: var(--color-purple);
+}

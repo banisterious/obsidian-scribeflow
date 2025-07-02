@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+main.js
+styles.css
+
+# Generated files
+coverage/
+*.min.*
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+
+# Package manager
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

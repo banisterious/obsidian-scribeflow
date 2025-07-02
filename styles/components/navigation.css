@@ -1,0 +1,94 @@
+/* ScribeFlow - Navigation Components
+ * 
+ * Navigation sidebar and tab controls
+ */
+
+/* Navigation Sidebar */
+.sfp-journal-modal .sfp-nav-sidebar {
+    min-width: 200px;
+    padding: 16px 0;
+    border-right: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+}
+
+.sfp-journal-modal .sfp-nav-item {
+    padding: 4px;
+    margin: 2px 0;
+    border-radius: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sfp-journal-modal .sfp-nav-item:first-child {
+    margin-top: 10px;
+}
+
+.sfp-journal-modal .sfp-nav-item:last-child {
+    margin-bottom: 10px;
+}
+
+.sfp-journal-modal .sfp-nav-item:hover {
+    background: var(--background-modifier-hover);
+    padding-left: 24px;
+}
+
+.sfp-journal-modal .sfp-nav-item.sfp-active {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border-left: 4px solid var(--text-on-accent);
+    padding-left: 20px;
+}
+
+.sfp-journal-modal .sfp-nav-item.sfp-nav-active {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+    font-weight: 500;
+}
+
+.sfp-journal-modal .sfp-nav-item.sfp-nav-active:hover {
+    background: var(--interactive-accent-hover);
+}
+
+/* Navigation Headings */
+.sfp-journal-modal .sfp-nav-heading {
+    padding: 4px;
+    margin-top: 8px;
+    background-color: var(--background-primary);
+    border-top: 1px solid var(--background-modifier-border);
+    border-bottom: 1px solid var(--background-modifier-border);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Tab Content Container */
+.sfp-tab-content {
+    flex: 1;
+    height: 100%;
+    padding-bottom: 1em;
+    padding-right: 12px;
+    overflow-y: auto;
+}
+
+.sfp-journal-modal .sfp-tab-content {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.sfp-journal-modal .sfp-tab-content h3 {
+    margin: 0 0 16px 0;
+    color: var(--text-normal);
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* Content Container Top Margin Fix */
+.sfp-modal-content-container h2:first-of-type {
+    margin-block-start: 0;
+}

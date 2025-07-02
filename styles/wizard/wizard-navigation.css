@@ -1,0 +1,133 @@
+/* ScribeFlow - Wizard Navigation
+ * 
+ * Navigation buttons and controls
+ */
+
+/* Wizard Navigation Container */
+.sfp-wizard-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    background: var(--background-secondary);
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+.sfp-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sfp-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Step Indicator */
+.sfp-step-indicator {
+    padding: 4px 8px;
+    background: var(--background-primary);
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Navigation Buttons */
+.sfp-wizard-nav-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sfp-wizard-nav-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Previous Button */
+.sfp-wizard-prev-button {
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    color: var(--text-muted);
+}
+
+.sfp-wizard-prev-button:hover:not(:disabled) {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+
+/* Next Button */
+.sfp-wizard-next-button {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.sfp-wizard-next-button:hover:not(:disabled) {
+    background: var(--interactive-accent-hover);
+}
+
+/* Finish Button */
+.sfp-wizard-finish-button {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+    font-weight: 600;
+}
+
+.sfp-wizard-finish-button:hover:not(:disabled) {
+    background: var(--interactive-accent-hover);
+}
+
+/* Cancel Button */
+.sfp-wizard-cancel-button {
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.sfp-wizard-cancel-button:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+
+/* Button Icons */
+.sfp-wizard-nav-button .sfp-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.sfp-wizard-prev-button .sfp-icon {
+    order: -1;
+}
+
+/* Button States */
+.sfp-wizard-nav-button.sfp-loading {
+    pointer-events: none;
+}
+
+.sfp-wizard-nav-button.sfp-loading::after {
+    width: 12px;
+    height: 12px;
+    margin-left: 6px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    content: "";
+    border-top-color: transparent;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

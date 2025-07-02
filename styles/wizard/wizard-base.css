@@ -1,0 +1,137 @@
+/* ScribeFlow - Template Wizard Base
+ * 
+ * Core wizard layout and container styles
+ */
+
+/* Wizard Modal Base */
+.modal:has(.sfp-template-wizard-modal) {
+    width: 900px;
+    max-width: 90vw;
+    height: 700px;
+    max-height: 80vh;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.sfp-wizard-modal {
+    width: 900px;
+    max-width: 90vw;
+    height: 700px;
+    max-height: 80vh;
+}
+
+.sfp-wizard-modal .modal-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0;
+}
+
+.sfp-wizard-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--background-primary);
+}
+
+/* Wizard Header */
+.sfp-wizard-header {
+    padding: 16px 24px;
+    background: var(--background-primary);
+    border-bottom: 1px solid var(--background-modifier-border);
+    color: var(--text-normal);
+}
+
+.sfp-wizard-title-container {
+    margin-bottom: 16px;
+}
+
+.sfp-wizard-title {
+    margin: 0 0 4px 0;
+    color: var(--text-normal);
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.sfp-wizard-subtitle {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* Wizard Content */
+.sfp-wizard-content {
+    flex: 1;
+    padding: 24px;
+    background: var(--background-primary);
+    max-height: calc(70vh - 120px);
+    overflow-y: auto;
+}
+
+.sfp-step-content {
+    animation: slideIn 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.sfp-step-title {
+    margin: 0 0 6px 0;
+    color: var(--text-normal);
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.sfp-step-description {
+    margin: 0 0 20px 0;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Wizard Footer */
+.sfp-wizard-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px 24px 24px;
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+.sfp-wizard-footer .sfp-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sfp-wizard-footer .sfp-footer-right {
+    display: flex;
+    gap: 12px;
+}
+
+/* Step Indicators */
+.sfp-step-indicator {
+    padding: 4px 8px;
+    background: var(--background-secondary);
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* Form Sections */
+.sfp-wizard-section {
+    margin-bottom: 24px;
+}
+
+.sfp-wizard-section h3 {
+    margin: 0 0 12px 0;
+    color: var(--text-normal);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.sfp-wizard-section p {
+    margin: 0 0 16px 0;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.4;
+}

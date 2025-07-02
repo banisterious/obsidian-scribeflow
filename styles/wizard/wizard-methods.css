@@ -1,0 +1,131 @@
+/* ScribeFlow - Wizard Methods
+ * 
+ * Method selection cards and options
+ */
+
+/* Enhanced Method Selection Grid */
+.sfp-method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.sfp-method-card {
+    padding: 16px;
+    border: 2px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.sfp-method-card:hover {
+    background: var(--background-modifier-hover);
+    border-color: var(--interactive-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.sfp-method-card.sfp-method-selected {
+    background: var(--interactive-accent-hover);
+    border-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.sfp-method-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin: 0 auto 12px;
+    background: var(--background-primary);
+    border-radius: 8px;
+    font-size: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.sfp-method-card.sfp-method-selected .sfp-method-icon {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.sfp-method-title {
+    margin: 0 0 6px 0;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.sfp-method-description {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.3;
+    opacity: 0.8;
+}
+
+/* Method Details */
+.sfp-method-details {
+    margin-top: 20px;
+    padding: 16px;
+    border-left: 4px solid var(--interactive-accent);
+    background: var(--background-secondary);
+    border-radius: 6px;
+}
+
+.sfp-method-details h4 {
+    margin: 0 0 8px 0;
+    color: var(--text-normal);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.sfp-method-details p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Plugin Source Selection */
+.sfp-plugin-selection {
+    margin-top: 16px;
+}
+
+.sfp-plugin-options {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.sfp-plugin-option {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sfp-plugin-option:hover {
+    border-color: var(--interactive-accent);
+}
+
+.sfp-plugin-option.sfp-plugin-selected {
+    border-color: var(--interactive-accent);
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.sfp-plugin-option-title {
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.sfp-plugin-option-status {
+    font-size: 12px;
+    opacity: 0.8;
+}

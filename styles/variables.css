@@ -1,0 +1,48 @@
+/* ScribeFlow - CSS Variables and Design Tokens
+ * 
+ * Centralized design system variables for consistent theming
+ * Extracted from styles.css for better maintainability
+ */
+
+:root {
+    /* Modal sizing */
+    --modal-height: 80vh;
+    --modal-width: 90vw;
+    --modal-max-height: 800px;
+    --modal-max-width: 1200px;
+
+    /* Spacing scale */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+    --spacing-xxl: 32px;
+
+    /* Border radius scale */
+    --radius-sm: 4px;
+    --radius-md: 6px; /* Updated to match existing usage */
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+
+    /* Typography scale */
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 24px;
+
+    /* Component spacing */
+    --component-padding: var(--spacing-xl);
+    --component-gap: var(--spacing-md);
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+    --transition-slow: 0.35s ease;
+}

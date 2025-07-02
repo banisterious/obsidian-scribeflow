@@ -1,0 +1,185 @@
+/* ScribeFlow - Dashboard Table
+ * 
+ * Table layout, rows, columns, and interactions
+ */
+
+/* Table Container */
+.sfp-dashboard-table-container {
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.sfp-dashboard-table {
+    width: 100%;
+    font-size: 14px;
+    border-collapse: collapse;
+}
+
+/* Table Header */
+.sfp-dashboard-table thead {
+    border-bottom: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+}
+
+.sfp-dashboard-table th {
+    padding: 12px 16px;
+    border-right: 1px solid var(--background-modifier-border);
+    color: var(--text-normal);
+    font-weight: 500;
+    text-align: left;
+}
+
+.sfp-dashboard-table th:last-child {
+    border-right: none;
+}
+
+.sfp-dashboard-table th.sortable {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.sfp-dashboard-table th.sortable:hover {
+    background: var(--background-modifier-hover);
+}
+
+/* Sort Indicators */
+.sfp-dashboard-table th.sortable::after {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 0;
+    height: 0;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    opacity: 0.3;
+    transform: translateY(-50%);
+    content: "";
+}
+
+.sfp-dashboard-table th.sort-asc::after {
+    border-bottom: 6px solid var(--text-muted);
+    opacity: 1;
+}
+
+.sfp-dashboard-table th.sort-desc::after {
+    border-top: 6px solid var(--text-muted);
+    opacity: 1;
+}
+
+/* Table Body */
+.sfp-dashboard-table tbody tr {
+    border-bottom: 1px solid var(--background-modifier-border);
+    transition: background-color 0.2s ease;
+}
+
+.sfp-dashboard-table tbody tr:hover {
+    background: var(--background-modifier-hover);
+}
+
+.sfp-dashboard-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.sfp-dashboard-table td {
+    padding: 12px 16px;
+    border-right: 1px solid var(--background-modifier-border);
+    vertical-align: top;
+}
+
+.sfp-dashboard-table td:last-child {
+    border-right: none;
+}
+
+/* Cell Types */
+.date-cell {
+    min-width: 100px;
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.content-cell {
+    position: relative;
+    max-width: 400px;
+}
+
+.count-cell {
+    min-width: 60px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-align: center;
+}
+
+.file-cell {
+    min-width: 150px;
+}
+
+.file-cell .internal-link {
+    color: var(--text-accent);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.file-cell .internal-link:hover {
+    text-decoration: underline;
+}
+
+/* Content Preview */
+.preview-text {
+    color: var(--text-normal);
+    line-height: 1.4;
+}
+
+.preview-text.collapsed {
+    position: relative;
+    max-height: 100px;
+    overflow: hidden;
+}
+
+.preview-text.expanded {
+    max-height: none;
+}
+
+.preview-text + button {
+    margin-top: 8px;
+    padding: 4px 8px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.preview-text + button:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+
+/* Dashboard Paragraphs */
+.dashboard-paragraph {
+    margin-bottom: 8px;
+}
+
+.dashboard-paragraph:last-child {
+    margin-bottom: 0;
+}
+
+/* Empty State */
+.sfp-dashboard-table tbody tr td[colspan] {
+    padding: 40px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Highlight */
+.highlight {
+    padding: 1px 2px;
+    background: var(--text-highlight-bg);
+    border-radius: 2px;
+    color: var(--text-normal);
+}

@@ -1,0 +1,125 @@
+/* ScribeFlow - Metrics Components
+ * 
+ * Dream metrics and scoring interfaces
+ */
+
+/* Metrics Container */
+.sfp-journal-modal .sfp-metrics-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+
+.sfp-journal-modal .sfp-metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+
+.sfp-journal-modal .sfp-metric-description {
+    margin-bottom: 12px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* Score Inputs */
+.sfp-journal-modal .sfp-score-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sfp-journal-modal .sfp-score-input {
+    width: 60px;
+    text-align: center;
+}
+
+.sfp-journal-modal .sfp-score-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+/* Text Metrics */
+.sfp-journal-modal .sfp-text-metric textarea {
+    min-height: 60px;
+    font-size: 13px;
+}
+
+/* Number Metrics */
+.sfp-journal-modal .sfp-number-metric {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sfp-journal-modal .sfp-number-input {
+    width: 80px;
+}
+
+/* Metric Management (Settings) */
+.sfp-metrics-manager {
+    margin-top: 16px;
+}
+
+.sfp-selected-metrics,
+.sfp-available-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.sfp-metric-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: 6px;
+}
+
+.sfp-journal-modal .sfp-metric-item {
+    padding: 16px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.sfp-journal-modal .sfp-metric-item:hover {
+    border-color: var(--interactive-accent);
+}
+
+.sfp-drag-handle {
+    color: var(--text-muted);
+    font-size: 16px;
+    cursor: grab;
+}
+
+.sfp-drag-handle:active {
+    cursor: grabbing;
+}
+
+.sfp-metric-name {
+    flex: 1;
+    color: var(--text-normal);
+    font-weight: 500;
+}
+
+.sfp-journal-modal .sfp-metric-name {
+    color: var(--text-normal);
+    font-weight: 500;
+}
+
+.sfp-metric-desc {
+    flex: 2;
+    color: var(--text-muted);
+    font-size: 13px;
+}

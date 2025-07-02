@@ -2,79 +2,78 @@ import { DashboardExportData, EntryExportData } from './types';
 import { DashboardStatistics } from '../../types/dashboard';
 
 export class ExportFormatters {
-    
-    formatAsMarkdownTable(data: DashboardExportData): string {
-        let content = `# ScribeFlow Dashboard Export\n\n`;
-        content += `**Export Date:** ${new Date(data.metadata.exportDate).toLocaleString()}\n`;
-        content += `**Filter:** ${this.formatFilterName(data.metadata.filter)}\n`;
-        if (data.metadata.searchQuery) {
-            content += `**Search Query:** "${data.metadata.searchQuery}"\n`;
-        }
-        content += `**Total Entries:** ${data.metadata.totalEntries}\n\n`;
+	formatAsMarkdownTable(data: DashboardExportData): string {
+		let content = `# ScribeFlow Dashboard Export\n\n`;
+		content += `**Export Date:** ${new Date(data.metadata.exportDate).toLocaleString()}\n`;
+		content += `**Filter:** ${this.formatFilterName(data.metadata.filter)}\n`;
+		if (data.metadata.searchQuery) {
+			content += `**Search Query:** "${data.metadata.searchQuery}"\n`;
+		}
+		content += `**Total Entries:** ${data.metadata.totalEntries}\n\n`;
 
-        // Statistics section
-        if (data.statistics) {
-            content += `## Summary Statistics\n\n`;
-            content += this.formatStatisticsAsMarkdown(data.statistics);
-            content += `\n`;
-        }
+		// Statistics section
+		if (data.statistics) {
+			content += `## Summary Statistics\n\n`;
+			content += this.formatStatisticsAsMarkdown(data.statistics);
+			content += `\n`;
+		}
 
-        // Main table
-        content += `## Journal Entries\n\n`;
-        content += `| Date | Content | Words | Images | File |\n`;
-        content += `|------|---------|--------|--------|------|\n`;
+		// Main table
+		content += `## Journal Entries\n\n`;
+		content += `| Date | Content | Words | Images | File |\n`;
+		content += `|------|---------|--------|--------|------|\n`;
 
-        data.entries.forEach(entry => {
-            const entryContent = this.escapeMarkdown(entry.fullContent);
-            const filename = this.getFileName(entry.filePath);
-            content += `| ${entry.date} | ${entryContent} | ${entry.wordCount} | ${entry.imageCount} | ${filename} |\n`;
-        });
+		data.entries.forEach(entry => {
+			const entryContent = this.escapeMarkdown(entry.fullContent);
+			const filename = this.getFileName(entry.filePath);
+			content += `| ${entry.date} | ${entryContent} | ${entry.wordCount} | ${entry.imageCount} | ${filename} |\n`;
+		});
 
-        return content;
-    }
+		return content;
+	}
 
-    formatAsCSV(data: DashboardExportData): string {
-        let content = '';
-        
-        // CSV Header
-        content += '"Date","Content","Word Count","Image Count","Filename"\n';
-        
-        // Data rows
-        data.entries.forEach(entry => {
-            const entryContent = this.escapeCSV(entry.fullContent);
-            const filename = this.escapeCSV(this.getFileName(entry.filePath));
-            content += `"${entry.date}","${entryContent}","${entry.wordCount}","${entry.imageCount}","${filename}"\n`;
-        });
+	formatAsCSV(data: DashboardExportData): string {
+		let content = '';
 
-        return content;
-    }
+		// CSV Header
+		content += '"Date","Content","Word Count","Image Count","Filename"\n';
 
-    formatAsJSON(data: DashboardExportData): string {
-        const exportObject = {
-            metadata: {
-                exportDate: data.metadata.exportDate,
-                filter: data.metadata.filter,
-                searchQuery: data.metadata.searchQuery || null,
-                totalEntries: data.metadata.totalEntries,
-                exportedAt: new Date().toISOString()
-            },
-            statistics: data.statistics,
-            entries: data.entries.map(entry => ({
-                date: entry.date,
-                title: entry.title,
-                fullContent: entry.fullContent,
-                wordCount: entry.wordCount,
-                imageCount: entry.imageCount,
-                filename: this.getFileName(entry.filePath),
-                filePath: entry.filePath
-            }))
-        };
+		// Data rows
+		data.entries.forEach(entry => {
+			const entryContent = this.escapeCSV(entry.fullContent);
+			const filename = this.escapeCSV(this.getFileName(entry.filePath));
+			content += `"${entry.date}","${entryContent}","${entry.wordCount}","${entry.imageCount}","${filename}"\n`;
+		});
 
-        return JSON.stringify(exportObject, null, 2);
-    }
+		return content;
+	}
 
-    private formatStatisticsAsMarkdown(stats: DashboardStatistics): string {
-        return `
+	formatAsJSON(data: DashboardExportData): string {
+		const exportObject = {
+			metadata: {
+				exportDate: data.metadata.exportDate,
+				filter: data.metadata.filter,
+				searchQuery: data.metadata.searchQuery || null,
+				totalEntries: data.metadata.totalEntries,
+				exportedAt: new Date().toISOString(),
+			},
+			statistics: data.statistics,
+			entries: data.entries.map(entry => ({
+				date: entry.date,
+				title: entry.title,
+				fullContent: entry.fullContent,
+				wordCount: entry.wordCount,
+				imageCount: entry.imageCount,
+				filename: this.getFileName(entry.filePath),
+				filePath: entry.filePath,
+			})),
+		};
+
+		return JSON.stringify(exportObject, null, 2);
+	}
+
+	private formatStatisticsAsMarkdown(stats: DashboardStatistics): string {
+		return `
 ### Overall Progress
 - **Total Entries:** ${stats.totalEntries}
 - **Total Words:** ${stats.totalWords.toLocaleString()}
@@ -94,37 +93,31 @@ export class ExportFormatters {
 ### Patterns
 - **Most Active Day:** ${stats.mostActiveDayOfWeek}
         `.trim();
-    }
+	}
 
-    private formatFilterName(filter: string): string {
-        const filterNames: Record<string, string> = {
-            'all-time': 'All Time',
-            'today': 'Today',
-            'this-week': 'This Week',
-            'this-month': 'This Month',
-            'last-30-days': 'Last 30 Days',
-            'this-year': 'This Year'
-        };
-        return filterNames[filter] || filter;
-    }
+	private formatFilterName(filter: string): string {
+		const filterNames: Record<string, string> = {
+			'all-time': 'All Time',
+			today: 'Today',
+			'this-week': 'This Week',
+			'this-month': 'This Month',
+			'last-30-days': 'Last 30 Days',
+			'this-year': 'This Year',
+		};
+		return filterNames[filter] || filter;
+	}
 
-    private escapeMarkdown(text: string): string {
-        if (!text) return '';
-        return text
-            .replace(/\|/g, '\\|')
-            .replace(/\n/g, ' ')
-            .replace(/\r/g, ' ');
-    }
+	private escapeMarkdown(text: string): string {
+		if (!text) return '';
+		return text.replace(/\|/g, '\\|').replace(/\n/g, ' ').replace(/\r/g, ' ');
+	}
 
-    private escapeCSV(text: string): string {
-        if (!text) return '';
-        return text
-            .replace(/"/g, '""')
-            .replace(/\n/g, ' ')
-            .replace(/\r/g, ' ');
-    }
+	private escapeCSV(text: string): string {
+		if (!text) return '';
+		return text.replace(/"/g, '""').replace(/\n/g, ' ').replace(/\r/g, ' ');
+	}
 
-    private getFileName(filePath: string): string {
-        return filePath.split('/').pop() || filePath;
-    }
+	private getFileName(filePath: string): string {
+		return filePath.split('/').pop() || filePath;
+	}
 }

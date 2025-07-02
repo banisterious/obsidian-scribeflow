@@ -2,25 +2,24 @@ import ScribeFlowPlugin from '../../main';
 import { MarkdownRenderer } from 'obsidian';
 
 export class InspirationsTab {
-    containerEl: HTMLElement;
-    plugin: ScribeFlowPlugin;
-    private contentEl: HTMLElement;
+	containerEl: HTMLElement;
+	plugin: ScribeFlowPlugin;
+	private contentEl: HTMLElement;
 
-    constructor(containerEl: HTMLElement, plugin: ScribeFlowPlugin) {
-        this.containerEl = containerEl;
-        this.plugin = plugin;
-        
-        // Create dedicated content element for this tab
-        this.contentEl = containerEl.createDiv('sfp-tab-content sfp-inspirations-tab');
-        this.contentEl.style.display = 'none';
-    }
+	constructor(containerEl: HTMLElement, plugin: ScribeFlowPlugin) {
+		this.containerEl = containerEl;
+		this.plugin = plugin;
 
-    async display(): Promise<void> {
-        this.contentEl.style.display = 'block';
-        // Only render if not already rendered
-        if (this.contentEl.children.length === 0) {
+		// Create dedicated content element for this tab
+		this.contentEl = containerEl.createDiv('sfp-tab-content sfp-inspirations-tab');
+		this.contentEl.style.display = 'none';
+	}
 
-        const content = `## Sources and Inspirations
+	async display(): Promise<void> {
+		this.contentEl.style.display = 'block';
+		// Only render if not already rendered
+		if (this.contentEl.children.length === 0) {
+			const content = `## Sources and Inspirations
 
 ### Foundational Concepts
 
@@ -101,11 +100,11 @@ ScribeFlow provides a flexible framework built upon these general understandings
 
 The plugin does not prescribe any particular interpretation or meaning to dream content - it simply provides tools to help users discover their own patterns and insights through consistent tracking and reflection.`;
 
-            await MarkdownRenderer.renderMarkdown(content, this.contentEl, '', this.plugin);
-        }
-    }
+			await MarkdownRenderer.renderMarkdown(content, this.contentEl, '', this.plugin);
+		}
+	}
 
-    hide(): void {
-        this.contentEl.style.display = 'none';
-    }
+	hide(): void {
+		this.contentEl.style.display = 'none';
+	}
 }

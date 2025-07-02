@@ -1,0 +1,174 @@
+/* ScribeFlow - Settings Components
+ * 
+ * Settings UI, lists, and management interfaces
+ */
+
+/* Setting Items */
+.sfp-setting-item {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.sfp-setting-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.sfp-setting-item h6 {
+    margin: 0 0 8px 0;
+    color: var(--text-normal);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Section Headers */
+.sfp-section-header {
+    margin: 16px 0 8px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    color: var(--text-normal);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.sfp-section-header-first {
+    margin-top: 0;
+}
+
+/* Management Lists */
+.sfp-selected-types,
+.sfp-available-types,
+.sfp-selected-metrics,
+.sfp-available-metrics,
+.sfp-selected-templates,
+.sfp-available-templates {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* List Items */
+.sfp-type-item,
+.sfp-metric-item,
+.sfp-template-item,
+.sfp-folder-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.sfp-type-item:hover,
+.sfp-metric-item:hover,
+.sfp-template-item:hover {
+    border-color: var(--interactive-accent);
+    cursor: pointer;
+}
+
+/* Available Items - Interactive States */
+.sfp-available-types .sfp-type-item {
+    cursor: pointer;
+}
+
+.sfp-available-types .sfp-type-item:hover {
+    background: var(--background-modifier-hover);
+}
+
+.sfp-available-metrics .sfp-metric-item {
+    cursor: pointer;
+}
+
+.sfp-available-metrics .sfp-metric-item:hover {
+    background: var(--background-modifier-hover);
+}
+
+/* Item Content */
+.sfp-type-name,
+.sfp-metric-name,
+.sfp-template-name,
+.sfp-folder-name {
+    flex: 1;
+    color: var(--text-normal);
+    font-weight: 500;
+}
+
+.sfp-metric-desc,
+.sfp-template-desc {
+    flex: 2;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+/* Action Buttons */
+.sfp-add-btn,
+.sfp-remove-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sfp-add-btn {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.sfp-add-btn:hover {
+    background: var(--interactive-accent-hover);
+}
+
+.sfp-remove-btn {
+    background: var(--background-modifier-error);
+    color: var(--text-error);
+}
+
+.sfp-remove-btn:hover {
+    background: var(--background-modifier-error-hover);
+}
+
+/* No Content States */
+.sfp-no-templates,
+.sfp-no-metrics,
+.sfp-no-folders {
+    padding: 20px;
+    border: 1px dashed var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+}
+
+/* Scan Folders List */
+.sfp-scan-folders-list {
+    margin-top: 12px;
+}
+
+.sfp-folder-item {
+    justify-content: space-between;
+}
+
+/* Error Text */
+.sfp-error-text {
+    color: var(--text-error);
+    font-size: 12px;
+    font-style: italic;
+}

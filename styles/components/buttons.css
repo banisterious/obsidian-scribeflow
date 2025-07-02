@@ -1,0 +1,51 @@
+/* ScribeFlow - Button Components
+ * 
+ * Component-specific button styles
+ * Utility classes (btn-base, btn-primary, etc.) should be used in HTML
+ */
+
+/* Button Groups */
+.sfp-button-group {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* Component-specific modal footer buttons */
+.sfp-modal-footer button {
+    min-width: 80px;
+}
+
+/* Legacy support - these can be removed once HTML is updated to use utility classes */
+.sfp-journal-modal .sfp-add-btn,
+.sfp-journal-modal .sfp-remove-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 24px;
+    height: 24px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.sfp-journal-modal .sfp-add-btn {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.sfp-journal-modal .sfp-add-btn:hover {
+    background: var(--interactive-accent-hover);
+}
+
+.sfp-journal-modal .sfp-remove-btn {
+    background: var(--background-modifier-error);
+    color: var(--text-error);
+}
+
+.sfp-journal-modal .sfp-remove-btn:hover {
+    background: var(--background-modifier-error-hover);
+}

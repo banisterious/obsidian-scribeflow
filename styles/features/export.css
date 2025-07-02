@@ -1,0 +1,157 @@
+/* ScribeFlow - Export Features
+ * 
+ * Export buttons, menus, and interfaces
+ */
+
+/* Export Button */
+.sfp-export-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: 6px;
+    color: var(--text-normal);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sfp-export-button:hover {
+    border-color: var(--interactive-accent);
+    background: var(--background-modifier-hover);
+}
+
+.sfp-export-button .sfp-icon {
+    width: 14px;
+    height: 14px;
+    opacity: 0.8;
+}
+
+/* Export Dropdown */
+.sfp-export-dropdown {
+    display: inline-block;
+    position: relative;
+}
+
+.sfp-export-dropdown-content {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
+    min-width: 180px;
+    margin-top: 4px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+}
+
+.sfp-export-dropdown.sfp-dropdown-open .sfp-export-dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.sfp-export-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    color: var(--text-normal);
+    font-size: 13px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.sfp-export-option:last-child {
+    border-bottom: none;
+}
+
+.sfp-export-option:hover {
+    background: var(--background-modifier-hover);
+}
+
+.sfp-export-option .sfp-icon {
+    width: 14px;
+    height: 14px;
+    opacity: 0.7;
+}
+
+/* Context Menu */
+.sfp-context-menu {
+    position: fixed;
+    z-index: 2000;
+    min-width: 160px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.95);
+    transition: all 0.15s ease;
+}
+
+.sfp-context-menu.sfp-menu-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+.sfp-context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    color: var(--text-normal);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.sfp-context-menu-item:last-child {
+    border-bottom: none;
+}
+
+.sfp-context-menu-item:hover {
+    background: var(--background-modifier-hover);
+}
+
+.sfp-context-menu-item .sfp-icon {
+    width: 14px;
+    height: 14px;
+    opacity: 0.7;
+}
+
+/* Loading States */
+.sfp-export-button.sfp-loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.sfp-export-button.sfp-loading::after {
+    width: 12px;
+    height: 12px;
+    margin-left: 4px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    content: "";
+    border-top-color: transparent;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

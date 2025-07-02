@@ -1,0 +1,111 @@
+/* ScribeFlow - Dashboard Base
+ * 
+ * Main dashboard layout and container styles
+ */
+
+/* Dashboard Container */
+.sfp-scribeflow-dashboard {
+    height: 100%;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Dashboard Header */
+.sfp-dashboard-header {
+    margin-bottom: 24px;
+}
+
+.sfp-dashboard-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.sfp-dashboard-title-section h1 {
+    margin: 0;
+    color: var(--text-normal);
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.sfp-dashboard-subtitle {
+    margin: 8px 0 0 0;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.sfp-dashboard-header-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sfp-dashboard-toggle-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.sfp-dashboard-toggle-btn:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+
+.sfp-dashboard-header-content {
+    padding-top: 16px;
+}
+
+/* Dashboard Controls */
+.sfp-dashboard-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    border-radius: 8px;
+}
+
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-container label {
+    color: var(--text-normal);
+    font-weight: 500;
+}
+
+.filter-container select {
+    padding: 6px 12px;
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary);
+    border-radius: 4px;
+    color: var(--text-normal);
+}
+
+/* Loading and Error States */
+.sfp-dashboard-loading {
+    padding: 40px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.sfp-dashboard-error {
+    padding: 40px;
+    color: var(--text-error);
+    text-align: center;
+}
+
+.sfp-dashboard-empty {
+    padding: 40px;
+    color: var(--text-muted);
+    text-align: center;
+}

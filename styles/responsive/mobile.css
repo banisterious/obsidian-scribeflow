@@ -1,0 +1,194 @@
+/* ScribeFlow - Mobile Responsive
+ * 
+ * Mobile and tablet responsive styles
+ */
+
+/* Small Tablets and Large Phones */
+@media (width <= 768px) {
+    /* Modal Adjustments */
+    .modal:has(.sfp-journal-modal) {
+        width: 95vw;
+        max-width: none;
+        height: 90vh;
+        max-height: none;
+    }
+
+    .sfp-journal-modal .sfp-modal-header {
+        padding: 16px 16px 16px 0;
+    }
+
+    .sfp-journal-modal .sfp-header-content h2 {
+        font-size: 20px;
+    }
+
+    /* Navigation Sidebar */
+    .sfp-journal-modal .sfp-nav-sidebar {
+        min-width: 160px;
+    }
+
+    .sfp-journal-modal .sfp-nav-item {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    /* Tab Content */
+    .sfp-journal-modal .sfp-tab-content {
+        padding: 16px;
+    }
+
+    /* Form Adjustments */
+    .sfp-journal-modal .sfp-form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .sfp-journal-modal textarea {
+        min-height: 100px;
+    }
+
+    /* Dashboard */
+    .sfp-scribeflow-dashboard {
+        padding: 12px;
+    }
+
+    .sfp-dashboard-header-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .sfp-dashboard-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    /* Dashboard Table */
+    .sfp-dashboard-table {
+        font-size: 13px;
+    }
+
+    .sfp-dashboard-table th,
+    .sfp-dashboard-table td {
+        padding: 8px 10px;
+    }
+
+    .content-cell {
+        max-width: 250px;
+    }
+
+    /* Template Wizard */
+    .sfp-wizard-modal {
+        width: 95vw;
+        height: 90vh;
+    }
+
+    .sfp-method-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .sfp-plugin-options {
+        flex-direction: column;
+    }
+}
+
+/* Phones */
+@media (width <= 480px) {
+    /* Modal */
+    .sfp-journal-modal .sfp-modal-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .sfp-journal-modal .sfp-templates-container {
+        width: 100%;
+        margin: 8px 0;
+    }
+
+    .sfp-journal-modal .sfp-templates-dropdown select {
+        min-width: 100%;
+    }
+
+    /* Navigation */
+    .sfp-journal-modal .sfp-nav-sidebar {
+        min-width: 120px;
+    }
+
+    .sfp-journal-modal .sfp-nav-item {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    /* Modal Footer */
+    .sfp-journal-modal .sfp-modal-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .sfp-journal-modal .sfp-modal-footer .sfp-footer-buttons {
+        justify-content: space-between;
+        order: 1;
+    }
+
+    /* Dashboard */
+    .sfp-dashboard-title-section h1 {
+        font-size: 24px;
+    }
+
+    .sfp-dashboard-header-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    /* Dashboard Table - Hide some columns on very small screens */
+    .sfp-dashboard-table .count-cell:nth-child(4) {
+        display: none;
+    }
+
+    .sfp-dashboard-table th:nth-child(4) {
+        display: none;
+    }
+
+    /* Template Wizard */
+    .sfp-wizard-content {
+        padding: 16px;
+    }
+
+    .sfp-wizard-footer {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 16px;
+    }
+
+    .sfp-wizard-footer .sfp-footer-right {
+        justify-content: space-between;
+        width: 100%;
+        order: -1;
+    }
+
+    /* Progress */
+    .sfp-progress-labels {
+        font-size: 10px;
+    }
+
+    /* Export */
+    .sfp-export-dropdown-content {
+        right: auto;
+        left: 0;
+    }
+}
+
+/* Landscape Phones */
+@media (width <= 768px) and (orientation: landscape) {
+    .modal:has(.sfp-journal-modal) {
+        height: 95vh;
+    }
+
+    .sfp-wizard-modal {
+        height: 95vh;
+    }
+}

@@ -2,6 +2,8 @@
 
 A modern Obsidian plugin for creating structured journal entries with dream diary tracking, customizable metrics, and smart image management.
 
+ScribeFlow transforms structured journaling by providing a streamlined modal interface for users to input daily thoughts, dream diary entries, and transcribe text directly from images, all automatically formatted into organized nested callouts within their notes. Beyond enhanced data capture, it features a powerful Scribe Dashboard with dynamic tables of entries, insightful statistics cards summarizing journaling habits over customizable timeframes, and robust export options for both the aggregated data and individual entries, effectively complementing the specialized dream analysis offered by the OneiroMetrics plugin.
+
 ## Features
 
 ### 📝 **Structured Journal Entries**

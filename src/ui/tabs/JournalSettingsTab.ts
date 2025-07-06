@@ -16,11 +16,10 @@ export class JournalSettingsTab {
 
 		// Create dedicated content element for this tab
 		this.contentEl = containerEl.createDiv('sfp-tab-content sfp-settings-tab');
-		this.contentEl.style.display = 'none';
 	}
 
 	display(): void {
-		this.contentEl.style.display = 'block';
+		this.contentEl.classList.add('active');
 		// Always refresh settings content
 		this.contentEl.empty();
 
@@ -576,6 +575,6 @@ export class JournalSettingsTab {
 	}
 
 	hide(): void {
-		this.contentEl.style.display = 'none';
+		this.contentEl.classList.remove('active');
 	}
 }

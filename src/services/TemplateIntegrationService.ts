@@ -410,8 +410,25 @@ export class TemplateIntegrationService {
 					},
 				},
 			},
-			templaterCheck: {} as Record<string, any>,
-			coreTemplatesCheck: {},
+			templaterCheck: {} as Record<string, {
+				pluginExists: boolean;
+				pluginEnabled: boolean;
+				pluginObject: {
+					hasSettings: boolean;
+					isLoaded: boolean;
+					enabled: boolean | undefined;
+				} | null;
+			}>,
+			coreTemplatesCheck: {} as {
+				pluginExists: boolean;
+				pluginEnabled: boolean;
+				pluginObject: {
+					hasInstance: boolean;
+					hasOptions: boolean;
+					hasSettings: boolean;
+					enabled: boolean | undefined;
+				} | null;
+			},
 		};
 
 		// Check Templater plugin variants

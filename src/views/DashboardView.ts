@@ -395,19 +395,25 @@ export class DashboardView extends ItemView {
 			const cell = row.createEl('td', { attr: { colspan: '5' } });
 
 			if (this.state.entries.length === 0) {
-				cell.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
-                        <div style="font-size: 16px; margin-bottom: 8px;">No journal entries found</div>
-                        <div style="font-size: 14px;">Configure your dashboard settings to scan folders and select templates</div>
-                    </div>
-                `;
+				const messageContainer = cell.createDiv('sfp-dashboard-empty');
+				messageContainer.createDiv({
+					text: 'No journal entries found',
+					cls: 'sfp-dashboard-empty-title'
+				});
+				messageContainer.createDiv({
+					text: 'Configure your dashboard settings to scan folders and select templates',
+					cls: 'sfp-dashboard-empty-subtitle'
+				});
 			} else {
-				cell.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
-                        <div style="font-size: 16px; margin-bottom: 8px;">No entries match the current filter</div>
-                        <div style="font-size: 14px;">Try selecting a different date range</div>
-                    </div>
-                `;
+				const messageContainer = cell.createDiv('sfp-dashboard-filter-empty');
+				messageContainer.createDiv({
+					text: 'No entries match the current filter',
+					cls: 'sfp-dashboard-filter-empty-title'
+				});
+				messageContainer.createDiv({
+					text: 'Try selecting a different date range',
+					cls: 'sfp-dashboard-filter-empty-subtitle'
+				});
 			}
 			return;
 		}
@@ -442,11 +448,17 @@ export class DashboardView extends ItemView {
 		const fileMatch = searchResult?.matches.find(match => match.field === 'file');
 		const fileName = this.getFileName(entry.filePath);
 
+		// Add opening parenthesis
+		fileLink.appendChild(document.createTextNode('('));
+
 		if (fileMatch && this.state.searchQuery) {
-			fileLink.innerHTML = `(${this.highlightText(fileName, this.state.searchQuery)})`;
+			this.highlightTextInElement(fileName, this.state.searchQuery, fileLink);
 		} else {
-			fileLink.textContent = `(${fileName})`;
+			fileLink.appendChild(document.createTextNode(fileName));
 		}
+
+		// Add closing parenthesis
+		fileLink.appendChild(document.createTextNode(')'))
 
 		fileLink.addEventListener('click', e => {
 			e.preventDefault();
@@ -498,12 +510,9 @@ export class DashboardView extends ItemView {
 		const contentMatch = searchResult?.matches.find(match => match.field === 'content');
 
 		if (contentMatch && this.state.searchQuery) {
-			previewDiv.innerHTML = this.highlightText(
-				this.formatTextWithParagraphs(entry.preview),
-				this.state.searchQuery
-			);
+			this.createHighlightedParagraphElements(entry.preview, this.state.searchQuery, previewDiv);
 		} else {
-			previewDiv.innerHTML = this.formatTextWithParagraphs(entry.preview);
+			this.createParagraphElements(entry.preview, previewDiv);
 		}
 
 		previewDiv.setAttribute('data-full-text', entry.fullContent);
@@ -520,8 +529,16 @@ export class DashboardView extends ItemView {
 		const isCollapsed = previewDiv.classList.contains('collapsed');
 		const fullText = previewDiv.getAttribute('data-full-text') || '';
 
+		// Check if we have search results for this content
+		const searchQuery = this.state.searchQuery;
+		const hasSearch = searchQuery && searchQuery.trim().length > 0;
+
 		if (isCollapsed) {
-			previewDiv.innerHTML = this.formatTextWithParagraphs(fullText);
+			if (hasSearch) {
+				this.createHighlightedParagraphElements(fullText, searchQuery, previewDiv);
+			} else {
+				this.createParagraphElements(fullText, previewDiv);
+			}
 			previewDiv.classList.remove('collapsed');
 			previewDiv.classList.add('expanded');
 			button.textContent = 'less';
@@ -530,7 +547,11 @@ export class DashboardView extends ItemView {
 			const words = fullText.split(/\s+/).filter(word => word.length > 0);
 			const previewWords = words.slice(0, this.plugin.settings.dashboardSettings.previewWordLimit);
 			const preview = previewWords.join(' ') + (words.length > previewWords.length ? '...' : '');
-			previewDiv.innerHTML = this.formatTextWithParagraphs(preview);
+			if (hasSearch) {
+				this.createHighlightedParagraphElements(preview, searchQuery, previewDiv);
+			} else {
+				this.createParagraphElements(preview, previewDiv);
+			}
 			previewDiv.classList.remove('expanded');
 			previewDiv.classList.add('collapsed');
 			button.textContent = 'more';
@@ -550,6 +571,65 @@ export class DashboardView extends ItemView {
 			.filter(paragraph => paragraph.length > 0)
 			.map(paragraph => `<div class="dashboard-paragraph">${paragraph}</div>`)
 			.join('');
+	}
+
+	private createParagraphElements(text: string, container: HTMLElement): void {
+		if (!text) return;
+
+		// Clear existing content
+		container.empty();
+
+		// Split text by double line breaks (paragraph breaks)
+		const paragraphs = text.split(/\n\s*\n/);
+
+		// Create a div element for each paragraph
+		paragraphs
+			.map(paragraph => paragraph.trim())
+			.filter(paragraph => paragraph.length > 0)
+			.forEach(paragraph => {
+				const paragraphDiv = container.createDiv('dashboard-paragraph');
+				paragraphDiv.textContent = paragraph;
+			});
+	}
+
+	private createHighlightedParagraphElements(text: string, query: string, container: HTMLElement): void {
+		if (!text) return;
+
+		// Clear existing content
+		container.empty();
+
+		// Split text by double line breaks (paragraph breaks)
+		const paragraphs = text.split(/\n\s*\n/);
+
+		// Create a div element for each paragraph with highlighting
+		paragraphs
+			.map(paragraph => paragraph.trim())
+			.filter(paragraph => paragraph.length > 0)
+			.forEach(paragraph => {
+				const paragraphDiv = container.createDiv('dashboard-paragraph');
+				this.highlightTextInElement(paragraph, query, paragraphDiv);
+			});
+	}
+
+	private highlightTextInElement(text: string, query: string, element: HTMLElement): void {
+		if (!query) {
+			element.textContent = text;
+			return;
+		}
+
+		const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+		const parts = text.split(regex);
+
+		parts.forEach((part, index) => {
+			if (index % 2 === 1) {
+				// This is a match - create a highlighted span
+				const highlightSpan = element.createSpan('highlight');
+				highlightSpan.textContent = part;
+			} else {
+				// This is regular text
+				element.appendChild(document.createTextNode(part));
+			}
+		});
 	}
 
 	private async loadEntries(): Promise<void> {
@@ -812,8 +892,9 @@ export class DashboardView extends ItemView {
 		if (container) {
 			const tableContainer = container.querySelector('.sfp-dashboard-table-container');
 			if (tableContainer) {
-				tableContainer.innerHTML =
-					'<div style="text-align: center; padding: 2rem;">Loading journal entries...</div>';
+				tableContainer.empty();
+				const loadingDiv = tableContainer.createDiv('sfp-dashboard-loading');
+				loadingDiv.textContent = 'Loading journal entries...';
 			}
 		}
 	}
@@ -823,11 +904,20 @@ export class DashboardView extends ItemView {
 		if (container) {
 			const tableContainer = container.querySelector('.sfp-dashboard-table-container');
 			if (tableContainer) {
-				tableContainer.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--text-error);">
-                    Error loading entries: ${error.message || 'Unknown error'}
-                    <br><br>
-                    <button onclick="this.closest('.sfp-scribeflow-dashboard').dispatchEvent(new Event('refresh'))">Retry</button>
-                </div>`;
+				tableContainer.empty();
+				const errorDiv = tableContainer.createDiv('sfp-dashboard-error');
+				
+				errorDiv.textContent = `Error loading entries: ${error.message || 'Unknown error'}`;
+				
+				// Add line breaks
+				errorDiv.createEl('br');
+				errorDiv.createEl('br');
+				
+				// Add retry button
+				const retryButton = errorDiv.createEl('button', { text: 'Retry' });
+				retryButton.addEventListener('click', () => {
+					container.dispatchEvent(new Event('refresh'));
+				});
 			}
 		}
 	}
@@ -1084,7 +1174,7 @@ export class DashboardView extends ItemView {
 			card.addEventListener('click', () => {
 				isShowingDates = !isShowingDates;
 				// Clear existing content
-				valueEl.innerHTML = '';
+				valueEl.empty();
 				updateDisplay();
 			});
 

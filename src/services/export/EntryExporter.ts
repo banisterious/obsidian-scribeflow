@@ -322,13 +322,18 @@ export class EntryExporter {
 		try {
 			// Create a temporary container for the HTML content
 			const tempContainer = document.createElement('div');
-			tempContainer.innerHTML = html;
-			tempContainer.style.position = 'absolute';
-			tempContainer.style.left = '-9999px';
-			tempContainer.style.top = '-9999px';
-			tempContainer.style.width = '800px'; // Fixed width for consistent layout
-			tempContainer.style.padding = '20px';
-			tempContainer.style.backgroundColor = 'white';
+			
+			// Parse HTML safely using DOMParser
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(html, 'text/html');
+			const bodyContent = doc.body;
+			
+			// Move all children from parsed body to tempContainer
+			while (bodyContent.firstChild) {
+				tempContainer.appendChild(bodyContent.firstChild);
+			}
+			
+			tempContainer.classList.add('sfp-export-container');
 			document.body.appendChild(tempContainer);
 
 			// Configure html2canvas options

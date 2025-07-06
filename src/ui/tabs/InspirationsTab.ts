@@ -12,11 +12,10 @@ export class InspirationsTab {
 
 		// Create dedicated content element for this tab
 		this.contentEl = containerEl.createDiv('sfp-tab-content sfp-inspirations-tab');
-		this.contentEl.style.display = 'none';
 	}
 
 	async display(): Promise<void> {
-		this.contentEl.style.display = 'block';
+		this.contentEl.classList.add('active');
 		// Only render if not already rendered
 		if (this.contentEl.children.length === 0) {
 			const content = `## Sources and Inspirations
@@ -105,6 +104,6 @@ The plugin does not prescribe any particular interpretation or meaning to dream 
 	}
 
 	hide(): void {
-		this.contentEl.style.display = 'none';
+		this.contentEl.classList.remove('active');
 	}
 }

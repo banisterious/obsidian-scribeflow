@@ -29,8 +29,7 @@ export class JournalEntryTab {
 		this.journalModal = journalModal;
 
 		// Create dedicated content element for this tab
-		this.contentEl = containerEl.createDiv('sfp-tab-content sfp-journal-entry-tab');
-		this.contentEl.style.display = 'block'; // Initially visible
+		this.contentEl = containerEl.createDiv('sfp-tab-content sfp-journal-entry-tab active');
 
 		// Initialize form state with defaults or load from draft
 		const defaultMetrics: Record<string, number | string> = {};
@@ -93,7 +92,7 @@ export class JournalEntryTab {
 	}
 
 	display(): void {
-		this.contentEl.style.display = 'block';
+		this.contentEl.classList.add('active');
 		// Only render if not already rendered
 		if (this.contentEl.children.length === 0) {
 			this.renderFormElements(this.contentEl);
@@ -175,7 +174,7 @@ export class JournalEntryTab {
 			cls: 'sfp-field-input sfp-textarea',
 			placeholder: 'Describe your dream here...',
 		});
-		dreamTextarea.style.minHeight = '100px';
+		dreamTextarea.classList.add('sfp-textarea-dream');
 		dreamTextarea.value = this.formState.dreamContent;
 		dreamTextarea.addEventListener('input', e => {
 			this.formState.dreamContent = (e.target as HTMLTextAreaElement).value;
@@ -232,7 +231,7 @@ export class JournalEntryTab {
 
 			const sliderFill = document.createElement('div');
 			sliderFill.className = 'sfp-slider-fill';
-			sliderFill.style.width = `${((currentValue - (metric.min || 1)) / range) * 100}%`;
+			sliderFill.style.width = `${((currentValue - (metric.min || 1)) / range) * 100}%`; // Dynamic width must remain inline
 			metricSlider.appendChild(sliderFill);
 
 			const metricValue = metricField.createDiv({ text: currentValue.toString(), cls: 'sfp-metric-value' });
@@ -243,7 +242,7 @@ export class JournalEntryTab {
 				const percentage = Math.max(0, Math.min(1, x / rect.width));
 				const value = Math.round(percentage * range) + (metric.min || 1);
 				this.formState.metrics[metric.id] = value;
-				sliderFill.style.width = `${((value - (metric.min || 1)) / range) * 100}%`;
+				sliderFill.style.width = `${((value - (metric.min || 1)) / range) * 100}%`; // Dynamic width must remain inline
 				metricValue.textContent = value.toString();
 			});
 		} else if (metric.type === 'number') {
@@ -295,7 +294,7 @@ export class JournalEntryTab {
 
 		const widthLabel = widthControl.createSpan();
 		widthLabel.textContent = 'Width:';
-		widthLabel.style.color = 'var(--text-muted)';
+		widthLabel.classList.add('sfp-preview-label-color');
 
 		const widthInput = widthControl.createEl('input', {
 			type: 'number',
@@ -322,7 +321,7 @@ export class JournalEntryTab {
 
 		const pxLabel = widthControl.createSpan();
 		pxLabel.textContent = 'px';
-		pxLabel.style.color = 'var(--text-muted)';
+		pxLabel.classList.add('sfp-preview-label-color');
 	}
 
 	private openImageSelector(type: 'journal' | 'dream'): void {
@@ -360,8 +359,7 @@ export class JournalEntryTab {
 		modal.titleEl.textContent = `Select ${type === 'journal' ? 'Journal' : 'Dream'} Image`;
 
 		const container = modal.contentEl.createDiv();
-		container.style.maxHeight = '400px';
-		container.style.overflowY = 'auto';
+		container.classList.add('sfp-container-scrollable');
 
 		imageFiles.forEach(file => {
 			const fileItem = container.createDiv('file-item');
@@ -431,11 +429,7 @@ export class JournalEntryTab {
 				const url = URL.createObjectURL(blob);
 
 				const img = previewContainer.createEl('img');
-				img.style.maxWidth = '100%';
-				img.style.maxHeight = '600px';
-				img.style.objectFit = 'contain';
-				img.style.borderRadius = '4px';
-				img.style.marginTop = '10px';
+				img.classList.add('sfp-preview-image');
 				img.src = url;
 				img.alt = imagePath;
 
@@ -468,7 +462,7 @@ export class JournalEntryTab {
 	}
 
 	hide(): void {
-		this.contentEl.style.display = 'none';
+		this.contentEl.classList.remove('active');
 	}
 
 	private async handleInsertEntry(): Promise<void> {

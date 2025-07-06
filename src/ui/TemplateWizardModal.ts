@@ -114,7 +114,10 @@ export class TemplateWizardModal extends Modal {
 			const circle = stepEl.createDiv('sfp-progress-circle');
 			if (stepNumber < this.currentStep) {
 				circle.addClass('sfp-progress-completed');
-				circle.innerHTML = '<span class="sfp-progress-check">✓</span>';
+				circle.createEl('span', { 
+					cls: 'sfp-progress-check',
+					text: '✓'
+				});
 			} else if (stepNumber === this.currentStep) {
 				circle.addClass('sfp-progress-current');
 				circle.textContent = stepNumber.toString();

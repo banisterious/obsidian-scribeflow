@@ -1,0 +1,131 @@
+/* Tab Components Styles */
+
+/* Common tab styles */
+.sfp-tab-content {
+    display: none;
+}
+
+.sfp-tab-content.active {
+    display: block;
+}
+
+/* Journal Entry Tab */
+.sfp-journal-entry-tab {
+    /* Initially visible */
+}
+
+/* Textarea styles */
+.sfp-textarea.sfp-textarea-dream {
+    min-height: 100px;
+}
+
+/* Slider styles */
+.sfp-slider-fill {
+    /* Width is dynamically set based on value */
+}
+
+/* Preview label styles */
+.sfp-preview-label-color {
+    color: var(--text-muted);
+}
+
+/* Width control styles */
+.sfp-width-control span {
+    color: var(--text-muted);
+}
+
+/* Container styles */
+.sfp-container-scrollable {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Image preview styles */
+.sfp-preview-image {
+    max-width: 100%;
+    max-height: 600px;
+    object-fit: contain;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+/* File item hover effect (moved from inline) */
+.file-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.file-item:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+/* Hidden elements */
+.sfp-hidden {
+    display: none;
+}
+
+/* Export styles (for DashboardExporter and EntryExporter) */
+.sfp-export-container {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    width: 800px;
+    padding: 20px;
+    background-color: white;
+}
+
+/* Dashboard empty state styles */
+.sfp-dashboard-empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+}
+
+.sfp-dashboard-empty-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.sfp-dashboard-empty-subtitle {
+    font-size: 14px;
+}
+
+/* Dashboard filter empty state */
+.sfp-dashboard-filter-empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+}
+
+.sfp-dashboard-filter-empty-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.sfp-dashboard-filter-empty-subtitle {
+    font-size: 14px;
+}
+
+/* Dashboard loading state */
+.sfp-dashboard-loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Dashboard error state */
+.sfp-dashboard-error {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-error);
+}
+
+/* Utility classes for display control */
+.sfp-show {
+    display: block !important;
+}
+
+.sfp-hide {
+    display: none !important;
+}

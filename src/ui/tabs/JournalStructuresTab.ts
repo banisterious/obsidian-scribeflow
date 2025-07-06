@@ -13,7 +13,6 @@ export class JournalStructuresTab {
 		this.containerEl = containerEl;
 		this.plugin = plugin;
 		this.contentEl = containerEl.createDiv('sfp-tab-content sfp-journal-structures-tab');
-		this.contentEl.style.display = 'none';
 		this.render();
 	}
 
@@ -155,10 +154,10 @@ export class JournalStructuresTab {
 	}
 
 	display(): void {
-		this.contentEl.style.display = 'block';
+		this.contentEl.classList.add('active');
 	}
 
 	hide(): void {
-		this.contentEl.style.display = 'none';
+		this.contentEl.classList.remove('active');
 	}
 }

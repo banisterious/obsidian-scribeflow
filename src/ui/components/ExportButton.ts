@@ -44,8 +44,7 @@ export class ExportButton extends Component {
 		setIcon(chevronIcon, 'chevron-down');
 
 		// Dropdown container
-		this.dropdown = exportContainer.createDiv('sfp-export-dropdown');
-		this.dropdown.style.display = 'none';
+		this.dropdown = exportContainer.createDiv('sfp-export-dropdown sfp-hidden');
 
 		// Dropdown options
 		this.createDropdownOption(
@@ -139,7 +138,7 @@ export class ExportButton extends Component {
 
 	private openDropdown(): void {
 		this.isOpen = true;
-		this.dropdown.style.display = 'block';
+		this.dropdown.classList.remove('sfp-hidden');
 
 		// Update chevron icon
 		const chevronIcon = this.button.querySelector('.sfp-export-button-chevron');
@@ -153,7 +152,7 @@ export class ExportButton extends Component {
 
 	private closeDropdown(): void {
 		this.isOpen = false;
-		this.dropdown.style.display = 'none';
+		this.dropdown.classList.add('sfp-hidden');
 
 		// Update chevron icon
 		const chevronIcon = this.button.querySelector('.sfp-export-button-chevron');

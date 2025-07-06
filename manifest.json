@@ -6,5 +6,9 @@
     "description": "Streamlined journaling with structured entries, dream diary tracking, and insightful metrics",
     "author": "banisterious",
     "authorUrl": "https://github.com/banisterious",
-    "isDesktopOnly": false
+    "isDesktopOnly": false,
+    "fundingUrl": {
+        "Buy Me a Coffee": "https://www.buymeacoffee.com/banisterious",
+        "GitHub Sponsor": "https://github.com/sponsors/banisterious"
+    }
 } 

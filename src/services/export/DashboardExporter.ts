@@ -126,7 +126,7 @@ export class DashboardExporter {
 			const link = document.createElement('a');
 			link.href = url;
 			link.download = filename;
-			link.style.display = 'none';
+			link.classList.add('sfp-hidden');
 
 			// Trigger download
 			document.body.appendChild(link);

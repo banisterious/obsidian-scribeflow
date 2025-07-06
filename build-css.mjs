@@ -28,6 +28,7 @@ const CSS_BUILD_ORDER = [
     'components/settings.css',
     'components/metrics.css',
     'components/journal-entry.css',
+    'components/tabs.css',
     
     // Dashboard components
     'dashboard/dashboard-base.css',

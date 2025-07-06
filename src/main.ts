@@ -20,7 +20,7 @@ export default class ScribeFlowPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'open-scribeflow-entry-modal',
-			name: 'Create ScribeFlow Entry',
+			name: 'Create Journal Entry',
 			callback: () => {
 				new JournalEntryModal(this.app, this).open();
 			},

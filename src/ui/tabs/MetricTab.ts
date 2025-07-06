@@ -16,11 +16,10 @@ export class MetricTab {
 
 		// Create dedicated content element for this tab
 		this.contentEl = containerEl.createDiv('sfp-tab-content sfp-metric-tab');
-		this.contentEl.style.display = 'none';
 	}
 
 	async display(): Promise<void> {
-		this.contentEl.style.display = 'block';
+		this.contentEl.classList.add('active');
 		// Only render if not already rendered
 		if (this.contentEl.children.length === 0) {
 			const content = this.getMetricContent(this.metricId);
@@ -332,6 +331,6 @@ Content not available for this metric.`
 	}
 
 	hide(): void {
-		this.contentEl.style.display = 'none';
+		this.contentEl.classList.remove('active');
 	}
 }

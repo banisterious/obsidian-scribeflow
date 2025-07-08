@@ -82,6 +82,7 @@
 .sfp-interactive-stat-card {
     position: relative;
     user-select: none;
+    cursor: pointer;
 }
 
 .sfp-interactive-stat-card:hover {

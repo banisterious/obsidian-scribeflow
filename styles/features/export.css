@@ -3,6 +3,19 @@
  * Export buttons, menus, and interfaces
  */
 
+/* Export Content Styling */
+.sfp-export-wikilink {
+    color: #007acc;
+}
+
+.sfp-export-image {
+    max-width: 100%;
+}
+
+.sfp-export-hidden-link {
+    display: none;
+}
+
 /* Export Button */
 .sfp-export-button {
     display: inline-flex;

@@ -7,7 +7,7 @@
  * 1. Edit the individual CSS files in styles/
  * 2. Run 'npm run build:css' to regenerate this file
  * 
- * Build time: 2025-07-06T22:54:43.216Z
+ * Build time: 2025-07-08T20:37:39.082Z
  * Build order: 23 files concatenated
  */
 
@@ -1961,6 +1961,7 @@
 .sfp-interactive-stat-card {
     position: relative;
     user-select: none;
+    cursor: pointer;
 }
 
 .sfp-interactive-stat-card:hover {
@@ -2453,6 +2454,19 @@
  * 
  * Export buttons, menus, and interfaces
  */
+
+/* Export Content Styling */
+.sfp-export-wikilink {
+    color: #007acc;
+}
+
+.sfp-export-image {
+    max-width: 100%;
+}
+
+.sfp-export-hidden-link {
+    display: none;
+}
 
 /* Export Button */
 .sfp-export-button {

@@ -1168,7 +1168,6 @@ export class DashboardView extends ItemView {
 		// Add interactive behavior if we have a date range
 		if (dateRange) {
 			card.addClass('sfp-interactive-stat-card');
-			card.style.cursor = 'pointer';
 
 			// Click/tap to toggle
 			card.addEventListener('click', () => {

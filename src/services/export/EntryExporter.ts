@@ -272,12 +272,12 @@ export class EntryExporter {
 		html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
 		// Convert links
-		html = html.replace(/\[\[([^\]]+)\]\]/g, '<span style="color: #007acc;">$1</span>');
+		html = html.replace(/\[\[([^\]]+)\]\]/g, '<span class="sfp-export-wikilink">$1</span>');
 		html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
 
 		// Convert images
 		html = html.replace(/!\[\[([^\]]+)\]\]/g, '<em>[Image: $1]</em>');
-		html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%;">');
+		html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="sfp-export-image">');
 
 		// Convert paragraphs
 		html = html.replace(/\n\s*\n/g, '</p><p>');
@@ -356,7 +356,7 @@ export class EntryExporter {
 						const link = document.createElement('a');
 						link.href = url;
 						link.download = filename;
-						link.style.display = 'none';
+						link.classList.add('sfp-export-hidden-link');
 
 						document.body.appendChild(link);
 						link.click();
@@ -388,7 +388,7 @@ export class EntryExporter {
 			const link = document.createElement('a');
 			link.href = url;
 			link.download = filename;
-			link.style.display = 'none';
+			link.classList.add('sfp-export-hidden-link');
 
 			document.body.appendChild(link);
 			link.click();

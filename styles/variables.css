@@ -6,7 +6,6 @@
 
 :root {
     /* Modal sizing */
-    --modal-height: 80vh;
     --modal-width: 90vw;
     --modal-max-height: 800px;
     --modal-max-width: 1200px;

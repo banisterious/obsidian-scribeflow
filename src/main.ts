@@ -20,7 +20,7 @@ export default class ScribeFlowPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'open-scribeflow-entry-modal',
-			name: 'Create Journal Entry',
+			name: 'Create journal entry',
 			callback: () => {
 				new JournalEntryModal(this.app, this).open();
 			},
@@ -28,14 +28,14 @@ export default class ScribeFlowPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'open-scribe-dashboard',
-			name: 'Open Scribe Dashboard',
+			name: 'Open Scribe dashboard',
 			callback: () => {
 				this.openDashboard();
 			},
 		});
 
 		// Add ribbon buttons
-		this.addRibbonIcon('notebook-pen', 'ScribeFlow Journal Entry', () => {
+		this.addRibbonIcon('notebook-pen', 'ScribeFlow journal entry', () => {
 			new JournalEntryModal(this.app, this).open();
 		});
 

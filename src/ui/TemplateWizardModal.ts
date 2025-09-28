@@ -164,7 +164,7 @@ export class TemplateWizardModal extends Modal {
 	}
 
 	private renderStep1_CreationMethod(container: HTMLElement): void {
-		container.createEl('h2', { text: 'Choose Creation Method', cls: 'sfp-step-title' });
+		container.createEl('h2', { text: 'Choose creation method', cls: 'sfp-step-title' });
 		container.createEl('p', {
 			text: 'Select how you would like to create your template:',
 			cls: 'sfp-step-description',
@@ -175,7 +175,7 @@ export class TemplateWizardModal extends Modal {
 		// Direct Input method
 		const directCard = this.createMethodCard(
 			'edit-3',
-			'Direct Input',
+			'Direct input',
 			'Create template content manually with helper tools and placeholders',
 			'direct'
 		);
@@ -184,7 +184,7 @@ export class TemplateWizardModal extends Modal {
 		// Template Integration method
 		const templateCard = this.createMethodCard(
 			'zap',
-			'Template Integration',
+			'Template integration',
 			'Import from Templater or Core Templates plugin',
 			'template'
 		);
@@ -193,7 +193,7 @@ export class TemplateWizardModal extends Modal {
 		// Predefined Structures method
 		const predefinedCard = this.createMethodCard(
 			'building-2',
-			'Predefined Structures',
+			'Predefined structures',
 			'Generate from common journal entry patterns and layouts',
 			'predefined'
 		);
@@ -236,11 +236,11 @@ export class TemplateWizardModal extends Modal {
 	}
 
 	private renderStep2_TemplateInfo(container: HTMLElement): void {
-		container.createEl('h2', { text: 'Template Information', cls: 'sfp-step-title' });
+		container.createEl('h2', { text: 'Template information', cls: 'sfp-step-title' });
 		container.createEl('p', { text: 'Enter basic information about your template:', cls: 'sfp-step-description' });
 
 		new Setting(container)
-			.setName('Template Name')
+			.setName('Template name')
 			.setDesc('A descriptive name for this template')
 			.addText(text =>
 				text
@@ -253,7 +253,7 @@ export class TemplateWizardModal extends Modal {
 			);
 
 		new Setting(container)
-			.setName('Description (Optional)')
+			.setName('Description (optional)')
 			.setDesc('Brief description of what this template is for')
 			.addText(text =>
 				text
@@ -270,7 +270,7 @@ export class TemplateWizardModal extends Modal {
 
 	private renderTemplatePluginSelection(container: HTMLElement): void {
 		const sourceSection = container.createDiv('sfp-template-source');
-		sourceSection.createEl('h3', { text: 'Template Source', cls: 'sfp-template-source-title' });
+		sourceSection.createEl('h3', { text: 'Template source', cls: 'sfp-template-source-title' });
 
 		// Check if any template plugins are available
 		const availablePlugins = this.templateIntegrationService.getAvailablePlugins();
@@ -294,7 +294,7 @@ export class TemplateWizardModal extends Modal {
 		}
 
 		new Setting(sourceSection)
-			.setName('Template Plugin')
+			.setName('Template plugin')
 			.setDesc('Select which plugin to import templates from')
 			.addDropdown(dropdown => {
 				dropdown.addOption('', 'Select template source...');
@@ -432,7 +432,7 @@ export class TemplateWizardModal extends Modal {
 	}
 
 	private renderStep3_Content(container: HTMLElement): void {
-		container.createEl('h2', { text: 'Template Content', cls: 'sfp-step-title' });
+		container.createEl('h2', { text: 'Template content', cls: 'sfp-step-title' });
 
 		if (this.selectedCreationMethod === 'direct') {
 			this.renderDirectInputContent(container);
@@ -448,15 +448,15 @@ export class TemplateWizardModal extends Modal {
 
 		// Helper tools
 		const helpersContainer = container.createDiv('sfp-helper-tools');
-		helpersContainer.createEl('h3', { text: 'Helper Tools', cls: 'sfp-helper-title' });
+		helpersContainer.createEl('h3', { text: 'Helper tools', cls: 'sfp-helper-title' });
 
 		const buttonsContainer = helpersContainer.createDiv('sfp-helper-buttons');
 
 		new ButtonComponent(buttonsContainer)
-			.setButtonText('Insert Sample Entry')
+			.setButtonText('Insert sample entry')
 			.onClick(() => this.insertSampleContent());
 
-		new ButtonComponent(buttonsContainer).setButtonText('Insert Callout').onClick(() => this.insertCallout());
+		new ButtonComponent(buttonsContainer).setButtonText('Insert callout').onClick(() => this.insertCallout());
 
 		// Content textarea
 		new Setting(container)
@@ -501,7 +501,7 @@ export class TemplateWizardModal extends Modal {
 		// Show imported template info
 		if (this.selectedTemplateFile) {
 			const infoContainer = container.createDiv('sfp-template-info');
-			infoContainer.createEl('h3', { text: 'Imported Template', cls: 'sfp-preview-title' });
+			infoContainer.createEl('h3', { text: 'Imported template', cls: 'sfp-preview-title' });
 			infoContainer.createEl('p', {
 				text: `Source: ${this.selectedTemplateFile.name} (${this.templatePluginSource})`,
 				cls: 'sfp-template-source-info',
@@ -529,7 +529,7 @@ export class TemplateWizardModal extends Modal {
 
 			if (conversions.length > 0) {
 				const conversionInfo = container.createDiv('sfp-conversion-info');
-				conversionInfo.createEl('h4', { text: 'Templater Conversion', cls: 'sfp-conversion-title' });
+				conversionInfo.createEl('h4', { text: 'Templater conversion', cls: 'sfp-conversion-title' });
 				conversionInfo.createEl('p', {
 					text: 'The following Templater syntax was converted to ScribeFlow placeholders:',
 					cls: 'sfp-conversion-description',
@@ -561,7 +561,7 @@ export class TemplateWizardModal extends Modal {
 		const predefinedStructures = [
 			{
 				id: 'flat-dual',
-				name: 'Flat Dual Callout',
+				name: 'Flat dual callout',
 				description: 'Simple side-by-side journal entry and metrics',
 				content: `# Dream Journal Entry
 
@@ -574,7 +574,7 @@ export class TemplateWizardModal extends Modal {
 			},
 			{
 				id: 'nested-2level',
-				name: '2-Level Nested',
+				name: '2-level nested',
 				description: 'Journal entry with nested dream diary and metrics',
 				content: `> [!journal-entry] {{date-month-day}}
 > ^{{date-compact}}
@@ -588,7 +588,7 @@ export class TemplateWizardModal extends Modal {
 			},
 			{
 				id: 'nested-3level',
-				name: '3-Level Nested',
+				name: '3-level nested',
 				description: 'Separate content areas with nested dream section',
 				content: `> [!journal-entry] {{date-month-day}}
 > ^{{date-compact}}
@@ -656,7 +656,7 @@ export class TemplateWizardModal extends Modal {
 
 	private renderEditableStructureContent(container: HTMLElement): void {
 		const editSection = container.createDiv('sfp-editable-structure');
-		editSection.createEl('h3', { text: 'Customize Structure', cls: 'sfp-editable-title' });
+		editSection.createEl('h3', { text: 'Customize structure', cls: 'sfp-editable-title' });
 		editSection.createEl('p', {
 			text: 'You can modify the structure below to fit your needs:',
 			cls: 'sfp-editable-description',
@@ -708,7 +708,7 @@ export class TemplateWizardModal extends Modal {
 		const isLastStep = this.currentStep === this.totalSteps;
 		const canProceed = this.validateCurrentStep();
 
-		const buttonText = isLastStep ? (this.isEditMode ? 'Update Template' : 'Create Template') : 'Next';
+		const buttonText = isLastStep ? (this.isEditMode ? 'Update template' : 'Create template') : 'Next';
 
 		const nextButton = new ButtonComponent(rightButtons)
 			.setButtonText(buttonText)
@@ -806,7 +806,7 @@ export class TemplateWizardModal extends Modal {
 
 	private renderPlaceholderInserter(container: HTMLElement): void {
 		const inserterSection = container.createDiv('sfp-placeholder-inserter');
-		inserterSection.createEl('h3', { text: 'Insert Placeholders', cls: 'sfp-inserter-title' });
+		inserterSection.createEl('h3', { text: 'Insert placeholders', cls: 'sfp-inserter-title' });
 
 		const inserterControls = inserterSection.createDiv('sfp-inserter-controls');
 

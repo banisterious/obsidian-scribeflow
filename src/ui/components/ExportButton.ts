@@ -50,7 +50,7 @@ export class ExportButton extends Component {
 		this.createDropdownOption(
 			this.dropdown,
 			'clipboard',
-			'Copy as Markdown Table',
+			'Copy as markdown table',
 			'Copy formatted table to clipboard',
 			DashboardExportFormat.MARKDOWN_TABLE
 		);

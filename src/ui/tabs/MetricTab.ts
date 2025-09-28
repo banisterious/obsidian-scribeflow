@@ -1,5 +1,5 @@
 import ScribeFlowPlugin from '../../main';
-import { MarkdownRenderer } from 'obsidian';
+import { MarkdownRenderer, Component } from 'obsidian';
 
 export class MetricTab {
 	containerEl: HTMLElement;
@@ -7,6 +7,7 @@ export class MetricTab {
 	metricId: string;
 	metricName: string;
 	private contentEl: HTMLElement;
+	private markdownComponent: Component | null = null;
 
 	constructor(containerEl: HTMLElement, plugin: ScribeFlowPlugin, metricId: string, metricName: string) {
 		this.containerEl = containerEl;
@@ -23,7 +24,9 @@ export class MetricTab {
 		// Only render if not already rendered
 		if (this.contentEl.children.length === 0) {
 			const content = this.getMetricContent(this.metricId);
-			await MarkdownRenderer.renderMarkdown(content, this.contentEl, '', this.plugin);
+			// Create a new component for markdown rendering
+			this.markdownComponent = new Component();
+			await MarkdownRenderer.render(this.plugin.app, content, this.contentEl, '', this.markdownComponent);
 		}
 	}
 
@@ -332,5 +335,10 @@ Content not available for this metric.`
 
 	hide(): void {
 		this.contentEl.classList.remove('active');
+		// Unload the markdown component to prevent memory leaks
+		if (this.markdownComponent) {
+			this.markdownComponent.unload();
+			this.markdownComponent = null;
+		}
 	}
 }

@@ -13,7 +13,7 @@ export class ExportContextMenu {
 		// If multiple entries are selected, show multi-export options
 		if (selectedEntries && selectedEntries.length > 1) {
 			menu.addItem(item => {
-				item.setTitle(`Export Selected (${selectedEntries.length})`)
+				item.setTitle(`Export selected (${selectedEntries.length})`)
 					.setIcon('download')
 					.onClick(() => {
 						// Show submenu for format selection
@@ -67,7 +67,7 @@ export class ExportContextMenu {
 			});
 
 			menu.addItem(item => {
-				item.setTitle('Export as Plain Text')
+				item.setTitle('Export as plain text')
 					.setIcon('type')
 					.onClick(() => onExport(entry, EntryExportFormat.PLAIN_TEXT));
 			});
@@ -101,7 +101,7 @@ export class ExportContextMenu {
 		});
 
 		menu.addItem(item => {
-			item.setTitle('Export as Plain Text')
+			item.setTitle('Export as plain text')
 				.setIcon('type')
 				.onClick(() => onExport(entry, EntryExportFormat.PLAIN_TEXT));
 		});

@@ -69,7 +69,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	// Default Metrics
 	{
 		id: 'sensory',
-		name: 'Sensory Detail',
+		name: 'Sensory detail',
 		type: 'score',
 		description: 'How vivid were the sensory details?',
 		min: 1,
@@ -77,7 +77,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	},
 	{
 		id: 'emotional',
-		name: 'Emotional Recall',
+		name: 'Emotional recall',
 		type: 'score',
 		description: 'How emotionally intense was the dream?',
 		min: 1,
@@ -85,7 +85,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	},
 	{
 		id: 'lost',
-		name: 'Lost Segments',
+		name: 'Lost segments',
 		type: 'number',
 		description: 'How much detail was lost upon waking?',
 		min: 0,
@@ -101,7 +101,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	},
 	{
 		id: 'confidence',
-		name: 'Confidence Score',
+		name: 'Confidence score',
 		type: 'score',
 		description: 'How confident are you in your recall?',
 		min: 1,
@@ -111,7 +111,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	// Character Metrics
 	{
 		id: 'characterRoles',
-		name: 'Character Roles',
+		name: 'Character roles',
 		type: 'score',
 		description: 'Presence and significance of characters',
 		min: 1,
@@ -119,7 +119,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	},
 	{
 		id: 'charactersCount',
-		name: 'Characters Count',
+		name: 'Characters count',
 		type: 'number',
 		description: 'Total number of characters',
 		min: 0,
@@ -127,7 +127,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	},
 	{
 		id: 'familiarCount',
-		name: 'Familiar Count',
+		name: 'Familiar count',
 		type: 'number',
 		description: 'Number of familiar characters',
 		min: 0,
@@ -135,16 +135,16 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	},
 	{
 		id: 'unfamiliarCount',
-		name: 'Unfamiliar Count',
+		name: 'Unfamiliar count',
 		type: 'number',
 		description: 'Number of unfamiliar characters',
 		min: 0,
 		max: 100,
 	},
-	{ id: 'charactersList', name: 'Characters List', type: 'text', description: 'List all characters that appeared' },
+	{ id: 'charactersList', name: 'Characters list', type: 'text', description: 'List all characters that appeared' },
 	{
 		id: 'characterClarity',
-		name: 'Character Clarity',
+		name: 'Character clarity',
 		type: 'score',
 		description: 'How clearly you perceived characters',
 		min: 1,
@@ -152,11 +152,11 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	},
 
 	// Dream Experience Metrics
-	{ id: 'dreamTheme', name: 'Dream Theme', type: 'text', description: 'Dominant subjects or themes' },
-	{ id: 'symbolicContent', name: 'Symbolic Content', type: 'text', description: 'Meaningful symbols or objects' },
+	{ id: 'dreamTheme', name: 'Dream theme', type: 'text', description: 'Dominant subjects or themes' },
+	{ id: 'symbolicContent', name: 'Symbolic content', type: 'text', description: 'Meaningful symbols or objects' },
 	{
 		id: 'lucidityLevel',
-		name: 'Lucidity Level',
+		name: 'Lucidity level',
 		type: 'score',
 		description: 'Degree of awareness you were dreaming',
 		min: 1,
@@ -164,7 +164,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	},
 	{
 		id: 'dreamCoherence',
-		name: 'Dream Coherence',
+		name: 'Dream coherence',
 		type: 'score',
 		description: 'Logical consistency of the dream',
 		min: 1,
@@ -172,7 +172,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	},
 	{
 		id: 'environmentalFamiliarity',
-		name: 'Environmental Familiarity',
+		name: 'Environmental familiarity',
 		type: 'score',
 		description: 'How familiar were the locations?',
 		min: 1,
@@ -180,7 +180,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	},
 	{
 		id: 'timeDistortion',
-		name: 'Time Distortion',
+		name: 'Time distortion',
 		type: 'score',
 		description: 'How unusually did time behave?',
 		min: 1,
@@ -190,7 +190,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	// Memory & Recall Metrics
 	{
 		id: 'easeOfRecall',
-		name: 'Ease of Recall',
+		name: 'Ease of recall',
 		type: 'score',
 		description: 'How readily could you remember the dream?',
 		min: 1,
@@ -198,7 +198,7 @@ export const AVAILABLE_METRICS: MetricDefinition[] = [
 	},
 	{
 		id: 'recallStability',
-		name: 'Recall Stability',
+		name: 'Recall stability',
 		type: 'score',
 		description: 'How well did the memory hold up?',
 		min: 1,

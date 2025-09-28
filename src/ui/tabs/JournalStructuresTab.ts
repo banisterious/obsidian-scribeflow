@@ -19,7 +19,7 @@ export class JournalStructuresTab {
 	private render(): void {
 		this.contentEl.empty();
 
-		const title = this.contentEl.createEl('h3', { text: 'Journal Structures & Templates' });
+		const title = this.contentEl.createEl('h3', { text: 'Journal structures & templates' });
 		title.addClass('sfp-tab-title');
 
 		// Create main sections
@@ -29,7 +29,7 @@ export class JournalStructuresTab {
 
 	private renderTemplatesList(): void {
 		const listSection = this.contentEl.createDiv('sfp-templates-list-section');
-		listSection.createEl('h4', { text: 'Existing Templates' });
+		new Setting(listSection).setName('Existing templates').setHeading();
 
 		this.templatesListContainer = listSection.createDiv('sfp-templates-list');
 		this.updateTemplatesList();
@@ -37,11 +37,11 @@ export class JournalStructuresTab {
 
 	private renderCreateTemplateSection(): void {
 		const createSection = this.contentEl.createDiv('sfp-create-template-section');
-		createSection.createEl('h4', { text: 'Create New Template' });
+		new Setting(createSection).setName('Create new template').setHeading();
 
 		// Create Template button
 		new Setting(createSection)
-			.setName('Create Template')
+			.setName('Create template')
 			.setDesc('Create a new journal template')
 			.addButton(button =>
 				button

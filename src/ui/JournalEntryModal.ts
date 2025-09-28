@@ -25,7 +25,7 @@ export class JournalEntryModal extends Modal {
 
 		const headerEl = contentEl.createDiv('sfp-modal-header');
 		const headerContent = headerEl.createDiv('sfp-header-content');
-		headerContent.createEl('h2', { text: 'ScribeFlow Entry' });
+		headerContent.createEl('h2', { text: 'ScribeFlow entry' });
 
 		// Templates dropdown
 		const templatesContainer = headerEl.createDiv('sfp-templates-container');
@@ -58,9 +58,9 @@ export class JournalEntryModal extends Modal {
 		const navEl = mainContentEl.createDiv('sfp-modal-nav');
 
 		// Core tabs
-		const entryTab = navEl.createDiv({ text: 'Journal Entry', cls: 'sfp-nav-item sfp-active' });
+		const entryTab = navEl.createDiv({ text: 'Journal entry', cls: 'sfp-nav-item sfp-active' });
 		const settingsTab = navEl.createDiv({ text: 'Settings', cls: 'sfp-nav-item' });
-		const journalStructuresTab = navEl.createDiv({ text: 'Journal Structures', cls: 'sfp-nav-item' });
+		const journalStructuresTab = navEl.createDiv({ text: 'Journal structures', cls: 'sfp-nav-item' });
 
 		// Reference section heading
 		const referenceHeading = navEl.createDiv({ text: 'Reference', cls: 'sfp-nav-heading' });

@@ -57,11 +57,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 	}
 
 	private createCalloutNamesSettings(containerEl: HTMLElement): void {
-		const heading = containerEl.createDiv('setting-item setting-item-heading');
-		const info = heading.createDiv('setting-item-info');
-		info.createDiv({ text: 'Callout names', cls: 'setting-item-name' });
-		info.createDiv({ text: '', cls: 'setting-item-description' });
-		heading.createDiv('setting-item-control');
+		new Setting(containerEl).setName('Callout names').setHeading();
 
 		new Setting(containerEl)
 			.setName('Journal entry callout')
@@ -91,11 +87,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 	}
 
 	private createImageFolderSettings(containerEl: HTMLElement): void {
-		const heading = containerEl.createDiv('setting-item setting-item-heading');
-		const info = heading.createDiv('setting-item-info');
-		info.createDiv({ text: 'Image settings', cls: 'setting-item-name' });
-		info.createDiv({ text: '', cls: 'setting-item-description' });
-		heading.createDiv('setting-item-control');
+		new Setting(containerEl).setName('Images').setHeading();
 
 		new Setting(containerEl)
 			.setName('Default image folder')
@@ -130,7 +122,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 		const manager = this.imageTypesContainer.createDiv('sfp-image-types-manager');
 
 		const selectedSection = manager.createDiv();
-		selectedSection.createEl('h6', { text: 'Selected file types', cls: 'sfp-section-header-first' });
+		new Setting(selectedSection).setName('Selected file types').setHeading();
 
 		const selectedList = selectedSection.createDiv('sfp-selected-types');
 		this.plugin.settings.allowedImageTypes.forEach((type, index) => {
@@ -156,7 +148,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 
 		if (availableTypes.length > 0) {
 			const availableSection = manager.createDiv();
-			availableSection.createEl('h6', { text: 'Available file types', cls: 'sfp-section-header' });
+			new Setting(availableSection).setName('Available file types').setHeading();
 
 			const availableList = availableSection.createDiv('sfp-available-types');
 			availableTypes.forEach(type => {
@@ -177,11 +169,10 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 	}
 
 	private createDashboardSettings(containerEl: HTMLElement): void {
-		const heading = containerEl.createDiv('setting-item setting-item-heading');
-		const info = heading.createDiv('setting-item-info');
-		info.createDiv({ text: 'Scribe Dashboard', cls: 'setting-item-name' });
-		info.createDiv({ text: 'Configure settings for the journal dashboard view', cls: 'setting-item-description' });
-		heading.createDiv('setting-item-control');
+		new Setting(containerEl)
+			.setName('Scribe dashboard')
+			.setDesc('Configure settings for the journal dashboard view')
+			.setHeading();
 
 		// Statistics grouped view
 		new Setting(containerEl)
@@ -265,7 +256,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 		// Display current scan folders
 		if (this.plugin.settings.dashboardSettings.scanFolders.length > 0) {
 			const foldersContainer = containerEl.createDiv('sfp-scan-folders-list');
-			foldersContainer.createEl('h6', { text: 'Selected folders:', cls: 'sfp-section-header' });
+			new Setting(foldersContainer).setName('Selected folders:').setHeading();
 
 			this.plugin.settings.dashboardSettings.scanFolders.forEach((folder, index) => {
 				const folderItem = foldersContainer.createDiv('sfp-folder-item');
@@ -290,11 +281,10 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 		this.renderTemplateSelection(templatesContainer);
 
 		// Goal tracking section header
-		const goalHeader = containerEl.createDiv('setting-item setting-item-heading');
-		const goalInfo = goalHeader.createDiv('setting-item-info');
-		goalInfo.createDiv({ text: 'Goal Tracking', cls: 'setting-item-name' });
-		goalInfo.createDiv({ text: 'Set daily and weekly journaling goals', cls: 'setting-item-description' });
-		goalHeader.createDiv('setting-item-control');
+		new Setting(containerEl)
+			.setName('Goal tracking')
+			.setDesc('Set daily and weekly journaling goals')
+			.setHeading();
 
 		// Daily word goal
 		new Setting(containerEl)
@@ -341,7 +331,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 		// Selected templates section
 		if (this.plugin.settings.dashboardSettings.parseTemplates.length > 0) {
 			const selectedSection = container.createDiv();
-			selectedSection.createEl('h6', { text: 'Selected templates', cls: 'sfp-section-header' });
+			new Setting(selectedSection).setName('Selected templates').setHeading();
 
 			const selectedList = selectedSection.createDiv('sfp-selected-templates');
 			this.plugin.settings.dashboardSettings.parseTemplates.forEach((templateId, index) => {
@@ -368,7 +358,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 
 		if (availableTemplates.length > 0) {
 			const availableSection = container.createDiv();
-			availableSection.createEl('h6', { text: 'Available templates', cls: 'sfp-section-header' });
+			new Setting(availableSection).setName('Available templates').setHeading();
 
 			const availableList = availableSection.createDiv('sfp-available-templates');
 			availableTemplates.forEach(template => {
@@ -389,11 +379,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 	}
 
 	private createTOCSettings(containerEl: HTMLElement): void {
-		const heading = containerEl.createDiv('setting-item setting-item-heading');
-		const info = heading.createDiv('setting-item-info');
-		info.createDiv({ text: 'Table of contents', cls: 'setting-item-name' });
-		info.createDiv({ text: '', cls: 'setting-item-description' });
-		heading.createDiv('setting-item-control');
+		new Setting(containerEl).setName('Table of contents').setHeading();
 
 		// 1. Update active note table of contents
 		new Setting(containerEl)
@@ -481,11 +467,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 	}
 
 	private createMetricsSettings(containerEl: HTMLElement): void {
-		const heading = containerEl.createDiv('setting-item setting-item-heading');
-		const info = heading.createDiv('setting-item-info');
-		info.createDiv({ text: 'Dream metrics', cls: 'setting-item-name' });
-		info.createDiv({ text: '', cls: 'setting-item-description' });
-		heading.createDiv('setting-item-control');
+		new Setting(containerEl).setName('Dream metrics').setHeading();
 
 		const desc = containerEl.createDiv();
 		desc.createEl('p', { text: 'Select metrics to include in your dream entries. Drag to reorder.' });
@@ -500,7 +482,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 
 		// Selected metrics section
 		const selectedSection = container.createDiv();
-		selectedSection.createEl('h4', { text: 'Selected metrics' });
+		new Setting(selectedSection).setName('Selected metrics').setHeading();
 
 		const selectedList = selectedSection.createDiv('sfp-selected-metrics');
 		this.plugin.settings.selectedMetrics.forEach((metric, index) => {
@@ -529,7 +511,7 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 
 		if (availableMetrics.length > 0) {
 			const availableSection = container.createDiv();
-			availableSection.createEl('h4', { text: 'Available metrics' });
+			new Setting(availableSection).setName('Available metrics').setHeading();
 
 			const availableList = availableSection.createDiv('sfp-available-metrics');
 			availableMetrics.forEach(metric => {
@@ -553,14 +535,10 @@ export class ScribeFlowSettingTab extends PluginSettingTab {
 	}
 
 	private createLoggingSettings(containerEl: HTMLElement): void {
-		const heading = containerEl.createDiv('setting-item setting-item-heading');
-		const info = heading.createDiv('setting-item-info');
-		info.createDiv({ text: 'Logging', cls: 'setting-item-name' });
-		info.createDiv({
-			text: 'Configure logging output for debugging and troubleshooting',
-			cls: 'setting-item-description',
-		});
-		heading.createDiv('setting-item-control');
+		new Setting(containerEl)
+			.setName('Logging')
+			.setDesc('Configure logging output for debugging and troubleshooting')
+			.setHeading();
 
 		// Enable logging toggle
 		new Setting(containerEl)

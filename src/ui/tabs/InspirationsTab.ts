@@ -1,10 +1,11 @@
 import ScribeFlowPlugin from '../../main';
-import { MarkdownRenderer } from 'obsidian';
+import { MarkdownRenderer, Component } from 'obsidian';
 
 export class InspirationsTab {
 	containerEl: HTMLElement;
 	plugin: ScribeFlowPlugin;
 	private contentEl: HTMLElement;
+	private markdownComponent: Component | null = null;
 
 	constructor(containerEl: HTMLElement, plugin: ScribeFlowPlugin) {
 		this.containerEl = containerEl;
@@ -99,11 +100,18 @@ ScribeFlow provides a flexible framework built upon these general understandings
 
 The plugin does not prescribe any particular interpretation or meaning to dream content - it simply provides tools to help users discover their own patterns and insights through consistent tracking and reflection.`;
 
-			await MarkdownRenderer.renderMarkdown(content, this.contentEl, '', this.plugin);
+			// Create a new component for markdown rendering
+			this.markdownComponent = new Component();
+			await MarkdownRenderer.render(this.plugin.app, content, this.contentEl, '', this.markdownComponent);
 		}
 	}
 
 	hide(): void {
 		this.contentEl.classList.remove('active');
+		// Unload the markdown component to prevent memory leaks
+		if (this.markdownComponent) {
+			this.markdownComponent.unload();
+			this.markdownComponent = null;
+		}
 	}
 }

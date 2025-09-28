@@ -71,7 +71,7 @@ export class DashboardView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return 'Scribe Dashboard';
+		return 'Scribe dashboard';
 	}
 
 	getIcon(): string {
@@ -132,7 +132,7 @@ export class DashboardView extends ItemView {
 		const headerTop = header.createDiv('sfp-dashboard-header-top');
 
 		const titleSection = headerTop.createDiv('sfp-dashboard-title-section');
-		titleSection.createEl('h1', { text: 'Scribe Dashboard' });
+		titleSection.createEl('h1', { text: 'Scribe dashboard' });
 
 		// Add controls (toggle + refresh)
 		const controls = headerTop.createDiv('sfp-dashboard-header-controls');
@@ -195,10 +195,10 @@ export class DashboardView extends ItemView {
 		}).length;
 
 		const stats = [
-			{ label: 'Total Entries', value: totalEntries.toString() },
+			{ label: 'Total entries', value: totalEntries.toString() },
 			{ label: 'Showing', value: filteredEntries.toString() },
-			{ label: 'Average Words', value: avgWords.toString() },
-			{ label: 'This Month', value: thisMonthCount.toString() },
+			{ label: 'Average words', value: avgWords.toString() },
+			{ label: 'This month', value: thisMonthCount.toString() },
 		];
 
 		stats.forEach(stat => {
@@ -228,12 +228,12 @@ export class DashboardView extends ItemView {
 
 		const select = filterContainer.createEl('select');
 		const filterOptions = [
-			{ value: DateFilter.ALL_TIME, label: 'All Time' },
+			{ value: DateFilter.ALL_TIME, label: 'All time' },
 			{ value: DateFilter.TODAY, label: 'Today' },
-			{ value: DateFilter.THIS_WEEK, label: 'This Week' },
-			{ value: DateFilter.THIS_MONTH, label: 'This Month' },
-			{ value: DateFilter.LAST_30_DAYS, label: 'Last 30 Days' },
-			{ value: DateFilter.THIS_YEAR, label: 'This Year' },
+			{ value: DateFilter.THIS_WEEK, label: 'This week' },
+			{ value: DateFilter.THIS_MONTH, label: 'This month' },
+			{ value: DateFilter.LAST_30_DAYS, label: 'Last 30 days' },
+			{ value: DateFilter.THIS_YEAR, label: 'This year' },
 		];
 
 		filterOptions.forEach(option => {
@@ -623,7 +623,7 @@ export class DashboardView extends ItemView {
 		parts.forEach((part, index) => {
 			if (index % 2 === 1) {
 				// This is a match - create a highlighted span
-				const highlightSpan = element.createSpan('highlight');
+				const highlightSpan = element.createSpan('scribe-highlight');
 				highlightSpan.textContent = part;
 			} else {
 				// This is regular text
@@ -836,7 +836,7 @@ export class DashboardView extends ItemView {
 		if (!query) return text;
 
 		const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-		return text.replace(regex, '<span class="highlight">$1</span>');
+		return text.replace(regex, '<span class="scribe-highlight">$1</span>');
 	}
 
 	private setupSearchKeyboardShortcuts(searchInput: HTMLInputElement): void {
@@ -989,15 +989,15 @@ export class DashboardView extends ItemView {
 	private renderGroupedStatistics(container: HTMLElement): void {
 		// Group 0: Goal Progress
 		this.renderStatisticsGroup(container, 'Goals', [
-			{ label: 'Daily Goal', value: this.state.statistics.dailyGoalStatus, category: 'goals' },
-			{ label: 'Weekly Goal', value: this.state.statistics.weeklyGoalStatus, category: 'goals' },
-			{ label: 'Monthly Progress', value: this.state.statistics.monthlyGoalStatus, category: 'goals' },
+			{ label: 'Daily goal', value: this.state.statistics.dailyGoalStatus, category: 'goals' },
+			{ label: 'Weekly goal', value: this.state.statistics.weeklyGoalStatus, category: 'goals' },
+			{ label: 'Monthly progress', value: this.state.statistics.monthlyGoalStatus, category: 'goals' },
 		]);
 
 		// Group 1: Overall Progress / Summary
 		this.renderStatisticsGroup(container, 'Overall Progress', [
-			{ label: 'Total Entries', value: this.state.statistics.totalEntries, category: 'progress' },
-			{ label: 'Total Words', value: this.state.statistics.totalWords.toLocaleString(), category: 'progress' },
+			{ label: 'Total entries', value: this.state.statistics.totalEntries, category: 'progress' },
+			{ label: 'Total words', value: this.state.statistics.totalWords.toLocaleString(), category: 'progress' },
 			{
 				label: 'Avg Words/Entry',
 				value: Math.round(this.state.statistics.averageWordsPerEntry),
@@ -1008,18 +1008,18 @@ export class DashboardView extends ItemView {
 		// Group 2: Consistency
 		this.renderStatisticsGroup(container, 'Consistency', [
 			{
-				label: 'Current Streak',
+				label: 'Current streak',
 				value: this.state.statistics.currentJournalingStreak,
 				suffix: 'days',
 				category: 'consistency',
 			},
 			{
-				label: 'Longest Streak',
+				label: 'Longest streak',
 				value: this.state.statistics.longestJournalingStreak,
 				suffix: 'days',
 				category: 'consistency',
 			},
-			{ label: 'Days Journaled', value: this.state.statistics.daysJournaled, category: 'consistency' },
+			{ label: 'Days journaled', value: this.state.statistics.daysJournaled, category: 'consistency' },
 			{
 				label: 'Frequency',
 				value: this.state.statistics.journalingFrequencyPercent.toFixed(1),
@@ -1029,16 +1029,16 @@ export class DashboardView extends ItemView {
 		]);
 
 		// Group 3: Content Insights
-		this.renderStatisticsGroup(container, 'Content Insights', [
-			{ label: 'Median Words', value: this.state.statistics.medianWordCount, category: 'content' },
+		this.renderStatisticsGroup(container, 'Content insights', [
+			{ label: 'Median words', value: this.state.statistics.medianWordCount, category: 'content' },
 			{
-				label: 'With Images',
+				label: 'With images',
 				value: this.state.statistics.entriesWithImagesPercent.toFixed(1),
 				suffix: '%',
 				category: 'content',
 			},
 			{
-				label: 'With Dreams',
+				label: 'With dreams',
 				value: this.state.statistics.entriesWithDreamDiaryPercent.toFixed(1),
 				suffix: '%',
 				category: 'content',
@@ -1047,9 +1047,9 @@ export class DashboardView extends ItemView {
 
 		// Group 4: Pattern Recognition
 		this.renderStatisticsGroup(container, 'Patterns', [
-			{ label: 'Most Frequent Day', value: this.state.statistics.mostFrequentDayOfWeek, category: 'pattern' },
-			{ label: 'Most Productive Day', value: this.state.statistics.mostProductiveDayOfWeek, category: 'pattern' },
-			{ label: 'Least Productive Day', value: this.state.statistics.leastProductiveDayOfWeek, category: 'pattern' },
+			{ label: 'Most frequent day', value: this.state.statistics.mostFrequentDayOfWeek, category: 'pattern' },
+			{ label: 'Most productive day', value: this.state.statistics.mostProductiveDayOfWeek, category: 'pattern' },
+			{ label: 'Least productive day', value: this.state.statistics.leastProductiveDayOfWeek, category: 'pattern' },
 		]);
 	}
 
@@ -1194,13 +1194,13 @@ export class DashboardView extends ItemView {
 	private getAllStatistics(): StatCard[] {
 		const allStats: StatCard[] = [
 			// Goal Progress
-			{ label: 'Daily Goal', value: this.state.statistics.dailyGoalStatus, category: 'goals' },
-			{ label: 'Weekly Goal', value: this.state.statistics.weeklyGoalStatus, category: 'goals' },
-			{ label: 'Monthly Progress', value: this.state.statistics.monthlyGoalStatus, category: 'goals' },
+			{ label: 'Daily goal', value: this.state.statistics.dailyGoalStatus, category: 'goals' },
+			{ label: 'Weekly goal', value: this.state.statistics.weeklyGoalStatus, category: 'goals' },
+			{ label: 'Monthly progress', value: this.state.statistics.monthlyGoalStatus, category: 'goals' },
 
 			// Overall Progress
-			{ label: 'Total Entries', value: this.state.statistics.totalEntries, category: 'progress' },
-			{ label: 'Total Words', value: this.state.statistics.totalWords.toLocaleString(), category: 'progress' },
+			{ label: 'Total entries', value: this.state.statistics.totalEntries, category: 'progress' },
+			{ label: 'Total words', value: this.state.statistics.totalWords.toLocaleString(), category: 'progress' },
 			{
 				label: 'Avg Words/Entry',
 				value: Math.round(this.state.statistics.averageWordsPerEntry),
@@ -1209,18 +1209,18 @@ export class DashboardView extends ItemView {
 
 			// Consistency
 			{
-				label: 'Current Streak',
+				label: 'Current streak',
 				value: this.state.statistics.currentJournalingStreak,
 				suffix: 'days',
 				category: 'consistency',
 			},
 			{
-				label: 'Longest Streak',
+				label: 'Longest streak',
 				value: this.state.statistics.longestJournalingStreak,
 				suffix: 'days',
 				category: 'consistency',
 			},
-			{ label: 'Days Journaled', value: this.state.statistics.daysJournaled, category: 'consistency' },
+			{ label: 'Days journaled', value: this.state.statistics.daysJournaled, category: 'consistency' },
 			{
 				label: 'Frequency',
 				value: this.state.statistics.journalingFrequencyPercent.toFixed(1),
@@ -1229,24 +1229,24 @@ export class DashboardView extends ItemView {
 			},
 
 			// Content Insights
-			{ label: 'Median Words', value: this.state.statistics.medianWordCount, category: 'content' },
+			{ label: 'Median words', value: this.state.statistics.medianWordCount, category: 'content' },
 			{
-				label: 'With Images',
+				label: 'With images',
 				value: this.state.statistics.entriesWithImagesPercent.toFixed(1),
 				suffix: '%',
 				category: 'content',
 			},
 			{
-				label: 'With Dreams',
+				label: 'With dreams',
 				value: this.state.statistics.entriesWithDreamDiaryPercent.toFixed(1),
 				suffix: '%',
 				category: 'content',
 			},
 
 			// Pattern Recognition
-			{ label: 'Most Frequent Day', value: this.state.statistics.mostFrequentDayOfWeek, category: 'pattern' },
-			{ label: 'Most Productive Day', value: this.state.statistics.mostProductiveDayOfWeek, category: 'pattern' },
-			{ label: 'Least Productive Day', value: this.state.statistics.leastProductiveDayOfWeek, category: 'pattern' },
+			{ label: 'Most frequent day', value: this.state.statistics.mostFrequentDayOfWeek, category: 'pattern' },
+			{ label: 'Most productive day', value: this.state.statistics.mostProductiveDayOfWeek, category: 'pattern' },
+			{ label: 'Least productive day', value: this.state.statistics.leastProductiveDayOfWeek, category: 'pattern' },
 		];
 
 		// Filter stats based on enabled metric categories
@@ -1370,7 +1370,7 @@ export class DashboardView extends ItemView {
 		
 		// Dropdown content
 		const content = dropdown.createDiv('sfp-metrics-dropdown-content');
-		content.createEl('h4', { text: 'Choose Metrics to Display' });
+		content.createEl('h4', { text: 'Choose metrics to display' });
 		
 		const categories = [
 			{ key: 'goals', label: 'Goals', desc: 'Daily and weekly goal progress tracking' },

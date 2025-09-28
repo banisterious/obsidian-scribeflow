@@ -7,7 +7,7 @@
  * 1. Edit the individual CSS files in styles/
  * 2. Run 'npm run build:css' to regenerate this file
  * 
- * Build time: 2025-07-06T22:54:43.216Z
+ * Build time: 2025-09-15T22:48:45.159Z
  * Build order: 23 files concatenated
  */
 
@@ -24,7 +24,6 @@
 
 :root {
     /* Modal sizing */
-    --modal-height: 80vh;
     --modal-width: 90vw;
     --modal-max-height: 800px;
     --modal-max-width: 1200px;
@@ -1851,7 +1850,7 @@
 }
 
 /* Search Highlighting */
-.highlight {
+.scribe-highlight {
     padding: 1px 2px;
     background: var(--text-highlight-bg);
     border-radius: 2px;
@@ -2390,7 +2389,7 @@
 }
 
 /* Highlight */
-.highlight {
+.scribe-highlight {
     padding: 1px 2px;
     background: var(--text-highlight-bg);
     border-radius: 2px;
@@ -3922,7 +3921,7 @@
  */
 
 /* Button Utilities */
-.btn-base {
+.scribe-btn-base {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);

@@ -22,6 +22,8 @@
         "**/*.ts"
     ],
     "exclude": [
-        "obsidian-oneirometrics-plugin/**/*"
+        "obsidian-oneirometrics-plugin/**/*",
+        "docs/developer/obsidian-oneirometrics-plugin/**/*",
+        "docs/archive/**/*"
     ]
 } 
